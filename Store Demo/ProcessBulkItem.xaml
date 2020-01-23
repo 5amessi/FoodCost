@@ -1,0 +1,92 @@
+﻿<UserControl x:Class="Food_Cost.ProcessBulkItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Food_Cost"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" >
+    <Grid Margin="80 65 0 0 ">
+        <Grid VerticalAlignment="Top" Name="Details" Background="White">
+            <Grid >
+                <GroupBox Header="Generate Bulk Items" Margin="10 10 0 10" FontSize="20" TextBlock.FontWeight="Bold" >
+                    <Grid TextBlock.FontSize="13" TextBlock.FontWeight="Normal" Height="150">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="4*"/>
+                            <ColumnDefinition Width="4*"/>
+
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock  Text="Resturant" Foreground="Red" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0"/>
+                        <ComboBox Grid.Column="1" VerticalAlignment="Center"  Foreground="Black" Name="StoreIDcbx" TextBlock.TextAlignment="Center" HorizontalContentAlignment="Center" SelectionChanged="ResturantComboBox_SelectionChanged"/>
+
+
+                        <TextBlock  Text="Kitchen" Grid.Row="1" Foreground="Red" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0"/>
+                        <ComboBox Grid.Column="1" Grid.Row="1" VerticalAlignment="Center"  Foreground="Black" Name="Kitchencbx" TextBlock.TextAlignment="Center" HorizontalContentAlignment="Center" SelectionChanged="kitchenComboBox_SelectionChanged"/>
+
+                        
+                    </Grid>
+                </GroupBox>
+            </Grid>
+        </Grid>
+        <Grid Name="ItemsDetails" Visibility="Hidden">
+            <StackPanel>
+                <StackPanel VerticalAlignment="Stretch">
+                    <Grid Background="White">
+                        <StackPanel>
+                            <Grid>
+                                <GroupBox Header="Process Bulk Items" Margin="10 10 0 10" FontSize="20" TextBlock.FontWeight="Bold" >
+                                    <Grid TextBlock.FontSize="13" TextBlock.FontWeight="Normal" VerticalAlignment="Stretch">
+                                        
+                                    <DataGrid Name="ItemsDGV" ScrollViewer.VerticalScrollBarVisibility="Auto" ColumnWidth="*" MaxHeight="350" Height="350" ItemsSource="{Binding}" BorderBrush="Black" BorderThickness="1"
+                                        ScrollViewer.HorizontalScrollBarVisibility="Auto" AutoGenerateColumns="True" ScrollViewer.CanContentScroll="True" CanUserAddRows="False" MouseLeftButtonUp="ItemsDGV_MouseLeftButtonUp">
+
+                                    </DataGrid>
+                                        
+                                </Grid>
+                                </GroupBox>
+                            </Grid>
+        
+                        </StackPanel>
+                    </Grid>
+        
+                    <Grid>
+        
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+        
+                        </Grid.ColumnDefinitions>
+
+
+
+                    <Button Grid.Column="1" Name="BulkItems" Foreground="Black" Background="#cacfd2"  FontSize="12" Padding="2" Margin="0 10 0 0" Height="40" Click="BulkItemsBtn_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Plus" Width="20"/>
+                            <TextBlock HorizontalAlignment="Right"> Generate Bulk Items</TextBlock>
+                        </StackPanel>
+                    </Button>
+                        
+                </Grid>
+                </StackPanel>
+                
+                <Grid>
+                    <StackPanel Orientation="Vertical">
+                        <DataGrid Name="ItemsofBulkItemsDGV" IsReadOnly="True" BorderBrush="Black" BorderThickness="1" ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding}" AutoGenerateColumns="True" ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                  ScrollViewer.CanContentScroll="True" CanUserAddRows="False" PreviewTextInput="NumberValidationTextBox"  PreviewKeyDown="NeglectWhiteSpace" Visibility="Hidden" ColumnWidth="*" Margin="0 20 0 0">
+                        </DataGrid>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,23 @@
+select Top(1) * from RO inner join RO_Items on RO.RO_ID = RO_Items.RO_No where
+RO_Items.Item_ID = '10101010001' and Receiving_Date <= '1900-01-01 00:00:00.000'
+order by Receiving_Date Desc
+--
+
+select top(1) * from Adjacment_tbl inner join Adjacment_Items on Adjacment_tbl.Adjacment_ID=Adjacment_Items.Adjacment_ID
+where Adjacment_Items.Item_ID='10101010001' and Adjacment_Date <= '1900-01-01 00:00:00.000'
+order by Adjacment_Date DESC
+select * from Adjacment_tbl where Adjacment_Date <= '1900-01-01 00:00:00.000'
+
+
+--
+select Top(1) * From StockInventory_tbl inner join StockInventory_Items on StockInventory_tbl.Inventory_ID=StockInventory_Items.Inventory_ID
+where StockInventory_Items.Item_ID='10101010001' and Inventory_Date<='1900-01-01 00:00:00.000'
+order by Inventory_Date DESC
+select * from StockInventory_tbl where Inventory_Date <= '1900-01-01 00:00:00.000'
+
+
+--
+select Top(1) * From PhysicalInventory_tbl inner join PhysicalInventory_Items on PhysicalInventory_tbl.Inventory_ID=PhysicalInventory_Items.Inventory_ID
+where PhysicalInventory_Items.Item_ID='10101010001' and Inventory_Date<='1900-01-01 00:00:00.000'
+order by Inventory_Date DESC
+select * from PhysicalInventory_tbl where Inventory_Date <= '1900-01-01 00:00:00.000'
