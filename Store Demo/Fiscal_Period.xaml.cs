@@ -22,11 +22,9 @@ namespace Food_Cost
     public partial class Fiscal_Period : Window
     {
         HashSet<string> SetStatus = new HashSet<string>();
-        public Fiscal_Period()
-        {
-            InitializeComponent();
 
-            MonthType_cbx.SelectedIndex = 0;
+        private void load_years()
+        {
             string cols = "Year varchar(50),Month varchar(50),[Month Type] varchar(50),[From] datetime,[To] datetime,isClosed bit";
             Classes.CreateTable("Setup_Fiscal_Period", cols);
             DataTable Years = Classes.RetrieveData("DISTINCT(Year)", "Setup_Fiscal_Period");
@@ -36,20 +34,44 @@ namespace Food_Cost
             }
         }
 
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void Close_All()
         {
-            if (MonthType_cbx.SelectedIndex == 0)
+            for (int i = 0; i < 13; i++)
             {
-                Month13_StackPanel.Visibility = Visibility.Hidden;
+                DatePicker From = FindName("from" + (i + 1)) as DatePicker;
+                DatePicker To = FindName("to" + (i + 1)) as DatePicker;
+                From.IsEnabled = false;
+                To.IsEnabled = false;
             }
-            else
-                Month13_StackPanel.Visibility = Visibility.Visible;
+        }
+
+        private void Open_All()
+        {
+            for (int i = 0; i < 13; i++)
+            {
+                DatePicker From = FindName("from" + (i + 1)) as DatePicker;
+                DatePicker To = FindName("to" + (i + 1)) as DatePicker;
+                From.IsEnabled = true;
+                To.IsEnabled = true;
+            }
+        }
+
+        private void Clear_All()
+        {
+            for (int i = 0; i < 13; i++)
+            {
+                DatePicker From = FindName("from" + (i + 1)) as DatePicker;
+                DatePicker To = FindName("to" + (i + 1)) as DatePicker;
+                From.Text = "";
+                To.Text = "";
+            }
+            CBCreatedYears.Text = "";
+            MonthType_cbx.Text = "";
+            Year.Text = "";
         }
 
         private void insert()
         {
-
-           
             string where = "Year = '" + Year.Text + "'";
             Classes.DeleteRows(where, "Setup_Fiscal_Period");
 
@@ -70,15 +92,33 @@ namespace Food_Cost
 
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        public Fiscal_Period()
         {
-            try
+            InitializeComponent();
+            MonthType_cbx.SelectedIndex = 0;
+            load_years();
+            Close_All();
+            BtnNew.IsEnabled = true;
+            BtnDelete.IsEnabled = false;
+            BtnSave.IsEnabled = false;
+            BtnUndo.IsEnabled = false;
+            BtnEdit.IsEnabled = false;
+            BtnExit.IsEnabled = true;
+            MonthType_cbx.IsEnabled = false;
+            Year.IsEnabled = false;
+
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (MonthType_cbx.Text != "")
             {
-                insert();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
+                if (MonthType_cbx.SelectedIndex == 0)
+                {
+                    Month13_StackPanel.Visibility = Visibility.Hidden;
+                }
+                else
+                    Month13_StackPanel.Visibility = Visibility.Visible;
             }
         }
 
@@ -148,55 +188,142 @@ namespace Food_Cost
 
         private void CreatedYear_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            BtnEdit.IsEnabled = true;
             DataTable MonthsforYear = Classes.RetrieveData("*", "Year = '" + CBCreatedYears.SelectedItem + "'", "Setup_Fiscal_Period");
+            if (MonthsforYear.Rows.Count != 0)
+            {
+                if (MonthsforYear.Rows[0]["Month Type"].ToString() == "Type2")
+                {
+                    Month13_StackPanel.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    Month13_StackPanel.Visibility = Visibility.Hidden;
+                }
 
-            if (MonthsforYear.Rows[0]["Month Type"].ToString() == "Type2")
-            {
-                Month13_StackPanel.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                Month13_StackPanel.Visibility = Visibility.Hidden;
-            }
-
-            SetStatus = new HashSet<string>();
-            for (int i = 0; i < MonthsforYear.Rows.Count; i++)
-            {
-                DatePicker From = FindName("from" + (i + 1)) as DatePicker;
-                DatePicker To = FindName("to" + (i + 1)) as DatePicker;
-                From.Text = MonthsforYear.Rows[i]["From"].ToString();
-                To.Text = MonthsforYear.Rows[i]["TO"].ToString();
-                SetStatus.Add(MonthsforYear.Rows[i]["isClosed"].ToString());
+                SetStatus = new HashSet<string>();
+                for (int i = 0; i < MonthsforYear.Rows.Count; i++)
+                {
+                    DatePicker From = FindName("from" + (i + 1)) as DatePicker;
+                    DatePicker To = FindName("to" + (i + 1)) as DatePicker;
+                    From.Text = MonthsforYear.Rows[i]["From"].ToString();
+                    To.Text = MonthsforYear.Rows[i]["TO"].ToString();
+                    SetStatus.Add(MonthsforYear.Rows[i]["isClosed"].ToString());
+                }
             }
         }
 
         private void New_Click(object sender, RoutedEventArgs e)
         {
-            //Open all Boxes
+            Clear_All();
+            Open_All();
+            BtnUndo.IsEnabled = true;
+            BtnExit.IsEnabled = true;
+            MonthType_cbx.IsEnabled = true;
+            Year.IsEnabled = true;
+            BtnSave.IsEnabled = true;
+            BtnDelete.IsEnabled = false;
+            BtnNew.IsEnabled = false;
+            BtnEdit.IsEnabled = false;
+            CBCreatedYears.IsEnabled = false;
         }
 
         private void Edit_Click(object sender, RoutedEventArgs e)
         {
-            if (SetStatus.Contains("True"))
+            if (!SetStatus.Contains("True"))
             {
-                MessageBox.Show("Open all months in this year");
+                BtnUndo.IsEnabled = true;
+                BtnExit.IsEnabled = true;
+                BtnSave.IsEnabled = true;
+                BtnDelete.IsEnabled = true;
+                MonthType_cbx.IsEnabled = false;
+                Year.IsEnabled = false;
+                BtnNew.IsEnabled = false;
+                BtnEdit.IsEnabled = false;
+                Clear_All();
+                Open_All();
+            }
+            else
+            {
+                MessageBox.Show("Please open all months in this year before doing this fucking action Motherfucker");
             }
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            insert();
+            BtnNew.IsEnabled = true;
+            BtnExit.IsEnabled = true;
+            CBCreatedYears.IsEnabled = true;
+            BtnEdit.IsEnabled = false;
+            BtnSave.IsEnabled = false;
+            BtnDelete.IsEnabled = false;
+            BtnUndo.IsEnabled = false;
+            MonthType_cbx.IsEnabled = false;
+            Year.IsEnabled = false;
+            Clear_All();
+            Close_All();
+            try
+            {
+                if (Year.Text != "")
+                    insert();
+                else
+                    MessageBox.Show("Nrakz Shwya M3lsh");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
+            BtnNew.IsEnabled = true;
+            CBCreatedYears.IsEnabled = true;
+            BtnExit.IsEnabled = true;
+            BtnEdit.IsEnabled = false;
+            BtnSave.IsEnabled = false;
+            BtnDelete.IsEnabled = false;
+            BtnUndo.IsEnabled = false;
+            MonthType_cbx.IsEnabled = false;
+            Year.IsEnabled = false;
+
             string where = "Year = '" + CBCreatedYears.SelectedItem + "'";
             Classes.DeleteRows(where, "Setup_Fiscal_Period");
+            Clear_All();
+            Close_All();
+            MessageBox.Show("Done");
         }
 
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            if (from1.IsEnabled)
+            {
+                MessageBoxResult result = MessageBox.Show("close without save", "Confirmation",
+                              MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.OK)
+                {
+                    this.Close();
+                }
+            }
+            else
+            {
+                this.Close();
+            }
+        }
+
+        private void Undo_Click(object sender, RoutedEventArgs e)
+        {
+            BtnNew.IsEnabled = true;
+            CBCreatedYears.IsEnabled = true;
+            BtnExit.IsEnabled = true;
+            BtnEdit.IsEnabled = false;
+            BtnSave.IsEnabled = false;
+            BtnDelete.IsEnabled = false;
+            BtnUndo.IsEnabled = false;
+            MonthType_cbx.IsEnabled = false;
+            Year.IsEnabled = false;
+            Clear_All();
+            Close_All();
         }
     }
 }

@@ -37,7 +37,7 @@ namespace Food_Cost
         {
             try
             {
-                Recalculate.ReCalculate_Cost_Qty(DTCurrentMonth.Rows[0]);
+                Recalculate.ReCalculate_Cost_Qty(DTCurrentMonth.Rows[0], DTPreviousMonth);
                 Recalculate.CloseMonth(DTCurrentMonth.Rows[0]);
                 where = "Month = '" + Month + "' and Year = '" + Year + "'";
                 Classes.UpdateCell("isClosed", "1", where, "Setup_Fiscal_Period");
