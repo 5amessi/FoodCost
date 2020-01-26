@@ -479,8 +479,7 @@ namespace Food_Cost
         {
             try
             {
-                string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-                SqlConnection con = new SqlConnection(connString);
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
 
                 if (e.Column.Header.ToString() == "Price")
                 {
@@ -563,10 +562,14 @@ namespace Food_Cost
 
         private void CalculatePrices(DataGridCellEditEndingEventArgs e)
         {
-            Serial_PO_NO.Focus();
+            //Serial_PO_NO.Focus();
             try
             {
                 DataTable dt = ItemsDGV.DataContext as DataTable;
+                for(int i=0;i<dt.Columns.Count;i++)
+                {
+
+                }
                 float Qty;
                 try
                 {
