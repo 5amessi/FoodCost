@@ -65,6 +65,12 @@ namespace Food_Cost
             {
                 if (BETable.Rows[k]["Trantype"].ToString() == "Adjactment" || k == 0)
                 {
+                    if (k != 0)
+                    {
+                        BETable.Rows[k]["Qty"] = (double.Parse(BETable.Rows[k]["Current_Qty"].ToString()) - double.Parse(BETable.Rows[k-1]["Current_Qty"].ToString())).ToString();
+                        string TempWhere = "Adjacment_ID = '" + BETable.Rows[k]["ID"].ToString() +  "' And Item_ID = '" + BETable.Rows[k]["Item_ID"].ToString() + "'";
+                        Classes.UpdateCell("Variance", BETable.Rows[k]["Qty"].ToString(), TempWhere, "Adjacment_Items");
+                    }
                     Insert(k);
                     continue;
                 }

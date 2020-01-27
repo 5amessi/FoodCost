@@ -233,14 +233,12 @@ namespace Food_Cost
             if (!SetStatus.Contains("True"))
             {
                 BtnUndo.IsEnabled = true;
-                BtnExit.IsEnabled = true;
                 BtnSave.IsEnabled = true;
                 BtnDelete.IsEnabled = true;
                 MonthType_cbx.IsEnabled = false;
                 Year.IsEnabled = false;
                 BtnNew.IsEnabled = false;
                 BtnEdit.IsEnabled = false;
-                Clear_All();
                 Open_All();
             }
             else

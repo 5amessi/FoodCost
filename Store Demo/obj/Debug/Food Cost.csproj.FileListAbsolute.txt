@@ -3602,3 +3602,6 @@ E:\Michael\Food Cost\Store Demo\obj\Debug\Food_Cost.application
 E:\Michael\Food Cost\Store Demo\obj\Debug\Food Cost.csproj.CopyComplete
 E:\Michael\Food Cost\Store Demo\obj\Debug\Food_Cost.exe
 E:\Michael\Food Cost\Store Demo\obj\Debug\Food_Cost.pdb
+E:\FOODCOST\GitFoodCost\Store Demo\bin\Debug\Food_Cost.exe.config
+E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.exe
+E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.pdb
