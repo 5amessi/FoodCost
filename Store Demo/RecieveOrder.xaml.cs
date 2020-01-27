@@ -201,7 +201,7 @@ namespace Food_Cost
                     MessageBox.Show("Delivery Date Can't Be Empty");
                     return false;
                 }
-                else if (Delivery_time.Text.Equals(""))
+                else if (Delivery_time.Text == null)
                 {
                     MessageBox.Show("Delivery Time Can't Be Empty");
                     return false;
@@ -591,7 +591,7 @@ namespace Food_Cost
 
                 }
 
-                SqlCommand cmd = new SqlCommand(string.Format("Insert into RO(RO_Serial,RO_No,Transactions_No,Status,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment)Values ('{0}','{1}','{2}','{3}','{4}',(select Code From Store_Setup WHere Name='{5}'),(select Code From Kitchens_Setup WHere Name='{6}'),'{7}','{8}','{9}')", RoTransferKitchen.Text, ManualROKitchen.Text, TransferResturantID, "Recieved", DeliveryROKitchen.Text +" "+ DeliveryROKitchenTime.Text, ToResturantKitchentxt.Text, ToKitchenKitchentxt.Text, Classes.WS, "Transfer_Resturant", commenttxt.Text), con);
+                SqlCommand cmd = new SqlCommand(string.Format("Insert into RO(RO_Serial,RO_No,Transactions_No,Status,Create_Date,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment,UserID)Values ('{0}','{1}','{2}','{3}',GETDATE(),'{4}',(select Code From Store_Setup WHere Name='{5}'),(select Code From Kitchens_Setup WHere Name='{6}'),'{7}','{8}','{9}','{10}')", RoTransferKitchen.Text, ManualROKitchen.Text, TransferResturantID, "Recieved", DeliveryROKitchen.Text +" "+ DeliveryROKitchenTime.Text, ToResturantKitchentxt.Text, ToKitchenKitchentxt.Text, Classes.WS, "Transfer_Resturant", commenttxt.Text,MainWindow.UserID), con);
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex) { MessageBox.Show(ex.ToString()); }
@@ -843,7 +843,7 @@ namespace Food_Cost
 
                 }
 
-                SqlCommand cmd = new SqlCommand(string.Format("Insert into RO(RO_Serial,RO_No,Transactions_No,Status,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment)Values ('{0}','{1}','{2}','{3}','{4}',(select Code From Store_Setup WHere Name='{5}'),(select Code From Kitchens_Setup WHere Name='{6}'),'{7}','{8}','{9}')", RoInter.Text, ManualROInter.Text, TransferKitchenID, "Recieved", DeliveryROInter.Text+" "+ DeliveryROInterTime.Text, FromResturantIntertxt.Text, ToKitchenIntertxt.Text, Classes.WS, "Transfer_Kitchen", CommentRoInter.Text), con);
+                SqlCommand cmd = new SqlCommand(string.Format("Insert into RO(RO_Serial,RO_No,Transactions_No,Status,Create_Date,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment,UserID)Values ('{0}','{1}','{2}','{3}',GETDATE(),'{4}',(select Code From Store_Setup WHere Name='{5}'),(select Code From Kitchens_Setup WHere Name='{6}'),'{7}','{8}','{9}','{10}')", RoInter.Text, ManualROInter.Text, TransferKitchenID, "Recieved", DeliveryROInter.Text+" "+ DeliveryROInterTime.Text, FromResturantIntertxt.Text, ToKitchenIntertxt.Text, Classes.WS, "Transfer_Kitchen", CommentRoInter.Text,MainWindow.UserID), con);
                 cmd.ExecuteNonQuery();
 
             }
@@ -980,7 +980,7 @@ namespace Food_Cost
                 }
 
 
-                cmd = new SqlCommand(string.Format("Insert into RO(RO_Serial,RO_No,Transactions_No,Status,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment,UserID)Values ('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}')", codetxt.Text, Manual_Recieve_No.Text, PO.Text, "Recieved", Delivery_dt.Text, RestaurantId, KitchenId, Classes.WS, "Auto_Recieve", commenttxt.Text, MainWindow.UserID), con);
+                cmd = new SqlCommand(string.Format("Insert into RO(RO_Serial,RO_No,Transactions_No,Status,Create_Date,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment,UserID)Values ('{0}','{1}','{2}','{3}',GETDATE(),'{4}','{5}','{6}','{7}','{8}','{9}','{10}')", codetxt.Text, Manual_Recieve_No.Text, PO.Text, "Recieved", Delivery_dt.Text, RestaurantId, KitchenId, Classes.WS, "Auto_Recieve", commenttxt.Text, MainWindow.UserID), con);
                 cmd.ExecuteNonQuery();
 
                 MainUiFormat();
@@ -1686,6 +1686,8 @@ namespace Food_Cost
         {
             SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString);
             SqlDataReader reader = null;
+            ResturantCbx.Items.Clear();
+            ResturantReqcbx.Items.Clear();
             try
             {
                 con.Open();

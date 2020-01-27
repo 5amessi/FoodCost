@@ -666,16 +666,16 @@ namespace Food_Cost
                 {
                     if(unit.Text == unit2.Text)
                     {
-                        s = string.Format("insert into Setup_Items Values ('{0}','{1}','{2}','{3}','{4}',(select Code from Vendors where Name = '{5}'),'{6}','{7}','{8}','{9}','{10}',{11},'{12}','{13}','{14}','{15}','{16}','{17}'," +
+                        s = string.Format("insert into Setup_Items Values ('{0}','{1}','{2}','{3}','{4}',(select Code from Vendors where Name = '{5}'),'{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}','{15}','{16}','{17}'," +
                           "'{18}','{19}','{20}','{21}','{22}','{23}','{24}','{25}','{26}',GETDATE(),NULL,'{27}','{28}','{29}','{30}')", Codetxt.Text, Manual_Code_txt.Text, BarCodetxt.Text, Name1txt.Text, Name2txt.Text, PrefVendortxt.Text, Categorytxt.Text, Departmenttxt.Text, Classtxt.Text, SubClasstxt.Text,
-                          MUT_cb.IsChecked,Activecbx.IsChecked, Specstxt.Text, Yieldtxt.Text, Weight.Text, unit.Text, unit_txt1.Text, ConvUnit2.Text, unit3.Text, '1', CW_cb.IsChecked, BI_cb.IsChecked, PI_cb.IsChecked, HI_cb.IsChecked,
+                          MUT_cb.IsChecked,ExpDate_cb.IsChecked, Specstxt.Text, Yieldtxt.Text, Weight.Text, unit.Text, unit_txt1.Text, ConvUnit2.Text, unit3.Text, '1', CW_cb.IsChecked, BI_cb.IsChecked, PI_cb.IsChecked, HI_cb.IsChecked,
                           TI_cb.IsChecked, taxable_prec_value, ItemImage.Source.ToString(),MainWindow.UserID,"", Inventory_Item.IsChecked,Activecbx.IsChecked);
                     }
                     else
                     {
-                        s = string.Format("insert into Setup_Items Values ('{0}','{1}','{2}','{3}','{4}',(select Code from Vendors where Name = '{5}'),'{6}','{7}','{8}','{9}','{10}',{11},'{12}','{13}','{14}','{15}','{16}','{17}'," +
+                        s = string.Format("insert into Setup_Items Values ('{0}','{1}','{2}','{3}','{4}',(select Code from Vendors where Name = '{5}'),'{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}','{15}','{16}','{17}'," +
                           "'{18}','{19}','{20}','{21}','{22}','{23}','{24}','{25}','{26}',GETDATE(),NULL,'{27}','{28}','{29}','{30}')", Codetxt.Text, Manual_Code_txt.Text, BarCodetxt.Text, Name1txt.Text, Name2txt.Text, PrefVendortxt.Text, Categorytxt.Text, Departmenttxt.Text, Classtxt.Text, SubClasstxt.Text,
-                          MUT_cb.IsChecked, Activecbx.IsChecked, Specstxt.Text, Yieldtxt.Text, Weight.Text, unit.Text, unit2.Text, ConvUnit2.Text, unit3.Text, '1', CW_cb.IsChecked, BI_cb.IsChecked, PI_cb.IsChecked, HI_cb.IsChecked,
+                          MUT_cb.IsChecked, ExpDate_cb.IsChecked, Specstxt.Text, Yieldtxt.Text, Weight.Text, unit.Text, unit2.Text, ConvUnit2.Text, unit3.Text, '1', CW_cb.IsChecked, BI_cb.IsChecked, PI_cb.IsChecked, HI_cb.IsChecked,
                           TI_cb.IsChecked, taxable_prec_value, ItemImage.Source.ToString(), MainWindow.UserID, "", Inventory_Item.IsChecked,Activecbx.IsChecked);
                     }
                     
@@ -695,8 +695,8 @@ namespace Food_Cost
                                                "',SUBClass='" + SubClasstxt.Text +
                                                "',Is_MultiUnitTrack='" + MUT_cb.IsChecked.ToString() +
                                                "',Specs='" + Specstxt.Text +
-                                               "',ExpDate=" + Activecbx.IsChecked +
-                                               ",Yield='" + Yieldtxt.Text +
+                                               "',ExpDate='" + ExpDate_cb.IsChecked +
+                                               "',Yield='" + Yieldtxt.Text +
                                                "',Weight='" + Weight.Text +
                                                "',Unit='" + unit.Text +
                                                "',Unit2='" + unit_txt1.Text +
@@ -729,8 +729,8 @@ namespace Food_Cost
                                                "',SUBClass='" + SubClasstxt.Text +
                                                "',Is_MultiUnitTrack='" + MUT_cb.IsChecked.ToString() +
                                                "',Specs='" + Specstxt.Text +
-                                               "',ExpDate=" + Activecbx.IsChecked +
-                                               ",Yield='" + Yieldtxt.Text +
+                                               "',ExpDate='" + ExpDate_cb.IsChecked +
+                                               "',Yield='" + Yieldtxt.Text +
                                                "',Weight='" + Weight.Text +
                                                "',Unit='" + unit.Text +
                                                "',Unit2='" + unit2.Text +
@@ -934,6 +934,8 @@ namespace Food_Cost
                         PI_cb.IsChecked = (bool) reader["Is_ParentItem"];
                         HI_cb.IsChecked = (bool) reader["Is_HotItem"];
                         TI_cb.IsChecked = (bool) reader["Is_TaxableItem"];
+                        Activecbx.IsChecked = (bool) reader["Active"];
+                        ExpDate_cb.IsChecked = (bool) reader["ExpDate"];
                         TI_Value.Text = reader["TaxableValue"].ToString();
 
                         if (TI_Value.Text != "")
@@ -1315,7 +1317,12 @@ namespace Food_Cost
 
         private void BI_cb_Click(object sender, RoutedEventArgs e)
         {
-            if((sender as CheckBox).IsChecked == true)
+            TreeViewItem item = treeViewItems.SelectedItem as TreeViewItem;
+
+            if (item.Header.Equals("Undefined"))
+                return;
+               
+            if ((sender as CheckBox).IsChecked == true)
             {
                 BulkWindow bulkWindow = new BulkWindow(Codetxt.Text, Name1txt.Text);
                 bulkWindow.ShowDialog();
@@ -1324,6 +1331,10 @@ namespace Food_Cost
 
         private void PI_cb_Checked(object sender, RoutedEventArgs e)
         {
+            TreeViewItem item = treeViewItems.SelectedItem as TreeViewItem;
+            if (item.Header.Equals("Undefined"))
+                return;
+
             if ((sender as CheckBox).IsChecked == true)
             {
                 ParentWindow parentWindow = new ParentWindow(Codetxt.Text);

@@ -567,6 +567,7 @@ namespace Food_Cost
                         }
                         reader2.Close();
                         string w = "SELECT Qty,MinNumber,MaxNumber,Units,Current_Cost FROM Items WHERE RestaurantID=" + valofStore + " AND ItemID=" + reader["Item_Code"].ToString() + " AND KitchenID=" + ValOfKitchen;
+                        
                         cmd2 = new SqlCommand(w, con2);
                         reader2 = cmd2.ExecuteReader();
                         if (reader2.HasRows ==true )
@@ -583,7 +584,7 @@ namespace Food_Cost
                                     else
                                     {
                                         RecipeItemDData[CountofRecipeItemData, 0] = reader["Item_Code"].ToString();
-                                        RecipeItemDData[CountofRecipeItemData, 1] = reader["Qty"].ToString();
+                                        RecipeItemDData[CountofRecipeItemData, 1] = ((float.Parse(reader["Qty"].ToString())/ float.Parse(BaseWeight))*float.Parse(QtyofRecipetxt.Text)).ToString();
                                         RecipeItemDData[CountofRecipeItemData, 2] = ((Convert.ToDouble(RecipeQty)) * (Convert.ToDouble(QtyofRecipetxt.Text)) * (Convert.ToDouble(reader["Qty"])) * (Convert.ToDouble(YeildofQty) / 100) * (Convert.ToDouble(reader2["Current_Cost"]))).ToString();
                                         CountofRecipeItemData++;
                                     }
@@ -598,7 +599,7 @@ namespace Food_Cost
                                     else
                                     {
                                         RecipeItemDData[CountofRecipeItemData, 0] = reader["Item_Code"].ToString();
-                                        RecipeItemDData[CountofRecipeItemData, 1] = reader["Qty"].ToString();
+                                        RecipeItemDData[CountofRecipeItemData, 1] = ((float.Parse(reader["Qty"].ToString()) / float.Parse(BaseWeight)) * float.Parse(QtyofRecipetxt.Text)).ToString();
                                         RecipeItemDData[CountofRecipeItemData, 2] = ((Convert.ToDouble(RecipeQty)) * (Convert.ToDouble(QtyofRecipetxt.Text)) * (Convert.ToDouble(reader["Qty"])) * (Convert.ToDouble(secondWeight)) * (Convert.ToDouble(YeildofQty) / 100) * (Convert.ToDouble(reader2["Current_Cost"]))).ToString();
                                         CountofRecipeItemData++;
                                     }

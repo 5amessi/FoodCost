@@ -55,8 +55,8 @@ namespace Food_Cost
             string FirstName = ""; string SeconName = "";
             SqlDataReader reader = null;
             SqlDataReader reader2 = null;
-            SqlConnection con = new SqlConnection(connString);
-            SqlConnection con2 = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
             SqlCommand cmd = new SqlCommand();
             SqlCommand cmd2 = new SqlCommand();
             //
@@ -207,12 +207,8 @@ namespace Food_Cost
             con.Close();
         }
 
-
-
-
         // Normal Adjacment 
         DataTable dt = new DataTable();
-        string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
         public AdjacmentInventory()
         {
             InitializeComponent();
@@ -220,7 +216,7 @@ namespace Food_Cost
         }
         public void LoadAllResturant()
         {
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlDataReader reader = null;
             con.Open();
             try
@@ -247,7 +243,7 @@ namespace Food_Cost
         private void ResturantComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Kitchencbx.Items.Clear();
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlDataReader reader = null;
             con.Open();
             try
@@ -271,9 +267,26 @@ namespace Food_Cost
                 con.Close();
             }
         }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            GetCodeofResturantAndKitchen();
+            Adjact.Visibility = Visibility.Visible;
+            NumberOfItemText.Visibility = Visibility.Visible;
+            TotalofItems.Visibility = Visibility.Visible;
+            NUmberOfItems.Visibility = Visibility.Visible;
+            Total_Price.Visibility = Visibility.Visible;
+            Adjact.IsEnabled = true;
+            adjacChose.Visibility = Visibility.Hidden;
+            AdjacInfo.Visibility = Visibility.Visible;
+            addItemBtn.Visibility = Visibility.Visible;
+            RemoveItemBtn.Visibility = Visibility.Visible;
+            LoadAllReasons();
+            GetAdjacmentID();
+        }
         private void LoadAllReasons()
         {
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlDataReader reader = null;
             try
             {
@@ -299,28 +312,27 @@ namespace Food_Cost
         }
         private void GetAdjacmentID()
         {
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             try
             {
                 con.Open();
-                string s = "Select TOP(1)Adjacment_ID From Adjacment_tbl ORDER BY Adjacment_ID DESC";
+                string s = string.Format("Select TOP(1) Adjacment_ID From Adjacment_tbl where Adjacment_ID like '{0}%' ORDER BY Adjacment_ID DESC", Classes.IDs);
                 SqlCommand cmd = new SqlCommand(s, con);
                 if (cmd.ExecuteScalar() == null)
                 {
-                    Serial_Adjacment_NO.Text = "1";
+                    Serial_Adjacment_NO.Text = Classes.IDs + "0000001";
                 }
                 else
                 {
-                    Serial_Adjacment_NO.Text = (int.Parse(cmd.ExecuteScalar().ToString()) + 1).ToString();
+                    Serial_Adjacment_NO.Text = "0" + (Int64.Parse(cmd.ExecuteScalar().ToString()) + 1).ToString();
                 }
                 con.Close();
             }
             catch { }
-            
         }
         private void GetCodeofResturantAndKitchen()
         {
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlCommand cmd = new SqlCommand();
             try
             {
@@ -355,23 +367,7 @@ namespace Food_Cost
                 con.Close();
             }
         }
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            GetCodeofResturantAndKitchen();
-            Adjact.Visibility = Visibility.Visible;
-            NumberOfItemText.Visibility = Visibility.Visible;
-            TotalofItems.Visibility = Visibility.Visible;
-            NUmberOfItems.Visibility = Visibility.Visible;
-            Total_Price.Visibility = Visibility.Visible;
-            Adjact.IsEnabled = true;
-            adjacChose.Visibility = Visibility.Hidden;
-            AdjacInfo.Visibility = Visibility.Visible;
-            addItemBtn.Visibility = Visibility.Visible;
-            RemoveItemBtn.Visibility = Visibility.Visible;
-            LoadAllReasons();
-            GetAdjacmentID();
-        }
-
+       
         private void ItemsDGV_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             dt = ItemsDGV.DataContext as DataTable;
@@ -379,15 +375,15 @@ namespace Food_Cost
             {
                 dt.Columns["Variance"].ReadOnly = false;
                 dt = ((DataView)ItemsDGV.ItemsSource).ToTable();
-                if (e.Column.Header == "AdjacmentableQty")
+                if (e.Column.Header == "Adjacmentable Qty")
                 {
                     try
                     {
-                        (ItemsDGV.SelectedItem as DataRowView).Row[5] = ( Convert.ToDouble((ItemsDGV.SelectedItem as DataRowView).Row.ItemArray[3]) - double.Parse((e.EditingElement as TextBox).Text)).ToString();
+                        (ItemsDGV.SelectedItem as DataRowView).Row[5] = (Double.Parse(((e.EditingElement as TextBox).Text).ToString()) - Convert.ToDouble((ItemsDGV.SelectedItem as DataRowView).Row.ItemArray[3]));
                     }
                     catch { }
                 }
-                    dt.Columns["AdjacmentableQty"].ReadOnly = false;
+                    dt.Columns["Adjacmentable Qty"].ReadOnly = false;
                     dt.Columns["Variance"].ReadOnly = true;
             }
             catch { }
@@ -446,7 +442,6 @@ namespace Food_Cost
             //}
         }
 
-
         private void Adjact_Click(object sender, RoutedEventArgs e)
         {
             if(ItemsDGV.Items.Count == 0 )
@@ -471,15 +466,20 @@ namespace Food_Cost
             }
             if (Adjacment_Date.Text.Equals(""))
             {
-                MessageBox.Show("First You should Choose The Reason !");
+                MessageBox.Show("First You should Enter The Date !");
+                return;
+            }
+            if (Adjacment_Time.Text.Equals(""))
+            {
+                MessageBox.Show("First You should Enter The Time !");
                 return;
             }
 
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             con.Open();
             try
             {
-                string s = string.Format("insert into Adjacment_tbl(Adjacment_ID,Adjacment_Num,Adjacment_Reason,Adjacment_Date,Comment,Resturant_ID,KitchenID,Post_Date) values({0},{1},(select Code From Setup_AdjacmentReasons_tbl where Name='{2}'),{3},'{4}',{5},{6},GETDATE())", Serial_Adjacment_NO.Text, Adjacment_NO.Text, Reasoncbx.Text, Adjacment_Date.Text, commenttxt.Text, ValOfResturant, ValOfKitchen);
+                string s = string.Format("insert into Adjacment_tbl(Adjacment_ID,Adjacment_Num,Adjacment_Reason,Adjacment_Date,Comment,Resturant_ID,KitchenID,Create_Date,User_ID,WS) values('{0}',{1},(select Code From Setup_AdjacmentReasons_tbl where Name='{2}'),'{3}','{4}',{5},{6},GETDATE(),'{7}','{8}')", Serial_Adjacment_NO.Text, Adjacment_NO.Text, Reasoncbx.Text, Adjacment_Date.Text+" "+ Adjacment_Time.Text, commenttxt.Text, ValOfResturant, ValOfKitchen,MainWindow.UserID,Classes.WS);
                 SqlCommand cmd = new SqlCommand(s, con);
                 cmd.ExecuteNonQuery();
             }
@@ -497,7 +497,7 @@ namespace Food_Cost
                 //con.Open();
                 for (int i = 0; i < ItemsDGV.Items.Count; i++)
                 {
-                    string s = "Insert into Adjacment_Items(Adjacment_ID,Item_ID,Qty,AdjacmentableQty,Variance,Cost) Values ( " + Serial_Adjacment_NO.Text + ",'" + (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]) + "'," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[5]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6]) + ")";
+                    string s = "Insert into Adjacment_Items(Adjacment_ID,Item_ID,Qty,AdjacmentableQty,Variance,Cost) Values ( '" + Serial_Adjacment_NO.Text + "','" + (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]) + "'," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[5]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6]) + ")";
                     SqlCommand cmd = new SqlCommand(s, con);
                     cmd.ExecuteNonQuery();
                 }

@@ -82,10 +82,10 @@
                 <Grid Grid.Row="1" TextBlock.FontSize="13" TextBlock.FontWeight="Normal">
                     <StackPanel HorizontalAlignment="Left" Margin="10 5 0 0" Orientation="Horizontal">
                         <Label Content="Total Price Without Tax:" FontSize="15" VerticalAlignment="Center"/>
-                        <TextBox BorderThickness="2" Text="0" HorizontalAlignment="Left" Width="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="15" Foreground="Black" Name="Total_Price_Without_Tax" IsReadOnly="True"/>
+                        <TextBox BorderThickness="2" Text="0" HorizontalAlignment="Left" Width="100" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="20" Foreground="Black" Name="Total_Price_Without_Tax" IsReadOnly="True"/>
 
                         <Label  Content="Total Price With Tax:" FontSize="15" VerticalAlignment="Center"/>
-                        <TextBox  BorderThickness="2" Text="0" HorizontalAlignment="Left" Width="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="15"  Foreground="Black" Name="Total_Price_With_Tax" IsReadOnly="True"/>
+                        <TextBox  BorderThickness="2" Text="0" HorizontalAlignment="Left" Width="100" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="20"  Foreground="Black" Name="Total_Price_With_Tax" IsReadOnly="True"/>
 
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

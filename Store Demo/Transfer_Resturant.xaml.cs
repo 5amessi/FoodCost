@@ -123,6 +123,11 @@ namespace Food_Cost
         }  //Done
         private void Row_Changed(object sender, DataGridCellEditEndingEventArgs e)
         {
+            DataTable Dat = ItemsDGV.DataContext as DataTable;
+            for(int i=0;i<Dat.Columns.Count;i++)
+            {
+                Dat.Columns[i].ReadOnly = false;
+            }
             SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlCommand cmd = new SqlCommand();
             con.Open();
@@ -168,13 +173,13 @@ namespace Food_Cost
                             to_rest_Cost = 0;
                         }
 
-                        (e.Row.Item as DataRowView).Row[From_Resturant.Text + " Qty"] = (from_rest_Qty - float.Parse((e.EditingElement as TextBox).Text)).ToString();
-                        (e.Row.Item as DataRowView).Row[From_Resturant.Text + " Unit Cost"] = from_rest_Cost.ToString();
-                        (e.Row.Item as DataRowView).Row[From_Resturant.Text + " Total Cost"] = (from_rest_Cost * (from_rest_Qty - float.Parse((e.EditingElement as TextBox).Text))).ToString();
-
-                        (e.Row.Item as DataRowView).Row[ToResturant.Text + " Qty"] = (to_rest_Qty + float.Parse((e.EditingElement as TextBox).Text)).ToString();
-                        (e.Row.Item as DataRowView).Row[ToResturant.Text + " Unit Cost"] = (((to_rest_Cost * to_rest_Qty) + (float.Parse((e.EditingElement as TextBox).Text) * from_rest_Cost)) / (to_rest_Qty + (float.Parse((e.EditingElement as TextBox).Text)))).ToString();
-                        (e.Row.Item as DataRowView).Row[ToResturant.Text + " Total Cost"] = (((to_rest_Cost * to_rest_Qty) + (float.Parse((e.EditingElement as TextBox).Text) * from_rest_Cost)) / (to_rest_Qty + (float.Parse((e.EditingElement as TextBox).Text))) * (to_rest_Qty + float.Parse((e.EditingElement as TextBox).Text))).ToString();
+                        Dat.Rows[e.Row.GetIndex()][From_Resturant.Text + " Qty"] = (from_rest_Qty - float.Parse((e.EditingElement as TextBox).Text)).ToString();
+                        Dat.Rows[e.Row.GetIndex()][From_Resturant.Text + " Unit Cost"] = from_rest_Cost.ToString();
+                        Dat.Rows[e.Row.GetIndex()][From_Resturant.Text + " Total Cost"] = (from_rest_Cost * (from_rest_Qty - float.Parse((e.EditingElement as TextBox).Text))).ToString();
+                        
+                        Dat.Rows[e.Row.GetIndex()][ToResturant.Text + " Qty"] = (to_rest_Qty + float.Parse((e.EditingElement as TextBox).Text)).ToString();
+                        Dat.Rows[e.Row.GetIndex()][ToResturant.Text + " Unit Cost"] = (((to_rest_Cost * to_rest_Qty) + (float.Parse((e.EditingElement as TextBox).Text) * from_rest_Cost)) / (to_rest_Qty + (float.Parse((e.EditingElement as TextBox).Text)))).ToString();
+                        Dat.Rows[e.Row.GetIndex()][ToResturant.Text + " Total Cost"] = (((to_rest_Cost * to_rest_Qty) + (float.Parse((e.EditingElement as TextBox).Text) * from_rest_Cost)) / (to_rest_Qty + (float.Parse((e.EditingElement as TextBox).Text))) * (to_rest_Qty + float.Parse((e.EditingElement as TextBox).Text))).ToString();
                     }
                     catch { }
                 }
@@ -205,6 +210,14 @@ namespace Food_Cost
                 Total_Price.Text = (totalPrice).ToString();
             }
             catch { }
+            for(int i=0;i<Dat.Columns.Count;i++)
+            {
+                Dat.Columns[i].ReadOnly = true;
+            }
+            Dat.Columns["Qty"].ReadOnly = false;
+            ItemsDGV.DataContext = Dat;
+
+
         }
         private void AddBtn_Click(object sender, RoutedEventArgs e)
         {

@@ -310,81 +310,106 @@ namespace Food_Cost
         }
         private void Row_Changed(object sender, DataGridCellEditEndingEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-            con.Open();
-            string ItemCode = (e.Row.Item as DataRowView).Row["Code"].ToString();
-            //string Qty = (e.EditingElement as TextBox).Text;
-
-            try
+            if (e.Column.Header == "Qty")
             {
-                using (SqlCommand cmd = new SqlCommand(string.Format("select Qty,Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{1}') and KitchenID = (select Code from Kitchens_Setup where Name = '{2}') union all select Qty, Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{1}') and KitchenID = (select Code from Kitchens_Setup where Name = '{3}')", ItemCode,Resturant.Text, From_Kitchen.Text, To_Kitchen.Text), con))
+
+                DataTable Dat = ItemsDGV.DataContext as DataTable;
+                for (int i = 0; i < Dat.Columns.Count; i++)
                 {
-                    Manual_transfer_No.Focus();
-
-                    
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    reader.Read();
-                    float from_rest_Qty = 0;float from_rest_Cost = 0;
-                    try
-                    {
-                        from_rest_Qty = float.Parse(reader["Qty"].ToString());
-                        from_rest_Cost = float.Parse(reader["Current_Cost"].ToString());
-                    }
-                    catch
-                    {
-
-                        from_rest_Qty = 0;
-                        from_rest_Cost = 0;
-                    }
-
-                    reader.Read();
-                    float to_rest_Qty = 0;float to_rest_Cost = 0;
-                    try
-                    {
-                        to_rest_Qty = float.Parse(reader["Qty"].ToString());
-                        to_rest_Cost = float.Parse(reader["Current_Cost"].ToString());
-                    }
-                    catch
-                    {
-                        to_rest_Qty = 0;
-                        to_rest_Cost = 0;
-                    }
-
-                    (e.Row.Item as DataRowView).Row[From_Kitchen.Text + " Qty"] = (from_rest_Qty - float.Parse((e.EditingElement as TextBox).Text)).ToString();
-                    (e.Row.Item as DataRowView).Row[From_Kitchen.Text + " Unit Cost"] = from_rest_Cost.ToString();
-                    (e.Row.Item as DataRowView).Row[From_Kitchen.Text + " Total Cost"] = (from_rest_Cost * (from_rest_Qty - float.Parse((e.EditingElement as TextBox).Text))).ToString();
-
-                    (e.Row.Item as DataRowView).Row[To_Kitchen.Text + " Qty"] = (to_rest_Qty + float.Parse((e.EditingElement as TextBox).Text)).ToString();
-                    (e.Row.Item as DataRowView).Row[To_Kitchen.Text + " Unit Cost"] = (((to_rest_Cost * to_rest_Qty) + (float.Parse((e.EditingElement as TextBox).Text) * from_rest_Cost)) / (to_rest_Qty + (float.Parse((e.EditingElement as TextBox).Text)))).ToString();
-                    (e.Row.Item as DataRowView).Row[To_Kitchen.Text + " Total Cost"] = (((to_rest_Cost * to_rest_Qty) + (float.Parse((e.EditingElement as TextBox).Text) * from_rest_Cost)) / (to_rest_Qty + (float.Parse((e.EditingElement as TextBox).Text))) * (to_rest_Qty + float.Parse((e.EditingElement as TextBox).Text))).ToString();
+                    Dat.Columns[i].ReadOnly = false;
                 }
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-                (e.EditingElement as TextBox).Text = "";
-            }
-            finally { con.Close(); }
 
-            try
-            {
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                con.Open();
+                string ItemCode = (e.Row.Item as DataRowView).Row["Code"].ToString();
+                //string Qty = (e.EditingElement as TextBox).Text;
 
-                double totalPrice = 0;
-                for (int i = 0; i < ItemsDGV.Items.Count; i++)
+                try
                 {
-                    try
+                    using (SqlCommand cmd = new SqlCommand(string.Format("select Qty,Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{1}') and KitchenID = (select Code from Kitchens_Setup where Name = '{2}') union all select Qty, Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{1}') and KitchenID = (select Code from Kitchens_Setup where Name = '{3}')", ItemCode, Resturant.Text, From_Kitchen.Text, To_Kitchen.Text), con))
                     {
-                        totalPrice += Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[10]);
-                    }
-                    catch
-                    {
+                        //Manual_transfer_No.Focus();
 
+
+                        SqlDataReader reader = cmd.ExecuteReader();
+                        reader.Read();
+                        float from_rest_Qty = 0; float from_rest_Cost = 0;
+                        try
+                        {
+                            from_rest_Qty = float.Parse(reader["Qty"].ToString());
+                            from_rest_Cost = float.Parse(reader["Current_Cost"].ToString());
+                        }
+                        catch
+                        {
+
+                            from_rest_Qty = 0;
+                            from_rest_Cost = 0;
+                        }
+
+                        reader.Read();
+                        float to_rest_Qty = 0; float to_rest_Cost = 0;
+                        try
+                        {
+                            to_rest_Qty = float.Parse(reader["Qty"].ToString());
+                            to_rest_Cost = float.Parse(reader["Current_Cost"].ToString());
+                        }
+                        catch
+                        {
+                            to_rest_Qty = 0;
+                            to_rest_Cost = 0;
+                        }
+
+                        Dat.Rows[e.Row.GetIndex()]["Qty"] = (float.Parse((e.EditingElement as TextBox).Text)).ToString();
+                        Dat.Rows[e.Row.GetIndex()][From_Kitchen.Text + " Qty"] = (from_rest_Qty - float.Parse((e.EditingElement as TextBox).Text)).ToString();
+                        Dat.Rows[e.Row.GetIndex()][From_Kitchen.Text + " Unit Cost"] = from_rest_Cost.ToString();
+                        Dat.Rows[e.Row.GetIndex()][From_Kitchen.Text + " Total Cost"] = (from_rest_Cost * (from_rest_Qty - float.Parse((e.EditingElement as TextBox).Text))).ToString();
+
+                        Dat.Rows[e.Row.GetIndex()][To_Kitchen.Text + " Qty"] = (to_rest_Qty + float.Parse((e.EditingElement as TextBox).Text)).ToString();
+                        Dat.Rows[e.Row.GetIndex()][To_Kitchen.Text + " Unit Cost"] = (((to_rest_Cost * to_rest_Qty) + (float.Parse((e.EditingElement as TextBox).Text) * from_rest_Cost)) / (to_rest_Qty + (float.Parse((e.EditingElement as TextBox).Text)))).ToString();
+                        Dat.Rows[e.Row.GetIndex()][To_Kitchen.Text + " Total Cost"] = (((to_rest_Cost * to_rest_Qty) + (float.Parse((e.EditingElement as TextBox).Text) * from_rest_Cost)) / (to_rest_Qty + (float.Parse((e.EditingElement as TextBox).Text))) * (to_rest_Qty + float.Parse((e.EditingElement as TextBox).Text))).ToString();
+
+
+                        //(e.Row.Item as DataRowView).Row[From_Kitchen.Text + " Qty"] = (from_rest_Qty - float.Parse((e.EditingElement as TextBox).Text)).ToString();
+                        //(e.Row.Item as DataRowView).Row[From_Kitchen.Text + " Unit Cost"] = from_rest_Cost.ToString();
+                        //(e.Row.Item as DataRowView).Row[From_Kitchen.Text + " Total Cost"] = (from_rest_Cost * (from_rest_Qty - float.Parse((e.EditingElement as TextBox).Text))).ToString();
+
+                        //(e.Row.Item as DataRowView).Row[To_Kitchen.Text + " Qty"] = (to_rest_Qty + float.Parse((e.EditingElement as TextBox).Text)).ToString();
+                        //(e.Row.Item as DataRowView).Row[To_Kitchen.Text + " Unit Cost"] = (((to_rest_Cost * to_rest_Qty) + (float.Parse((e.EditingElement as TextBox).Text) * from_rest_Cost)) / (to_rest_Qty + (float.Parse((e.EditingElement as TextBox).Text)))).ToString();
+                        //(e.Row.Item as DataRowView).Row[To_Kitchen.Text + " Total Cost"] = (((to_rest_Cost * to_rest_Qty) + (float.Parse((e.EditingElement as TextBox).Text) * from_rest_Cost)) / (to_rest_Qty + (float.Parse((e.EditingElement as TextBox).Text))) * (to_rest_Qty + float.Parse((e.EditingElement as TextBox).Text))).ToString();
                     }
                 }
-                NUmberOfItems.Text = (ItemsDGV.Items.Count).ToString();
-                Total_Price.Text = (totalPrice).ToString();
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                    (e.EditingElement as TextBox).Text = "";
+                }
+                finally { con.Close(); }
+
+                try
+                {
+                    double totalPrice = 0;
+                    for (int i = 0; i < ItemsDGV.Items.Count; i++)
+                    {
+                        try
+                        {
+                            totalPrice += Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[10]);
+                        }
+                        catch
+                        {
+
+                        }
+                    }
+                    NUmberOfItems.Text = (ItemsDGV.Items.Count).ToString();
+                    Total_Price.Text = (totalPrice).ToString();
+                }
+                catch { }
+                for(int i=0;i<Dat.Columns.Count;i++)
+                {
+                    Dat.Columns[i].ReadOnly = true;
+                }
+                Dat.Columns["Qty"].ReadOnly = false;
+                ItemsDGV.DataContext = Dat;
             }
-            catch { }
         }
        
         private void Resturant_Clicked(object sender, RoutedEventArgs e)

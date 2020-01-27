@@ -477,13 +477,18 @@ namespace Food_Cost
 
         private void ItemDgv_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
+            DataTable dt = ItemsDGV.DataContext as DataTable;
+            for (int i = 0; i < dt.Columns.Count; i++)
+            {
+                dt.Columns[i].ReadOnly = false;
+            }
             try
             {
                 SqlConnection con = new SqlConnection(Classes.DataConnString);
 
                 if (e.Column.Header.ToString() == "Price")
                 {
-                    CalculatePrices(e);
+                    CalculatePrices(e,dt);
                 }
                 else if (e.Column.Header.ToString() == "Tax Included")
                 {
@@ -497,7 +502,7 @@ namespace Food_Cost
                                 string tax = cmd.ExecuteScalar().ToString();
                                 if (tax == "")
                                     tax = "0";
-                                (e.Row.Item as DataRowView).Row["Tax"] = tax + "%";
+                                dt.Rows[e.Row.GetIndex()]["Tax"] = tax + "%";
                             }
                         }
                         catch { }
@@ -507,20 +512,28 @@ namespace Food_Cost
                     {
                         (e.Row.Item as DataRowView).Row["Tax"] = "0%";
                     }
-                    CalculatePrices(e);
+                    CalculatePrices(e,dt);
                 }
                 else if (e.Column.Header.ToString() == "Qty")
                 {
                     //CalculateQty3(e);
-                    CalculatePrices(e);
+                    CalculatePrices(e,dt);
                 }
-                else if (e.Column.Header.ToString() == "Qty_Unit3")
-                {
-                    //CalculateQty(e);
-                    CalculatePrices(e);
-                }
+                //else if (e.Column.Header.ToString() == "Qty_Unit3")
+                //{
+                //    //CalculateQty(e);
+                //    CalculatePrices(e);
+                //}
             }
             catch { }
+            for (int i = 0; i < dt.Columns.Count; i++)
+            {
+                dt.Columns[i].ReadOnly = true;
+            }
+            dt.Columns["Price"].ReadOnly = false;
+            dt.Columns["Qty"].ReadOnly = false;
+            dt.Columns["Tax Included"].ReadOnly = false;
+            ItemsDGV.DataContext = dt;
         }
 
         //private void CalculateQty(DataGridCellEditEndingEventArgs e)
@@ -560,47 +573,58 @@ namespace Food_Cost
 
         //}
 
-        private void CalculatePrices(DataGridCellEditEndingEventArgs e)
+        private void CalculatePrices(DataGridCellEditEndingEventArgs e, DataTable dt)
         {
             //Serial_PO_NO.Focus();
+            float Price,Qty,TaxPrec;
             try
             {
-                DataTable dt = ItemsDGV.DataContext as DataTable;
-                for(int i=0;i<dt.Columns.Count;i++)
+                if (e.Column.Header.ToString() == "Price")
                 {
-
+                    Price = float.Parse((e.EditingElement as TextBox).Text);
+                    dt.Rows[e.Row.GetIndex()]["Price"] = Price;
                 }
-                float Qty;
-                try
+                else
+                    try
+                    {
+                        Price = float.Parse((dt.Rows[e.Row.GetIndex()]["Price"]).ToString());
+                    }
+                    catch { Price = 0; }
+
+
+                if (e.Column.Header.ToString() == "Qty")
                 {
-                    Qty = float.Parse((e.Row.Item as DataRowView).Row["Qty"].ToString());
+                    Qty = float.Parse((e.EditingElement as TextBox).Text);
+                    dt.Rows[e.Row.GetIndex()]["Qty"] = Qty;
                 }
-                catch { Qty = float.Parse((e.EditingElement as TextBox).Text); }
+                else
+                    try
+                    {
+                        Qty = float.Parse((dt.Rows[e.Row.GetIndex()]["Qty"]).ToString());
+                    }
+                    catch { Qty = 0; }
 
-                float Price = float.Parse((e.Row.Item as DataRowView).Row["Price"].ToString());
-                float TaxPrec = float.Parse((e.Row.Item as DataRowView).Row["Tax"].ToString().Substring(0, (e.Row.Item as DataRowView).Row["Tax"].ToString().Length - 1)) / 100;
+                TaxPrec = float.Parse(dt.Rows[e.Row.GetIndex()]["Tax"].ToString().Substring(0, (e.Row.Item as DataRowView).Row["Tax"].ToString().Length - 1)) / 100;
 
                 if ((e.Row.Item as DataRowView).Row["Tax Included"].ToString() == "True")
                 {
-                    (e.Row.Item as DataRowView).Row["Total Price With Tax"] = (Price * Qty).ToString();
-                    (e.Row.Item as DataRowView).Row["Total Price Without Tax"] = ((Price - Price * TaxPrec) * Qty).ToString();
+                    dt.Rows[e.Row.GetIndex()]["Total Price With Tax"] = (Price * Qty).ToString();
+                    dt.Rows[e.Row.GetIndex()]["Total Price Without Tax"] = ((Price - Price * TaxPrec) * Qty).ToString();
 
                     if ((e.Row.Item as DataRowView).Row["Qty"].ToString() != "0")
                     {
-                        (e.Row.Item as DataRowView).Row["Unit Price With Tax"] = Price.ToString();
-                        (e.Row.Item as DataRowView).Row["Unit Price Without Tax"] = (Price - Price * TaxPrec).ToString();
+                        dt.Rows[e.Row.GetIndex()]["Unit Price With Tax"] = Price.ToString();
+                        dt.Rows[e.Row.GetIndex()]["Unit Price Without Tax"] = (Price - Price * TaxPrec).ToString();
                     }
                 }
                 else
                 {
-                    (e.Row.Item as DataRowView).Row["Total Price With Tax"] = (Price * Qty).ToString();
-                    (e.Row.Item as DataRowView).Row["Total Price Without Tax"] = (Price * Qty).ToString();
+                    dt.Rows[e.Row.GetIndex()]["Total Price With Tax"] = (Price * Qty).ToString();
+                    dt.Rows[e.Row.GetIndex()]["Total Price Without Tax"] = (Price * Qty).ToString();
+                    
+                    dt.Rows[e.Row.GetIndex()]["Unit Price With Tax"] = Price.ToString();
+                    dt.Rows[e.Row.GetIndex()]["Unit Price Without Tax"] = Price.ToString();
 
-                    //if ((e.Row.Item as DataRowView).Row["Qty"].ToString() != "0")
-                    //{
-                    (e.Row.Item as DataRowView).Row["Unit Price With Tax"] = Price.ToString();
-                    (e.Row.Item as DataRowView).Row["Unit Price Without Tax"] = Price.ToString();
-                    //}
                 }
 
                 float totalPriceWithoutTax = 0;
@@ -615,6 +639,7 @@ namespace Food_Cost
                 }
             }
             catch { }
+            
         }
 
         private void NeglectWhiteSpace(object sender, KeyEventArgs e)
