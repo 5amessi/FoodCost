@@ -223,6 +223,12 @@
     <Compile Include="RecieveOrder.xaml.cs">
       <DependentUpon>RecieveOrder.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Report\CR_BinCard 2.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CR_BinCard 2.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Report\Cr_MonthClosing.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -681,6 +687,10 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\CR_BinCard 2.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CR_BinCard 2.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Report\CR_BinCard.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>

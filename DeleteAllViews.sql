@@ -9,4 +9,4 @@ FROM   sys.views v
 PRINT @sql;
 EXEC(@sql);
 IF NOT EXISTS(SELECT * FROM sysobjects WHERE name = 'BeginningEndingMonth' ) 
-	CREATE TABLE[dbo].BeginningEndingMonth (Year varchar(50),Month varchar(50),FromDate datetime,ToDate datetime,Restaurant_ID int,Kitchen_ID int,Item_ID bigint,Qty bigint,Cost float);
+	CREATE TABLE[dbo].BeginningEndingMonth (Year varchar(50),Month varchar(50),FromDate datetime,ToDate datetime,Restaurant_ID int,Kitchen_ID int,Item_ID varchar(50),Qty bigint,Cost float);
