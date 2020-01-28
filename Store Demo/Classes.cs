@@ -1,5 +1,4 @@
-﻿//Git
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,6 +36,7 @@ namespace Food_Cost
                 config.Save();
                 ConfigurationManager.RefreshSection("connectionStrings");
                 DataConnString = Properties.Settings.Default.FoodCostDB.ToString();
+
     }
             catch (Exception exception)
             {
