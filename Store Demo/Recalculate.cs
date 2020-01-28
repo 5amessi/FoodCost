@@ -49,6 +49,22 @@ namespace Food_Cost
             Classes.InsertRow("TransActions", cols, values);
         }
 
+        private static void GetPrevQty(int k, DataTable DTPreviousMonth)
+        {
+            double TempCurrQty = double.Parse(BETable.Rows[k]["Current_Qty"].ToString());
+            if (DTPreviousMonth.Rows.Count != 0)
+            {
+                string Pyear = DTPreviousMonth.Rows[0]["Year"].ToString();
+                string Pmonth = DTPreviousMonth.Rows[0]["Month"].ToString();
+                string ItemID = BETable.Rows[k]["Item_ID"].ToString();
+                string KitName = BETable.Rows[k]["KitchenName"].ToString();
+                string where = "Year = '" + Pyear + "' AND Month = '" + Pmonth + "' And KitchenName= '" + KitName + "' AND Item_ID = '" + ItemID + "'";
+                string TempPrevQty = Classes.RetrieveData("Qty", where, "BeginningEndingMonthView").Rows[0][0].ToString();
+                BETable.Rows[k]["Current_Qty"] = (TempCurrQty + double.Parse(TempPrevQty)).ToString();
+            }
+            Insert(k);
+        }
+
         private static void CalculateQty(DataRow DRCurrentMonth, DataTable DTPreviousMonth)
         {
             string TezMikel = "_DATE datetime,Restaurant_ID int,Kitchen_ID int,KitchenName varchar(50),Trantype varchar(50),ID varchar(50)";
@@ -63,10 +79,16 @@ namespace Food_Cost
 
             for (int k = 0; k < BETable.Rows.Count; k++)
             {
-                if (BETable.Rows[k]["Trantype"].ToString() == "Adjactment" || k == 0)
+                if(k == 0)
                 {
+                    GetPrevQty(k,DTPreviousMonth);
+                }
+                else if (BETable.Rows[k]["Trantype"].ToString() == "Adjactment")
+                {
+                    BETable.Rows[k]["Qty"] = (double.Parse(BETable.Rows[k]["Current_Qty"].ToString()) - double.Parse(BETable.Rows[k-1]["Current_Qty"].ToString())).ToString();
+                    string TempWhere = "Adjacment_ID = '" + BETable.Rows[k]["ID"].ToString() +  "' And Item_ID = '" + BETable.Rows[k]["Item_ID"].ToString() + "'";
+                    Classes.UpdateCell("Variance", BETable.Rows[k]["Qty"].ToString(), TempWhere, "Adjacment_Items");
                     Insert(k);
-                    continue;
                 }
                 else if (BETable.Rows[k]["Item_ID"].ToString() == BETable.Rows[k - 1]["Item_ID"].ToString() && BETable.Rows[k]["KitchenName"].ToString() == BETable.Rows[k - 1]["KitchenName"].ToString())
                 {
@@ -75,17 +97,7 @@ namespace Food_Cost
                 }
                 else
                 {
-                    double TempCurrQty = double.Parse(BETable.Rows[k]["Current_Qty"].ToString());
-                    if (DTPreviousMonth.Rows.Count != 0)
-                    {
-                        string Pyear = DTPreviousMonth.Rows[0]["Year"].ToString();
-                        string Pmonth = DTPreviousMonth.Rows[0]["Month"].ToString();
-                        string ItemID = BETable.Rows[k]["Item_ID"].ToString();
-                        string where = "Year = '" + Pyear + "' AND Month = '" + Pmonth + "' AND Item_ID = '" + ItemID + "'";
-                        string TempPrevQty = Classes.RetrieveData("Qty", where, "BeginningEndingMonth").Rows[0][0].ToString();
-                        BETable.Rows[k]["Current_Qty"] = (TempCurrQty + double.Parse(TempPrevQty)).ToString();
-                    }
-                    Insert(k);
+                    GetPrevQty(k, DTPreviousMonth);
                 }
             }
         }
@@ -166,13 +178,13 @@ namespace Food_Cost
                             //where = "Item_ID = '" + Transactions.Rows[i]["Item_ID"].ToString() + "' AND Transfer_ID = '" + Transactions.Rows[i]["ID"].ToString() + "'";
                             //Classes.UpdateCell("Cost", item_cost[itemCostKey], where, "Transfer_Kitchens_Items");
 
-                            where = "Item_ID = '" + Transactions.Rows[i]["Item_ID"].ToString() + "' AND Request_ID = '" + Transactions.Rows[i]["ID"].ToString() + "'";
-                            Classes.UpdateCell("Cost", item_cost[itemCostKey], where, "Requests_Items");
+                            //where = "Item_ID = '" + Transactions.Rows[i]["Item_ID"].ToString() + "' AND Request_ID = '" + Transactions.Rows[i]["ID"].ToString() + "'";
+                            //Classes.UpdateCell("Cost", item_cost[itemCostKey], where, "Requests_Items");
 
-                            string drRoSerial = Classes.RetrieveData("SELECT RO_Serial from RO where Transactions_No = '" + Transactions.Rows[i]["ID"].ToString() + "' and Type = 'Transfer_Kitchen'").Rows[0][0].ToString();
+                            //string drRoSerial = Classes.RetrieveData("SELECT RO_Serial from RO where Transactions_No = '" + Transactions.Rows[i]["ID"].ToString() + "' and Type = 'Transfer_Kitchen'").Rows[0][0].ToString();
 
-                            where = "Item_ID = '" + Transactions.Rows[i]["Item_ID"].ToString() + "' AND RO_No = '" + drRoSerial.ToString() + "'";
-                            Classes.UpdateCell("Price_With_Tax", item_cost[itemCostKey], where, "RO_Items");
+                            //where = "Item_ID = '" + Transactions.Rows[i]["Item_ID"].ToString() + "' AND RO_No = '" + drRoSerial.ToString() + "'";
+                            //Classes.UpdateCell("Price_With_Tax", item_cost[itemCostKey], where, "RO_Items");
                         }
                     }
                 }
@@ -197,7 +209,7 @@ namespace Food_Cost
         {
             try
             {
-                cols = "Year varchar(50),Month varchar(50),FromDate datetime,ToDate datetime,Restaurant_ID int,Kitchen_ID int,Item_ID bigint,Qty bigint,Cost float";
+                cols = "Year varchar(50),Month varchar(50),FromDate datetime,ToDate datetime,Restaurant_ID int,Kitchen_ID int,Item_ID varchar(50),Qty bigint,Cost float";
 
                 Classes.CreateTable("BeginningEndingMonth", cols);
 

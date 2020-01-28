@@ -20,12 +20,12 @@ namespace Food_Cost.Forms
         }
 
         string Where = "", Filter = "", s = "", s1 = "", s2 = "", f = "", Date = "",CurrMDate = "",PrevDate = "";
-        DataTable DtItem_BinCard, dt, Dt, Dt2;
+        DataTable DtItem_BinCard, dt, Dt, Dt2, DTDate;
     
-        Dictionary<string, string> dic = new Dictionary<string, string>();
-        Dictionary<string, string> Stores = new Dictionary<string, string>();
-        Dictionary<string, string> changed_trasfers = new Dictionary<string, string>();
-        Dictionary<string, List<string>> FilterDic = new Dictionary<string, List<string>>();
+        //Dictionary<string, string> dic = new Dictionary<string, string>();
+        //Dictionary<string, string> Stores = new Dictionary<string, string>();
+        //Dictionary<string, string> changed_trasfers = new Dictionary<string, string>();
+        //Dictionary<string, List<string>> FilterDic = new Dictionary<string, List<string>>();
         Dictionary<string, Tuple<string, string>> BBalance = new Dictionary<string, Tuple<string, string>>();
         Dictionary<string, Tuple<string, string>> EBalance = new Dictionary<string, Tuple<string, string>>();
 
@@ -51,6 +51,7 @@ namespace Food_Cost.Forms
                 }
             }
         }
+
         private void Dates_Checked()
         {
             f = "";
@@ -64,7 +65,7 @@ namespace Food_Cost.Forms
                         CurrMDate = "Year = '" + Node.Text + "' AND Month = '" + Child.Text+ "'";
                         get_prev_month(Node.Text, Child.Text.Replace("Month", ""));
 
-                        DataTable DTDate = Classes.RetrieveData("[From],[To]", TempDate, "Setup_Fiscal_Period");
+                        DTDate = Classes.RetrieveData("[From],[To]", TempDate, "Setup_Fiscal_Period");
                         Date = "between '" + DTDate.Rows[0]["From"].ToString() + "' AND '"+ DTDate.Rows[0]["To"].ToString() + "'";
                       
                         break;
@@ -171,7 +172,7 @@ namespace Food_Cost.Forms
                 Ndr["EQty"] = EBalance[DR["KitchenName"].ToString()].Item1;
                 Ndr["ECost"] = EBalance[DR["KitchenName"].ToString()].Item2;
 
-                Ndr["Qty"] = "-" + DR["Qty"].ToString();
+                Ndr["Qty"] =  DR["Qty"].ToString();
                 Ndr["Cost"] = DR["Cost"].ToString();
                 Ndr["KitchenName"] = DR["KitchenName"].ToString();
                 Ndr["RestaurantName"] = DR["RestaurantName"].ToString();
@@ -180,6 +181,7 @@ namespace Food_Cost.Forms
 
                 DtItem_BinCard.Rows.Add(Ndr);
             }
+
             //Transfer In
             Select = "RestaurantName,KitchenName,Category,SUM(Qty) as Qty ,sum(Cost) as Cost";
             WhereDate = " And Receiving_Date " + Date;
@@ -203,7 +205,9 @@ namespace Food_Cost.Forms
                 Ndr["Type"] = DR["Category"].ToString();
                 DtItem_BinCard.Rows.Add(Ndr);
             }
-            //Transfer to
+
+            //Transfer Out
+            Select = "RestaurantName,KitchenName,Category,-SUM(Qty) as Qty ,-sum(Cost) as Cost";
             WhereDate = " And Request_Date " + Date;
             WhereRO = Where + WhereDate + order;
             dt = Classes.RetrieveData(Select, WhereRO, "TransferItemsOut");
@@ -217,7 +221,7 @@ namespace Food_Cost.Forms
                 Ndr["EQty"] = EBalance[DR["KitchenName"].ToString()].Item1;
                 Ndr["ECost"] = EBalance[DR["KitchenName"].ToString()].Item2;
 
-                Ndr["Qty"] = "-" + DR["Qty"].ToString();
+                Ndr["Qty"] = DR["Qty"].ToString();
                 Ndr["Cost"] = DR["Cost"].ToString();
                 Ndr["KitchenName"] = DR["KitchenName"].ToString();
                 Ndr["RestaurantName"] = DR["RestaurantName"].ToString();
@@ -230,6 +234,8 @@ namespace Food_Cost.Forms
             Rec.Rpt = new Cr_MonthClosing();
             Rec.Rpt.SetDataSource(DtItem_BinCard);
             Rec.Rpt.SetParameterValue("Filter", Filter);
+            Rec.Rpt.SetParameterValue("Rpt_Fdate", DTDate.Rows[0]["From"].ToString());
+            Rec.Rpt.SetParameterValue("Rpt_Tdate", DTDate.Rows[0]["To"].ToString());
             Rec.Show();
 
 

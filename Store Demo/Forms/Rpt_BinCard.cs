@@ -62,7 +62,7 @@ namespace Food_Cost.Forms
                 DataTable DTTop = Classes.RetrieveData("top 1 * ", where, "TransActions");
                 if (DTTop.Rows.Count != 0)
                 {
-                    Qty = DTTop.Rows[0]["AcQty"].ToString();
+                    Qty = DTTop.Rows[0]["Current_Qty"].ToString();
                     Cost = DTTop.Rows[0]["CurrentCost"].ToString();
                     BBalance[KitName] = new Tuple<string, string>(Qty, Cost);
                 }
@@ -74,7 +74,7 @@ namespace Food_Cost.Forms
                 DTTop = Classes.RetrieveData("top 1 * ", where, "TransActions");
                 if (DTTop.Rows.Count != 0)
                 {
-                    Qty = DTTop.Rows[0]["AcQty"].ToString();
+                    Qty = DTTop.Rows[0]["Current_Qty"].ToString();
                     Cost = DTTop.Rows[0]["CurrentCost"].ToString();
                     EBalance[KitName] = new Tuple<string, string>(Qty, Cost);
                 }
@@ -87,7 +87,8 @@ namespace Food_Cost.Forms
 
         private void btnRport_Click(object sender, EventArgs e)
         {            
-            DtItem_BinCard = Classes.RetrieveData("*", "BinCard");
+            DtItem_BinCard = Classes.RetrieveData("*", "TransActionsView");
+            DtItem_BinCard.Clear();
             if (!CBMyKitchen.Checked)
             {
                 Where = "";
@@ -108,7 +109,36 @@ namespace Food_Cost.Forms
             }
 
             string Select = "*";
-                                        
+
+
+            string WhereTA = Where + " And _Date between '" + dtp_from.Value.Date + "' AND '" + dtp_to.Value.Date + "'";
+            string order = "Order by _Date";
+            dt = Classes.RetrieveData(Select, WhereTA+ order, "TransActionsView");
+            foreach (DataRow DR in dt.Rows)
+            {
+                DataRow Ndr = DtItem_BinCard.NewRow();
+
+                Ndr["BQty"] = BBalance[DR["KitchenName"].ToString()].Item1;
+                Ndr["BCost"] = BBalance[DR["KitchenName"].ToString()].Item2;
+
+                Ndr["EQty"] = EBalance[DR["KitchenName"].ToString()].Item1;
+                Ndr["ECost"] = EBalance[DR["KitchenName"].ToString()].Item2;
+
+                Ndr["Qty"] = DR["Qty"].ToString();
+                Ndr["Current_Qty"] = DR["Current_Qty"].ToString();
+                Ndr["Cost"] = DR["Cost"].ToString();
+                Ndr["CurrentCost"] = DR["CurrentCost"].ToString();
+                Ndr["Unit"] = DR["Unit"].ToString();
+                Ndr["Trantype"] = DR["Trantype"].ToString();
+
+                Ndr["_Date"] = DR["_Date"].ToString();
+                Ndr["KitchenName"] = DR["KitchenName"].ToString();
+                Ndr["RestaurantName"] = DR["RestaurantName"].ToString();
+                DtItem_BinCard.Rows.Add(Ndr);
+            }
+
+            #region test
+            /*
             //Receive
             string WhereRO = Where + " And Receiving_Date between '" + dtp_from.Value.Date + "' AND '" + dtp_to.Value.Date + "'";
             dt = Classes.RetrieveData(Select, WhereRO, "ReceiveItemsView");
@@ -145,7 +175,7 @@ namespace Food_Cost.Forms
                 Ndr["EQty"] = EBalance[DR["KitchenName"].ToString()].Item1;
                 Ndr["ECost"] = EBalance[DR["KitchenName"].ToString()].Item2;
 
-                Ndr["Qty"] = "-"+DR["Variance"].ToString();
+                Ndr["Qty"] = "-" + DR["Variance"].ToString();
                 Ndr["Cost"] = DR["Cost"].ToString();
                 Ndr["Date"] = DR["Adjacment_Date"].ToString();
                 Ndr["KitchenName"] = DR["KitchenName"].ToString();
@@ -153,6 +183,7 @@ namespace Food_Cost.Forms
                 Ndr["TransDetails"] = "Adjustment";
                 DtItem_BinCard.Rows.Add(Ndr);
             }
+
             //Transfer IN
             string WhereTransfer = Where + " And Receiving_Date between '" + dtp_from.Value.Date + "' AND '" + dtp_to.Value.Date + "'";
             dt = Classes.RetrieveData(Select, WhereTransfer, "TransferItemsIn");
@@ -177,7 +208,8 @@ namespace Food_Cost.Forms
                 Ndr["TransDetails"] = "Transferd In ";
                 DtItem_BinCard.Rows.Add(Ndr);
             }
-            //Transfer to
+
+            //Transfer Out
             WhereTransfer = Where + " And Request_Date between '" + dtp_from.Value.Date + "' AND '" + dtp_to.Value.Date + "'";
             dt = Classes.RetrieveData(Select, WhereTransfer, "TransferItemsOut");
             foreach (DataRow DR in dt.Rows)
@@ -199,10 +231,32 @@ namespace Food_Cost.Forms
                 Ndr["TransDetails"] = "Transferd Out ";
                 DtItem_BinCard.Rows.Add(Ndr);
             }
-            
+
+            WhereTransfer = Where + " And Generate_Date between '" + dtp_from.Value.Date + "' AND '" + dtp_to.Value.Date + "'";
+            dt = Classes.RetrieveData(Select, WhereTransfer, "GeneratedRecipesView");
+            foreach (DataRow DR in dt.Rows)
+            {
+                DataRow Ndr = DtItem_BinCard.NewRow();
+                Ndr["BQty"] = BBalance[DR["KitchenName"].ToString()].Item1;
+                Ndr["BCost"] = BBalance[DR["KitchenName"].ToString()].Item2;
+
+                Ndr["EQty"] = EBalance[DR["KitchenName"].ToString()].Item1;
+                Ndr["ECost"] = EBalance[DR["KitchenName"].ToString()].Item2;
+
+                Ndr["Qty"] = "-" + DR["Qty"].ToString();
+                Ndr["Unit"] = DR["Unit"].ToString();
+                Ndr["Cost"] = "0";
+                Ndr["Date"] = DR["Generate_Date"].ToString();
+                Ndr["KitchenName"] = DR["KitchenName"].ToString();
+                Ndr["RestaurantName"] = DR["RestaurantName"].ToString();
+                Ndr["TransDetails"] = "Generated Reciepe";
+                DtItem_BinCard.Rows.Add(Ndr);
+            }
+            */
+            #endregion test
 
             ReportView Rec = new ReportView();
-            Rec.Rpt = new CR_BinCard();
+            Rec.Rpt = new CR_BinCard_2();
             Rec.Rpt.SetDataSource(DtItem_BinCard);
             Rec.Rpt.SetParameterValue("Rpt_Fdate", dtp_from.Value.Date);
             Rec.Rpt.SetParameterValue("Rpt_Tdate", dtp_to.Value);
@@ -226,8 +280,6 @@ namespace Food_Cost.Forms
                 Rec.Rpt.SetParameterValue("Min", "0");
             }
             Rec.Show();
-
-
         }
         
     }

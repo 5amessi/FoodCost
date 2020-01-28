@@ -143,7 +143,6 @@ namespace Food_Cost
                         try
                         {
                             val += Convert.ToDouble((e.EditingElement as TextBox).Text);
-
                         }
                         catch { }
                     }
