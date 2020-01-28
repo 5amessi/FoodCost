@@ -174,20 +174,11 @@ namespace Food_Cost
                         else
                         {
                             dt = PO.ItemsDGV.DataContext as DataTable;
+                            dt.Columns["Tax"].ReadOnly = false;
                         }
 
                         dt.ImportRow(drv.Row);
                         dt.Rows[dt.Rows.Count - 1]["Qty"] = 0;
-
-                        for (int i = 0; i < dt.Columns.Count; i++)
-                        {
-                            if (dt.Columns[i] == dt.Columns["Tax Included"])
-                                break;
-
-                            dt.Columns[i].ReadOnly = true;
-                        }
-
-                        //dt.Rows[dt.Rows.Count - 1]["Tax Included"] = true;
 
                         dt = LoadTaxValue(dt);
                         //dt = MultiTatackUnit_Update(dt);
@@ -197,7 +188,13 @@ namespace Food_Cost
                             dt.Columns.Remove("Is_MultiUnitTrack");
                         }
                         catch { }
-
+                        for (int i = 0; i < dt.Columns.Count; i++)
+                        {
+                            dt.Columns[i].ReadOnly = true;
+                        }
+                        dt.Columns["Tax Included"].ReadOnly = false;
+                        dt.Columns["Qty"].ReadOnly = false;
+                        dt.Columns["Price"].ReadOnly = false;
                         PO.ItemsDGV.DataContext = dt;
                         this.Close();
                     }
@@ -259,6 +256,7 @@ namespace Food_Cost
                         RO.ItemsWithoutDGV.DataContext = dt;
                         this.Close();
                     }
+
                     else if (main.GridMain.Children[0].GetType().Name == "Transfer_Resturant")
                     {
                         DataRowView drv = grid.SelectedItem as DataRowView;
@@ -286,9 +284,11 @@ namespace Food_Cost
 
                         dt.ImportRow(drv.Row);
 
-                        dt.Columns["Code"].ReadOnly = true;
-                        dt.Columns["Name"].ReadOnly = true;
-                        dt.Columns["Name2"].ReadOnly = true;
+                        for(int i=0;i<dt.Columns.Count;i++)
+                        {
+                            dt.Columns[i].ReadOnly = true;
+                        }
+                        dt.Columns["Qty"].ReadOnly = false;
 
                         Transfer_Resturant.ItemsDGV.DataContext = dt;
 
@@ -321,10 +321,11 @@ namespace Food_Cost
                             }
 
                         dt.ImportRow(drv.Row);
-
-                        dt.Columns["Code"].ReadOnly = true;
-                        dt.Columns["Name"].ReadOnly = true;
-                        dt.Columns["Name2"].ReadOnly = true;
+                        for(int i=0;i<dt.Columns.Count;i++)
+                        {
+                            dt.Columns[i].ReadOnly = true;
+                        }
+                        dt.Columns["Qty"].ReadOnly = false;
 
                         Transfer_Kitchens.ItemsDGV.DataContext = dt;
 
@@ -335,11 +336,11 @@ namespace Food_Cost
                     {
                         if (adjacmentInventory.ItemsDGV.DataContext == null)
                         {
-                            dt.Columns.Add("ItemsID");
+                            dt.Columns.Add("Code");
                             dt.Columns.Add("Name");
                             dt.Columns.Add("Name2");
                             dt.Columns.Add("Qty");
-                            dt.Columns.Add("AdjacmentableQty");
+                            dt.Columns.Add("Adjacmentable Qty");
                             dt.Columns.Add("Variance");
                             dt.Columns.Add("Cost");
                         }
@@ -347,7 +348,7 @@ namespace Food_Cost
                         {
                             dt = adjacmentInventory.ItemsDGV.DataContext as DataTable;
                             for (int i = 0; i < dt.Rows.Count; i++)
-                                if (dt.Rows[i]["ItemsID"].ToString() == (((DataRowView)grid.SelectedItem).Row.ItemArray[0]).ToString())
+                                if (dt.Rows[i]["Code"].ToString() == (((DataRowView)grid.SelectedItem).Row.ItemArray[0]).ToString())
                                 {
                                     MessageBox.Show("Item Existed");
                                     return;
@@ -398,7 +399,7 @@ namespace Food_Cost
                             {
                                 dt.Columns[i].ReadOnly = true;
                             }
-                            dt.Columns["AdjacmentableQty"].ReadOnly = false;
+                            dt.Columns["Adjacmentable Qty"].ReadOnly = false;
                             dt.Columns["Cost"].ReadOnly = false;
 
                             adjacmentInventory.ItemsDGV.DataContext = dt;
@@ -412,6 +413,7 @@ namespace Food_Cost
                             con.Close();
                         }
                 }
+
                     else if (main.GridMain.Children[0].GetType().Name == "StockInventory")
                     {
                         if (stockInventory.ItemsDGV.DataContext == null)
