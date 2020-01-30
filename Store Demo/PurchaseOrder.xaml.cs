@@ -116,7 +116,7 @@ namespace Food_Cost
             {
                 MessageBox.Show("Delivery Date Can't Be Empty");
             }
-            else if (Delivery_time.Text.Equals(""))
+            else if (Delivery_time.Text ==null)
             {
                 MessageBox.Show("Delivery Time Can't Be Empty");
             }

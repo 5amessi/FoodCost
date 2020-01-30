@@ -45,7 +45,7 @@ namespace Food_Cost
             {
                 MessageBox.Show("Transfer Date Can't Be Empty");
             }
-            else if (Transfer_Time.Text.Equals(""))
+            else if (Transfer_Time.Text == null)
             {
                 MessageBox.Show("Transfer Time Can't Be Empty");
             }

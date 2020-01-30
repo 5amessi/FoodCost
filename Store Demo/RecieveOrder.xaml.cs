@@ -1426,7 +1426,7 @@ namespace Food_Cost
                 MessageBox.Show("Plese Enter the Date !");
                 return;
             }
-            else if (Request_Time.Text == "")
+            else if (Request_Time.Text ==null)
             {
                 MessageBox.Show("Please Enter the Time !");
                 return;
