@@ -62,7 +62,7 @@ namespace Food_Cost.Forms
                     if (Child.Checked == true)
                     {
                         string TempDate = "Year = '" + Node.Text + "' AND Month = '" + Child.Text.Replace("Month", "") + "'";
-                        CurrMDate = "Year = '" + Node.Text + "' AND Month = '" + Child.Text+ "'";
+                        CurrMDate = "Year = '" + Node.Text + "' AND Month = '" + Child.Text.Replace("Month", "") + "'";
                         get_prev_month(Node.Text, Child.Text.Replace("Month", ""));
 
                         DTDate = Classes.RetrieveData("[From],[To]", TempDate, "Setup_Fiscal_Period");
@@ -98,18 +98,18 @@ namespace Food_Cost.Forms
                 BBalance[kit] = new Tuple<string, string>("0", "0");
                 EBalance[kit] = new Tuple<string, string>("0", "0");
             }
-            DataTable DT = Classes.RetrieveData("KitchenName,SUM(Qty) as Qty ,sum(Cost) as Cost", PrevDate + "AND " + Where + " group by KitchenName ", "BeginningEndingMonthView ");
+            DataTable DT = Classes.RetrieveData("KitchenName,SUM(Qty) as Qty ,SUM(Qty*Cost) as Cost", PrevDate + "AND " + Where + " group by KitchenName ", "BeginningEndingMonthView");
+
             foreach (DataRow DR in DT.Rows)
             {
                 BBalance[DR["KitchenName"].ToString()] = new Tuple<string, string>(DR["Qty"].ToString(), DR["Cost"].ToString());
             }
             
-            DT = Classes.RetrieveData("KitchenName,SUM(Qty) as Qty ,sum(Cost) as Cost", CurrMDate + "AND " + Where + " group by KitchenName ", "BeginningEndingMonthView ");
+            DT = Classes.RetrieveData("KitchenName,SUM(Qty) as Qty ,SUM(Qty*Cost) as Cost", CurrMDate + "AND " + Where + " group by KitchenName ", "BeginningEndingMonthView");
             foreach (DataRow DR in DT.Rows)
             {
                 EBalance[DR["KitchenName"].ToString()] = new Tuple<string, string>(DR["Qty"].ToString(), DR["Cost"].ToString());
             }
-           
         }
 
         private void btnRport_Click(object sender, EventArgs e)
@@ -158,7 +158,7 @@ namespace Food_Cost.Forms
             }
 
             //Adjustment
-            Select = "RestaurantName,KitchenName,Category,SUM(Variance) as Qty ,sum(Cost) as Cost";
+            Select = "RestaurantName,KitchenName,Category,SUM(Variance) as Qty,SUM(Variance*Cost) as Cost ";
             WhereDate = " And Adjacment_Date " + Date;
             WhereRO = Where + WhereDate + order;
 
@@ -183,7 +183,7 @@ namespace Food_Cost.Forms
             }
 
             //Transfer In
-            Select = "RestaurantName,KitchenName,Category,SUM(Qty) as Qty ,sum(Cost) as Cost";
+            Select = "RestaurantName,KitchenName,Category,SUM(Qty) as Qty ,sum(Net_Price) as Cost";
             WhereDate = " And Receiving_Date " + Date;
             WhereRO = Where + WhereDate + order;
             dt = Classes.RetrieveData(Select, WhereRO, "TransferItemsIn");
@@ -207,7 +207,7 @@ namespace Food_Cost.Forms
             }
 
             //Transfer Out
-            Select = "RestaurantName,KitchenName,Category,-SUM(Qty) as Qty ,-sum(Cost) as Cost";
+            Select = "RestaurantName,KitchenName,Category,-SUM(Qty) as Qty ,-sum(Qty*Cost) as Cost";
             WhereDate = " And Request_Date " + Date;
             WhereRO = Where + WhereDate + order;
             dt = Classes.RetrieveData(Select, WhereRO, "TransferItemsOut");
@@ -226,6 +226,30 @@ namespace Food_Cost.Forms
                 Ndr["KitchenName"] = DR["KitchenName"].ToString();
                 Ndr["RestaurantName"] = DR["RestaurantName"].ToString();
                 Ndr["TransDetails"] = "Total Transfer Out";
+                Ndr["Type"] = DR["Category"].ToString();
+                DtItem_BinCard.Rows.Add(Ndr);
+            }
+
+            //Generate Recipes
+            Select = "RestaurantName,KitchenName,Category,-SUM(ItemQty) as Qty,-sum(Net_Cost) as Cost";
+            WhereDate = " And Generate_Date " + Date;
+            WhereRO = Where + WhereDate + order;
+            dt = Classes.RetrieveData(Select, WhereRO, "GeneratedRecipesView");
+
+            foreach (DataRow DR in dt.Rows)
+            {
+                DataRow Ndr = DtItem_BinCard.NewRow();
+                Ndr["BQty"] = BBalance[DR["KitchenName"].ToString()].Item1;
+                Ndr["BCost"] = BBalance[DR["KitchenName"].ToString()].Item2;
+
+                Ndr["EQty"] = EBalance[DR["KitchenName"].ToString()].Item1;
+                Ndr["ECost"] = EBalance[DR["KitchenName"].ToString()].Item2;
+
+                Ndr["Qty"] = DR["Qty"].ToString();
+                Ndr["Cost"] = DR["Cost"].ToString();
+                Ndr["KitchenName"] = DR["KitchenName"].ToString();
+                Ndr["RestaurantName"] = DR["RestaurantName"].ToString();
+                Ndr["TransDetails"] = "Generated";
                 Ndr["Type"] = DR["Category"].ToString();
                 DtItem_BinCard.Rows.Add(Ndr);
             }

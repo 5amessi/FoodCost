@@ -82,6 +82,13 @@ namespace Food_Cost
             return MyTable;
         }
 
+        public static void UpdateCell(string FieldSelected, string Value, string TableName)
+        {
+            MyConnection = new SqlConnection(DataConnString);
+            MyConnection.Open();
+            MyComm = new SqlCommand("Update " + TableName + " set " + FieldSelected + " = " + Value, MyConnection);
+            MyComm.ExecuteNonQuery();
+        }
         public static void UpdateCell(string FieldSelected, string Value, string WhereFiltering, string TableName)
         {
             MyConnection = new SqlConnection(DataConnString);
