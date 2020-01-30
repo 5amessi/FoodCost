@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
+
 namespace Food_Cost
 {
     /// <summary>
@@ -1069,7 +1070,7 @@ namespace Food_Cost
                 try
                 {
                     con.Open();
-                    string s = "select Name from Kitchens_Setup WHERE RestaurantID=" + RestaurantId + " AND Virtual='True'";
+                    string s = "select Name from Kitchens_Setup WHERE RestaurantID=" + RestaurantId ;
                     SqlCommand cmd = new SqlCommand(s, con);
                     reader = cmd.ExecuteReader();
                     while (reader.Read())
@@ -1170,7 +1171,7 @@ namespace Food_Cost
                 try
                 {
                     con.Open();
-                    string s = "select Name from Kitchens_Setup WHERE RestaurantID=" + RestaurantId + " AND Virtual='True'";
+                    string s = "select Name from Kitchens_Setup WHERE RestaurantID=" + RestaurantId;
                     SqlCommand cmd = new SqlCommand(s, con);
                     reader = cmd.ExecuteReader();
                     while (reader.Read())
