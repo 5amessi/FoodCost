@@ -6,6 +6,8 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Food_Cost.Classes;
+
 
 namespace Food_Cost
 {
@@ -281,7 +283,7 @@ namespace Food_Cost
         }
         private void IncrementPoNo()
         {
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            SqlConnection con = new SqlConnection(Conn.DataConnString);
             try
             {
                 con.Open();
@@ -292,7 +294,7 @@ namespace Food_Cost
                 //    return;
                 //}
 
-                SqlCommand cmd = new SqlCommand(string.Format("select Top(1) RO_Serial from Ro where RO_Serial like '{0}%' order by  RO_Serial desc", Classes.IDs), con);
+                SqlCommand cmd = new SqlCommand(string.Format("select Top(1) RO_Serial from Ro where RO_Serial like '{0}%' order by  RO_Serial desc", Methods.IDs), con);
                 codetxt.Text = "0" + (Int64.Parse(cmd.ExecuteScalar().ToString()) + 1).ToString();
                 RoTransferKitchen.Text = "0" + (Int64.Parse(cmd.ExecuteScalar().ToString()) + 1).ToString();
                 RoInter.Text = "0" + (Int64.Parse(cmd.ExecuteScalar().ToString()) + 1).ToString();
@@ -300,10 +302,10 @@ namespace Food_Cost
             }
             catch
             {
-                codetxt.Text = Classes.IDs + "0000001";
-                RoTransferKitchen.Text = Classes.IDs + "0000001";
-                RoInter.Text = Classes.IDs + "0000001";
-                codeWithouttxt.Text = Classes.IDs + "0000001";
+                codetxt.Text = Methods.IDs + "0000001";
+                RoTransferKitchen.Text = Methods.IDs + "0000001";
+                RoInter.Text = Methods.IDs + "0000001";
+                codeWithouttxt.Text = Methods.IDs + "0000001";
                 con.Close();
                 return;
             }
@@ -313,7 +315,7 @@ namespace Food_Cost
         //Recive Purshace 
         private void LoadToDGV()
         {
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            SqlConnection con = new SqlConnection(Conn.DataConnString);
             DataTable dt = new DataTable();
             try
             {
@@ -345,7 +347,7 @@ namespace Food_Cost
                     if (code == "") return;
                     string valuoSerial = "";
                     string valuoNumber = "";
-                    SqlConnection con2 = new SqlConnection(Classes.DataConnString); SqlConnection con = new SqlConnection(Classes.DataConnString);
+                    SqlConnection con2 = new SqlConnection(Conn.DataConnString); SqlConnection con = new SqlConnection(Conn.DataConnString);
                     DataTable dt = new DataTable(); DataTable Dat = new DataTable();
                     Dat.Columns.Add(new DataColumn("Received", typeof(bool)));
                     Dat.Columns.Add("Code");
@@ -448,7 +450,7 @@ namespace Food_Cost
         {
             try
             {
-                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                SqlConnection con = new SqlConnection(Conn.DataConnString);
                 DataTable Dat = new DataTable();
                 Dat = (ItemsDGV.DataContext as DataTable);
                 Dat.Columns["Net_Price"].ReadOnly = false;
@@ -470,8 +472,8 @@ namespace Food_Cost
 
             if (!DoSomeChecks())
                 return;
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
+            SqlConnection con = new SqlConnection(Conn.DataConnString);
+            SqlConnection con2 = new SqlConnection(Conn.DataConnString);
             SqlCommand cmd = new SqlCommand();
             try
             {
@@ -507,7 +509,7 @@ namespace Food_Cost
                     //
                     FiledSelection = "Item_ID,RO_No,Qty,Unit,Price_Without_Tax,Tax,Price_With_Tax,Net_Price,QtyOnHand_To,Cost_To";
                     Values = "'" + dt.Rows[i]["Code"].ToString() + "','" + codetxt.Text + "'," + dt.Rows[i]["Qty"] + ",'" + "" + "'," + dt.Rows[i]["Price Without Tax"] + "," + dt.Rows[i]["Tax"] + "," + dt.Rows[i]["Price_With_Tax"] + "," + dt.Rows[i]["Net_Price"] + ",'" + QTyonHand + "','" + CostOfItemsOnHand + "'";
-                    Classes.InsertRow("RO_Items", FiledSelection, Values);
+                    Methods.InsertRow("RO_Items", FiledSelection, Values);
                     //s = "insert into RO_Items (Item_ID,RO_No,Qty,Unit,Price_Without_Tax,Tax,Price_With_Tax,Net_Price,QtyOnHand_To,Cost_To) values ('" + dt.Rows[i]["Code"].ToString() + "','" + codetxt.Text + "'," + dt.Rows[i]["Qty"] + ",'" + "" + "'," + dt.Rows[i]["Price Without Tax"] + "," + dt.Rows[i]["Tax"] + "," + dt.Rows[i]["Price_With_Tax"] + "," + dt.Rows[i]["Net_Price"] + ",'" + QTyonHand + "','" + CostOfItemsOnHand + "')";
                     //_CMD = new SqlCommand(s, con);
                     ////reader.Close();
@@ -521,7 +523,7 @@ namespace Food_Cost
                     {
                         FiledSelection = "RestaurantID,KitchenID,ItemID,Qty,Units,Last_Cost,Current_Cost,Net_Cost";
                         Values = string.Format("'{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}'", "1", "1", dt.Rows[i]["Code"], dt.Rows[i]["Qty"], "", dt.Rows[i]["Price_With_Tax"], dt.Rows[i]["Price_With_Tax"], dt.Rows[i]["Net_Price"]);
-                        Classes.InsertRow("Items", FiledSelection, Values);
+                        Methods.InsertRow("Items", FiledSelection, Values);
                         //s = string.Format("insert into Items(RestaurantID,KitchenID,ItemID,Qty,Units,Last_Cost,Current_Cost,Net_Cost) Values ('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}')", "1", "1", dt.Rows[i]["Code"], dt.Rows[i]["Qty"], "", dt.Rows[i]["Price_With_Tax"], dt.Rows[i]["Price_With_Tax"], dt.Rows[i]["Net_Price"]);
                         //_cmd = new SqlCommand(s, con);
                         //_cmd.ExecuteNonQuery();
@@ -529,8 +531,8 @@ namespace Food_Cost
                 }
 
                 FiledSelection = "RO_Serial,RO_No,Transactions_No,Status,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment,UserID,Create_Date";
-                Values = string.Format("'{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}',GETDATE()", codetxt.Text, Manual_Recieve_No.Text, (RecieveOrderDGV.SelectedItem as DataRowView).Row.ItemArray[0].ToString(), "Recieved", Delivery_dt.Text + " " + Delivery_time.Text, "1", "1", Classes.WS, "Recieve_Purchase", commenttxt.Text, MainWindow.UserID);
-                Classes.InsertRow("RO", FiledSelection, Values);
+                Values = string.Format("'{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}',GETDATE()", codetxt.Text, Manual_Recieve_No.Text, (RecieveOrderDGV.SelectedItem as DataRowView).Row.ItemArray[0].ToString(), "Recieved", Delivery_dt.Text + " " + Delivery_time.Text, "1", "1", Methods.WS, "Recieve_Purchase", commenttxt.Text, MainWindow.UserID);
+                Methods.InsertRow("RO", FiledSelection, Values);
                 //cmd = new SqlCommand(string.Format("Insert into RO(RO_Serial,RO_No,Transactions_No,Status,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment,UserID)Values ('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}')", codetxt.Text, Manual_Recieve_No.Text, (RecieveOrderDGV.SelectedItem as DataRowView).Row.ItemArray[0].ToString(), "Recieved", Delivery_dt.Text, "1", "1", Classes.WS, "Recieve_Purchase", commenttxt.Text,MainWindow.UserID), con);
                 //cmd.ExecuteNonQuery();
 
@@ -591,7 +593,7 @@ namespace Food_Cost
 
                 }
 
-                SqlCommand cmd = new SqlCommand(string.Format("Insert into RO(RO_Serial,RO_No,Transactions_No,Status,Create_Date,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment,UserID)Values ('{0}','{1}','{2}','{3}',GETDATE(),'{4}',(select Code From Store_Setup WHere Name='{5}'),(select Code From Kitchens_Setup WHere Name='{6}'),'{7}','{8}','{9}','{10}')", RoTransferKitchen.Text, ManualROKitchen.Text, TransferResturantID, "Recieved", DeliveryROKitchen.Text +" "+ DeliveryROKitchenTime.Text, ToResturantKitchentxt.Text, ToKitchenKitchentxt.Text, Classes.WS, "Transfer_Resturant", commenttxt.Text,MainWindow.UserID), con);
+                SqlCommand cmd = new SqlCommand(string.Format("Insert into RO(RO_Serial,RO_No,Transactions_No,Status,Create_Date,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment,UserID)Values ('{0}','{1}','{2}','{3}',GETDATE(),'{4}',(select Code From Store_Setup WHere Name='{5}'),(select Code From Kitchens_Setup WHere Name='{6}'),'{7}','{8}','{9}','{10}')", RoTransferKitchen.Text, ManualROKitchen.Text, TransferResturantID, "Recieved", DeliveryROKitchen.Text +" "+ DeliveryROKitchenTime.Text, ToResturantKitchentxt.Text, ToKitchenKitchentxt.Text, Methods.WS, "Transfer_Resturant", commenttxt.Text,MainWindow.UserID), con);
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex) { MessageBox.Show(ex.ToString()); }
@@ -620,7 +622,7 @@ namespace Food_Cost
                 {
                     Dat.Columns[i].ReadOnly = false;
                 }
-                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                SqlConnection con = new SqlConnection(Conn.DataConnString);
                 SqlCommand cmd = new SqlCommand();
                 con.Open();
                 string ItemCode = (e.Row.Item as DataRowView).Row["ItemID"].ToString();
@@ -723,7 +725,7 @@ namespace Food_Cost
                 {
                     Dat.Columns[i].ReadOnly = false;
                 }
-                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                SqlConnection con = new SqlConnection(Conn.DataConnString);
                 con.Open();
                 string ItemCode = (e.Row.Item as DataRowView).Row["ItemID"].ToString();
                 try
@@ -843,7 +845,7 @@ namespace Food_Cost
 
                 }
 
-                SqlCommand cmd = new SqlCommand(string.Format("Insert into RO(RO_Serial,RO_No,Transactions_No,Status,Create_Date,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment,UserID)Values ('{0}','{1}','{2}','{3}',GETDATE(),'{4}',(select Code From Store_Setup WHere Name='{5}'),(select Code From Kitchens_Setup WHere Name='{6}'),'{7}','{8}','{9}','{10}')", RoInter.Text, ManualROInter.Text, TransferKitchenID, "Recieved", DeliveryROInter.Text+" "+ DeliveryROInterTime.Text, FromResturantIntertxt.Text, ToKitchenIntertxt.Text, Classes.WS, "Transfer_Kitchen", CommentRoInter.Text,MainWindow.UserID), con);
+                SqlCommand cmd = new SqlCommand(string.Format("Insert into RO(RO_Serial,RO_No,Transactions_No,Status,Create_Date,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment,UserID)Values ('{0}','{1}','{2}','{3}',GETDATE(),'{4}',(select Code From Store_Setup WHere Name='{5}'),(select Code From Kitchens_Setup WHere Name='{6}'),'{7}','{8}','{9}','{10}')", RoInter.Text, ManualROInter.Text, TransferKitchenID, "Recieved", DeliveryROInter.Text+" "+ DeliveryROInterTime.Text, FromResturantIntertxt.Text, ToKitchenIntertxt.Text, Methods.WS, "Transfer_Kitchen", CommentRoInter.Text,MainWindow.UserID), con);
                 cmd.ExecuteNonQuery();
 
             }
@@ -872,7 +874,7 @@ namespace Food_Cost
         {
             try
             {
-                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                SqlConnection con = new SqlConnection(Conn.DataConnString);
 
                 if (e.Column.Header.ToString() == "Price")
                 {
@@ -922,8 +924,8 @@ namespace Food_Cost
                 return;
 
             string QTyonHand = ""; string CostOfItemsOnHand = ""; string QtyOnHandMultipleCost = "";
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
+            SqlConnection con = new SqlConnection(Conn.DataConnString);
+            SqlConnection con2 = new SqlConnection(Conn.DataConnString);
             try
             {
                 con.Open();
@@ -980,7 +982,7 @@ namespace Food_Cost
                 }
 
 
-                cmd = new SqlCommand(string.Format("Insert into RO(RO_Serial,RO_No,Transactions_No,Status,Create_Date,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment,UserID)Values ('{0}','{1}','{2}','{3}',GETDATE(),'{4}','{5}','{6}','{7}','{8}','{9}','{10}')", codetxt.Text, Manual_Recieve_No.Text, PO.Text, "Recieved", Delivery_dt.Text, RestaurantId, KitchenId, Classes.WS, "Auto_Recieve", commenttxt.Text, MainWindow.UserID), con);
+                cmd = new SqlCommand(string.Format("Insert into RO(RO_Serial,RO_No,Transactions_No,Status,Create_Date,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment,UserID)Values ('{0}','{1}','{2}','{3}',GETDATE(),'{4}','{5}','{6}','{7}','{8}','{9}','{10}')", codetxt.Text, Manual_Recieve_No.Text, PO.Text, "Recieved", Delivery_dt.Text, RestaurantId, KitchenId, Methods.WS, "Auto_Recieve", commenttxt.Text, MainWindow.UserID), con);
                 cmd.ExecuteNonQuery();
 
                 MainUiFormat();
@@ -1069,7 +1071,7 @@ namespace Food_Cost
                 try
                 {
                     con.Open();
-                    string s = "select Name from Kitchens_Setup WHERE RestaurantID=" + RestaurantId + " AND Virtual='True'";
+                    string s = "select Name from Kitchens_Setup WHERE RestaurantID=" + RestaurantId ;
                     SqlCommand cmd = new SqlCommand(s, con);
                     reader = cmd.ExecuteReader();
                     while (reader.Read())
@@ -1121,7 +1123,7 @@ namespace Food_Cost
             dt.Columns.Add("Transfer Date");
             dt.Columns.Add("To Resturant");
             dt.Columns.Add("To Kitchen");
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            SqlConnection con = new SqlConnection(Conn.DataConnString);
             try
             {
                 con.Open();
@@ -1142,7 +1144,7 @@ namespace Food_Cost
         }
         private void ResturantReqcbx_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            SqlConnection con = new SqlConnection(Conn.DataConnString);
             KitchenReqcbx.Items.Clear();
             string b = "";
             if (ResturantReqcbx.SelectedItem != null)
@@ -1170,7 +1172,7 @@ namespace Food_Cost
                 try
                 {
                     con.Open();
-                    string s = "select Name from Kitchens_Setup WHERE RestaurantID=" + RestaurantId + " AND Virtual='True'";
+                    string s = "select Name from Kitchens_Setup WHERE RestaurantID=" + RestaurantId;
                     SqlCommand cmd = new SqlCommand(s, con);
                     reader = cmd.ExecuteReader();
                     while (reader.Read())
@@ -1192,7 +1194,7 @@ namespace Food_Cost
         }
         private void KitchenReqcbx_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            SqlConnection con = new SqlConnection(Conn.DataConnString);
             try
             {
                 con.Open();
@@ -1212,8 +1214,8 @@ namespace Food_Cost
         }
         private void RequestssDGV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            SqlConnection con2 = new SqlConnection(Conn.DataConnString);
+            SqlConnection con = new SqlConnection(Conn.DataConnString);
             float from_rest_Qty = 0; float from_rest_Cost = 0; float to_rest_Qty = 0; float to_rest_Cost = 0;
             DataTable dt = new DataTable();
             recieveTransfer.IsEnabled = true;
@@ -1353,7 +1355,7 @@ namespace Food_Cost
             float from_rest_Qty = 0; float from_rest_Cost = 0; float to_rest_Qty = 0; float to_rest_Cost = 0;
             if (e.Column.Header.ToString() != "Received")
             {
-                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                SqlConnection con = new SqlConnection(Conn.DataConnString);
                 SqlCommand cmd = new SqlCommand();
                 con.Open();
                 string ItemCode = (e.Row.Item as DataRowView).Row["Code"].ToString();
@@ -1444,8 +1446,8 @@ namespace Food_Cost
                 return;
             }
 
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
+            SqlConnection con = new SqlConnection(Conn.DataConnString);
+            SqlConnection con2 = new SqlConnection(Conn.DataConnString);
             try
             {
                 con2.Open();
@@ -1491,7 +1493,7 @@ namespace Food_Cost
                 string FiledSelection = "Request_Date,Comment,Status";
                 string Values = string.Format("'{0}','{1}','{2}'", Request_Date.Text+" "+ Request_Time.Text,commenttxt.Text,StatusReq.Text);
                 string where = string.Format("Request_Serial={0}", Serial_Request_NO.Text);
-                Classes.UpdateRow(FiledSelection, Values, where, "Requests_tbl");
+                Methods.UpdateRow(FiledSelection, Values, where, "Requests_tbl");
                 //string s = string.Format("update PO Set PO_No='{0}',Ship_To=(select Code from Store_Setup where Name = '{1}'),Vendor_ID=(select VendorID from Vendors where Name = '{2}'),Delivery_Date='{3}',Last_Modified_Date=GETDATE(),Comment='{4}',Total_Price='{5}',Status='{6}' Where PO_Serial={7}", PO_NO.Text, ShipTo.Text, Vendor.Text, Delivery_dt.Text+" "+Delivery_time.Text, commenttxt.Text, Total_Price_With_Tax.Text,Statustxt.Text ,Serial_PO_NO.Text);
                 //SqlCommand cmd = new SqlCommand(s, con);
                 //cmd.ExecuteNonQuery();
@@ -1554,7 +1556,7 @@ namespace Food_Cost
         {
             try
             {
-                string s = string.Format("insert into Requests_tbl(Request_Serial,Manual_Request_No,Request_Date,Comment,From_Resturant_ID,To_Resturant_ID,From_Kitchen_ID,To_Kitchen_ID,Post_Date,Type,UserID,WS,Status) values('{0}','{1}','{2}','{3}',(select Code from Store_Setup where Name = '{4}'),(select Code from Store_Setup where Name = '{5}'),(select Code from Kitchens_Setup where Name = '{6}'),(select Code from Kitchens_Setup where Name = '{7}'),GETDATE(),'{8}','{9}','{10}','{11}')", Serial_Request_NO.Text, Request_NO.Text, Request_Date.Text + " " + Request_Time.Text, commenttxt.Text, ResturantReqcbx.Text, TOResturantReq.Text, KitchenReqcbx.Text, TOKitchenReq.Text, TypeCbx.Text, MainWindow.UserID, Classes.WS, StatusReq.Text);
+                string s = string.Format("insert into Requests_tbl(Request_Serial,Manual_Request_No,Request_Date,Comment,From_Resturant_ID,To_Resturant_ID,From_Kitchen_ID,To_Kitchen_ID,Post_Date,Type,UserID,WS,Status) values('{0}','{1}','{2}','{3}',(select Code from Store_Setup where Name = '{4}'),(select Code from Store_Setup where Name = '{5}'),(select Code from Kitchens_Setup where Name = '{6}'),(select Code from Kitchens_Setup where Name = '{7}'),GETDATE(),'{8}','{9}','{10}','{11}')", Serial_Request_NO.Text, Request_NO.Text, Request_Date.Text + " " + Request_Time.Text, commenttxt.Text, ResturantReqcbx.Text, TOResturantReq.Text, KitchenReqcbx.Text, TOKitchenReq.Text, TypeCbx.Text, MainWindow.UserID, Methods.WS, StatusReq.Text);
                 SqlCommand cmd = new SqlCommand(s, con);
                 cmd.ExecuteNonQuery();
             }
@@ -1644,7 +1646,7 @@ namespace Food_Cost
 
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            SqlConnection con = new SqlConnection(Conn.DataConnString);
             try
             {
                 con.Open();

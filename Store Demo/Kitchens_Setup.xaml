@@ -49,8 +49,6 @@
                                 <TextBox Margin="0 0 0 18" Name="Name_txt" Padding="1" FontSize="13"/>
                                 <TextBlock Text="Name2"   FontSize="14" Foreground="#FFCD0E0E" FontWeight="Bold" />
                                 <TextBox Name="Name2_txt" Padding="1" FontSize="13" Margin="0 0 0 18"/>
-                                <TextBlock Text="IP"   FontSize="14" Foreground="#FFCD0E0E" FontWeight="Bold" />
-                                <TextBox Name="IPtxt" Padding="1" FontSize="13" Margin="0 0 0 18"/>
 
                                 <Grid>
                                     <StackPanel Orientation="Horizontal">
