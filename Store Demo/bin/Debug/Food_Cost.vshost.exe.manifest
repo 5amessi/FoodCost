@@ -276,14 +276,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Food_Cost.exe" size="7955456">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Food_Cost.exe" size="7955968">
       <assemblyIdentity name="Food_Cost" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>OD+UweGQRayQs07/rDO2pV/wG7ZtFZlNwrT4WfqqXmg=</dsig:DigestValue>
+        <dsig:DigestValue>UyRJU5GWQ9hNH32Ut9kXtxhDfFmRRcko78jhCFXrDR8=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

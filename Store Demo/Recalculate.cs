@@ -195,11 +195,17 @@ namespace Food_Cost
                 }
                 else if (Transactions.Rows[i]["Trantype"].ToString() == "Generate")
                 {
-                    Classes.UpdateRow("CurrentCost,Cost", item_cost[itemCostKey] + "," + item_cost[itemCostKey], where, "TransActions");
-                    tempwhere = "Item_ID = '" + Transactions.Rows[i]["Item_ID"].ToString() + "' AND Generate_ID = '" + Transactions.Rows[i]["ID"].ToString() + "'";
-                    Classes.UpdateCell("Cost", item_cost[itemCostKey], tempwhere, "GenerateRecipe_Items");
-                    Classes.UpdateCell("Net_Cost", "Cost * ItemQty", "GenerateRecipe_Items");
-
+                    if (item_cost.ContainsKey(itemCostKey))
+                    {
+                        Classes.UpdateRow("CurrentCost,Cost", item_cost[itemCostKey] + "," + item_cost[itemCostKey], where, "TransActions");
+                        tempwhere = "Item_ID = '" + Transactions.Rows[i]["Item_ID"].ToString() + "' AND Generate_ID = '" + Transactions.Rows[i]["ID"].ToString() + "'";
+                        Classes.UpdateCell("Cost", item_cost[itemCostKey], tempwhere, "GenerateRecipe_Items");
+                        Classes.UpdateCell("Net_Cost", "Cost * ItemQty", "GenerateRecipe_Items");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error in Time");
+                    }
                 }
             }
         }
