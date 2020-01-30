@@ -1,1 +1,1 @@
-Data Source=.;Initial Catalog=FoodCost;Integrated Security=True;User Id=sa;Password=CounterPoint8
+Data Source=192.168.1.5;Initial Catalog=FoodCost;Integrated Security=False;User Id=sa;Password=CounterPoint8
