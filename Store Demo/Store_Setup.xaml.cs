@@ -14,7 +14,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Food_Cost.Classes;
 
 namespace Food_Cost
 {
@@ -34,17 +33,24 @@ namespace Food_Cost
         //functions
         private void FillDGV()
         {
-            SqlConnection con = new SqlConnection(Conn.DataConnString);
+            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
+            SqlConnection con = new SqlConnection(connString);
             SqlDataReader reader = null;
+
             try
             {
                 con.Open();
+
                 string s = "select Code,Name,Name2,IsMain,IsActive from Store_Setup";
+
                 SqlCommand cmd = new SqlCommand(s, con);
+
                 reader = cmd.ExecuteReader();
+
                 while (reader.Read())
                 {
                     var data = new DgvData { Code = reader["Code"].ToString(), Name = reader["Name"].ToString(), Name2 = reader["Name2"].ToString(), IsMain = reader["IsMain"].ToString(), IsActive = reader["IsActive"].ToString() };
+
                     Stores_DGV.Items.Add(data);
                 }
             }
@@ -69,7 +75,6 @@ namespace Food_Cost
             UndoBtn.IsEnabled = false;
             DeleteBtn.IsEnabled = false;
             NewBtn.IsEnabled = true;
-            KitchenBtn.IsEnabled = false;
 
         }
         public void EnableUI()
@@ -83,7 +88,6 @@ namespace Food_Cost
             UndoBtn.IsEnabled = true;
             DeleteBtn.IsEnabled = true;
             NewBtn.IsEnabled = true;
-            KitchenBtn.IsEnabled = true;
         }
         private void ClearUIFields()
         {
@@ -98,7 +102,6 @@ namespace Food_Cost
         {
             EnableUI();
             ClearUIFields();
-            KitchenBtn.IsEnabled = false;
             NewBtn.IsEnabled = false;
             UpdateBtn.IsEnabled = false;
             DeleteBtn.IsEnabled = false;
@@ -121,14 +124,18 @@ namespace Food_Cost
                 }
             }
 
-            SqlConnection con = new SqlConnection(Conn.DataConnString);
+            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
+            SqlConnection con = new SqlConnection(connString);
+
             try
             {
                 con.Open();
+
                 string s = "insert into Store_Setup(Code,Name,Name2,IsMain,IsActive) values (" + Code_txt.Text +  ",'" + Name_txt.Text + "','" +
                     Name2_txt.Text  + "','" + IsMain.IsChecked + "','" + Active_chbx.IsChecked + "')";
 
                 SqlCommand cmd = new SqlCommand(s, con);
+
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -148,12 +155,17 @@ namespace Food_Cost
 
         private void UpdateBtn_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Conn.DataConnString);
+            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
+            SqlConnection con = new SqlConnection(connString);
+
             try
             {
                 con.Open();
+
                 string s = "Update Store_Setup SET " + "Name = '" + Name_txt.Text + "', Name2 = '" + Name2_txt.Text  + "', IsMain = '" + IsMain.IsChecked  + "', IsActive = '" + Active_chbx.IsChecked + "' Where Code = " + Code_txt.Text;
+
                 SqlCommand cmd = new SqlCommand(s, con);
+
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -178,12 +190,17 @@ namespace Food_Cost
 
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Conn.DataConnString);
+            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
+            SqlConnection con = new SqlConnection(connString);
+
             try
             {
                 con.Open();
+
                 string s = "delete from Store_Setup where Code = " + Code_txt.Text;
+
                 SqlCommand cmd = new SqlCommand(s, con);
+
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -221,7 +238,6 @@ namespace Food_Cost
                     Code_txt.IsEnabled = false;
                     NewBtn.IsEnabled = false;
                     SaveBtn.IsEnabled = false;
-                    KitchenBtn.IsEnabled = true;
                 }
             }
         }

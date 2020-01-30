@@ -13,7 +13,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Food_Cost.Classes;
 
 namespace Food_Cost
 {
@@ -36,12 +35,17 @@ namespace Food_Cost
 
         private void ParentStore()
         {
-            SqlConnection con = new SqlConnection(Conn.DataConnString);
+            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
+            SqlConnection con = new SqlConnection(connString);
+
             try
             {
                 con.Open();
+
                 string s = string.Format("select Name from Store_Setup where Code = {0}", code);
+
                 SqlCommand cmd = new SqlCommand(s, con);
+
                 ParentStore_cbx.Text = cmd.ExecuteScalar().ToString();
             }
             catch (Exception ex)
@@ -53,21 +57,26 @@ namespace Food_Cost
                 con.Close();
             }
         }
-
         private void FillDGV(string code)
         {
-            SqlConnection con = new SqlConnection(Conn.DataConnString);
+            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
+            SqlConnection con = new SqlConnection(connString);
             SqlDataReader reader = null;
 
             try
             {
                 con.Open();
+
                 string s = string.Format("select Code,Name,Name2,IsMain,IsOutlet,IsActive from Kitchens_Setup where RestaurantID = {0} order by Code", code);
+
                 SqlCommand cmd = new SqlCommand(s, con);
+
                 reader = cmd.ExecuteReader();
+
                 while (reader.Read())
                 {
                     var data = new DgvData { Code = reader["Code"].ToString(), Name = reader["Name"].ToString(), Name2 = reader["Name2"].ToString(), IsMain = reader["IsMain"].ToString(), IsOutlet = reader["IsOutlet"].ToString(), IsActive = reader["IsActive"].ToString() };
+
                     Stores_DGV.Items.Add(data);
                 }
             }
@@ -81,7 +90,6 @@ namespace Food_Cost
                 con.Close();
             }
         }
-
         private void MainUiFormat()
         {
             Code_txt.IsEnabled = false;
@@ -95,6 +103,7 @@ namespace Food_Cost
             UndoBtn.IsEnabled = false;
             DeleteBtn.IsEnabled = false;
             NewBtn.IsEnabled = true;
+            IPtxt.IsEnabled = false;
         }
         public void EnableUI()
         {
@@ -109,12 +118,14 @@ namespace Food_Cost
             UndoBtn.IsEnabled = true;
             DeleteBtn.IsEnabled = true;
             NewBtn.IsEnabled = true;
+            IPtxt.IsEnabled = true;
         }
         private void ClearUIFields()
         {
             Code_txt.Text = "";
             Name_txt.Text = "";
             Name2_txt.Text = "";
+            IPtxt.Text = "";
             Active_chbx.IsChecked = false;
             IsMain.IsChecked = false;
             IsOutlet.IsChecked = false;
@@ -127,7 +138,6 @@ namespace Food_Cost
             UpdateBtn.IsEnabled = false;
             DeleteBtn.IsEnabled = false;
         }
-        
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
             if (Code_txt.Text == "")
@@ -145,16 +155,19 @@ namespace Food_Cost
                 }
             }
 
-            SqlConnection con = new SqlConnection(Conn.DataConnString);
-            SqlConnection con2 = new SqlConnection(Conn.DataConnString);
+            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
+            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con2 = new SqlConnection(connString);
 
             try
             {
                 con.Open();
 
-                string s = "insert into Kitchens_Setup(Code,Name,Name2,IsMain,IsOutlet,IsActive,RestaurantID) values (" + Code_txt.Text + ",'" + Name_txt.Text + "','" +
-                    Name2_txt.Text + "','" + IsMain.IsChecked + "','" + IsOutlet.IsChecked + "','" + Active_chbx.IsChecked + "',(" + string.Format("select Code from Store_Setup where Name = '{0}'",ParentStore_cbx.Text) + "))";
+                string s = "insert into Kitchens_Setup(Code,Name,Name2,IsMain,IsOutlet,IsActive,RestaurantID,IP) values (" + Code_txt.Text + ",'" + Name_txt.Text + "','" +
+                    Name2_txt.Text + "','" + IsMain.IsChecked + "','" + IsOutlet.IsChecked + "','" + Active_chbx.IsChecked + "',(" + string.Format("select Code from Store_Setup where Name = '{0}'",ParentStore_cbx.Text) + "),'" + IPtxt.Text + "')";
+
                 SqlCommand cmd = new SqlCommand(s, con);
+
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -201,16 +214,19 @@ namespace Food_Cost
             }
             MessageBox.Show("Saved Successfully");
         }
-
         private void UpdateBtn_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Conn.DataConnString);
+            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
+            SqlConnection con = new SqlConnection(connString);
 
             try
             {
                 con.Open();
-                string s = "Update Kitchens_Setup SET " + "Name = '" + Name_txt.Text + "', Name2 = '" + Name2_txt.Text + "', IsMain = '" + IsMain.IsChecked + "', IsOutlet = '" + IsOutlet.IsChecked + "', IsActive = '" + Active_chbx.IsChecked + "', RestaurantID = " + string.Format("(select Code from Store_Setup where Name = '{0}')", ParentStore_cbx.Text) + " Where Code = " + Code_txt.Text + " and RestaurantID = " + string.Format("(select Code from Store_Setup where Name = '{0}')", ParentStore_cbx.Text);
+
+                string s = "Update Kitchens_Setup SET " + "Name = '" + Name_txt.Text + "', Name2 = '" + Name2_txt.Text + "', IsMain = '" + IsMain.IsChecked + "', IP = '" + IPtxt.Text + "', IsOutlet = '" + IsOutlet.IsChecked + "', IsActive = '" + Active_chbx.IsChecked + "', RestaurantID = " + string.Format("(select Code from Store_Setup where Name = '{0}')", ParentStore_cbx.Text) + " Where Code = " + Code_txt.Text + " and RestaurantID = " + string.Format("(select Code from Store_Setup where Name = '{0}')", ParentStore_cbx.Text);
+
                 SqlCommand cmd = new SqlCommand(s, con);
+
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -227,20 +243,23 @@ namespace Food_Cost
             }
             MessageBox.Show("Updated Successfully");
         }
-
         private void UndoBtn_Click(object sender, RoutedEventArgs e)
         {
             MainUiFormat();
         }
-
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Conn.DataConnString);
+            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
+            SqlConnection con = new SqlConnection(connString);
+
             try
             {
                 con.Open();
+
                 string s = "delete from Kitchens_Setup where Code = " + Code_txt.Text;
+
                 SqlCommand cmd = new SqlCommand(s, con);
+
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -257,7 +276,6 @@ namespace Food_Cost
             }
             MessageBox.Show("Deleted Successfully");
         }
-        
         private void RowClicked(object sender, MouseButtonEventArgs e)
         {
             if (sender != null)

@@ -15,8 +15,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Food_Cost.Classes;
-
 
 namespace Food_Cost
 {
@@ -31,6 +29,7 @@ namespace Food_Cost
         string ValOfResturant = "";
         string ValOfKitchen = "";
         int Count = 0;
+        string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
         public KitcheItemsn()
         {
             InitializeComponent();
@@ -46,7 +45,7 @@ namespace Food_Cost
 
         private void LoadAllOutlet()
         {
-            SqlConnection con = new SqlConnection(Conn.DataConnString);
+            SqlConnection con = new SqlConnection(connString);
             SqlDataReader reader = null;
             try
             {
@@ -95,8 +94,8 @@ namespace Food_Cost
             SqlDataReader reader = null;
             SqlDataReader reader2 = null;
             string valuoOfKitchen = Kitchencbx.SelectedItem.ToString();
-            SqlConnection con = new SqlConnection(Conn.DataConnString);
-            SqlConnection con2 = new SqlConnection(Conn.DataConnString);
+            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con2 = new SqlConnection(connString);
             try
             {
                 con.Open();
@@ -171,7 +170,7 @@ namespace Food_Cost
                     return;
                 }
 
-            SqlConnection con = new SqlConnection(Conn.DataConnString);
+            SqlConnection con = new SqlConnection(connString);
             for (int i = 0; i < ItemsDGV.Items.Count; i++)
             {
                 try
@@ -220,7 +219,7 @@ namespace Food_Cost
 
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Conn.DataConnString);
+            SqlConnection con = new SqlConnection(connString);
             try
             {
                 con.Open();
@@ -270,7 +269,7 @@ namespace Food_Cost
             Kitchencbx.Items.Clear();
             ValOfResturant = "";
             string v = Outletcbx.SelectedItem.ToString();
-            SqlConnection con = new SqlConnection(Conn.DataConnString);
+            SqlConnection con = new SqlConnection(connString);
             try
             {
                 con.Open();
@@ -292,7 +291,7 @@ namespace Food_Cost
             try
             {
                 con.Open();
-                string s = "select Name from Kitchens_Setup WHERE RestaurantID=" + ValOfResturant ;
+                string s = "select Name from Kitchens_Setup WHERE RestaurantID=" + ValOfResturant + " AND Virtual='True'";
                 SqlCommand cmd = new SqlCommand(s, con);
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
