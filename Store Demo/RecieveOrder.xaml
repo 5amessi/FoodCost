@@ -294,7 +294,7 @@
                                                 <DatePicker Grid.Column="1" Name="DeliveryROInter" VerticalAlignment="Center" Grid.Row="1" Foreground="Black" TextBlock.TextAlignment="Center" IsEnabled="False"/>
 
                                                 <TextBlock Text="Time" Foreground="Red" Grid.Column="2" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                                <TextBox Grid.Column="3" Name="DeliveryROInterTime" VerticalAlignment="Center" Grid.Row="1" Foreground="Black"  IsEnabled="False" Margin="0 0 0 0"/>
+                                                <materialDesign:TimePicker Grid.Column="3" Name="DeliveryROInterTime" VerticalAlignment="Center" Grid.Row="1" Foreground="Black"  IsEnabled="False" Margin="0 0 0 0"/>
 
                                                 <TextBlock Text="Comments" Foreground="Red" Grid.Column="4" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                                 <TextBox Grid.Column="5" Name="CommentRoInter" VerticalAlignment="Bottom" Grid.Row="1" Foreground="Black" Padding="5"  IsEnabled="False" Margin="0 0 0 0"/>
