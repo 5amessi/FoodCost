@@ -968,7 +968,7 @@ namespace Food_Cost
                     _CMD.ExecuteNonQuery();
 
 
-                    s = string.Format("Update Items set Qty = Qty + {1},Last_Cost = Current_Cost,Current_Cost = ((Current_Cost * Qty)+({1} * {3}))/(Qty+{1}),Units = '{4}',Net_Cost=(((Current_Cost * Qty)+({1} * {3}))/(Qty+{1})*({1}+Qty)) where ItemID = '{0}' and RestaurantID ='{2}' and KitchenID ='{4}'", dt.Rows[i]["Code"], dt.Rows[i]["Qty"], RestaurantId, dt.Rows[i]["Unit Price With Tax"], " ", KitchenId);
+                    s = string.Format("Update Items set Qty = Qty + {1},Last_Cost = Current_Cost,Current_Cost = ((Current_Cost * Qty)+({1} * {3}))/(Qty+{1}),Units = '{4}',Net_Cost=(((Current_Cost * Qty)+({1} * {3}))/(Qty+{1})*({1}+Qty)) where ItemID = '{0}' and RestaurantID ='{2}' and KitchenID ='{5}'", dt.Rows[i]["Code"], dt.Rows[i]["Qty"], RestaurantId, dt.Rows[i]["Unit Price With Tax"], " ", KitchenId);
                     SqlCommand _cmd = new SqlCommand(s, con);
                     int n = _cmd.ExecuteNonQuery();
 
