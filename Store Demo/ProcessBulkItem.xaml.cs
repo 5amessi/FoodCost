@@ -159,7 +159,7 @@ namespace Food_Cost
                     try
                     {
                         con2.Open();
-                        string q = "select Qty,Current_Cost FROM Items Where ItemID = '" + reader["Code"].ToString() + "'";
+                        string q = string.Format("select Qty,Current_Cost FROM Items Where ItemID='{0}' and RestaurantID='{1}' and KitchenID='{2}'", reader["Code"].ToString(), CodeOfResturant, CodeOfKitchens);
                         cmd2 = new SqlCommand(q, con2);
                         reader2 = cmd2.ExecuteReader();
                         reader2.Read();
