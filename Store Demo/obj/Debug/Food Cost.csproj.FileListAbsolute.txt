@@ -3766,7 +3766,6 @@ E:\Michael\Git_FoodCost\Store Demo\bin\Debug\Microsoft.SqlServer.Smo.dll
 E:\Michael\Git_FoodCost\Store Demo\bin\Debug\Microsoft.SqlServer.SmoExtended.dll
 E:\Michael\Git_FoodCost\Store Demo\bin\Debug\Microsoft.VisualStudio.Shell.Interop.dll
 E:\Michael\Git_FoodCost\Store Demo\bin\Debug\Microsoft.VisualStudio.OLE.Interop.dll
-E:\Michael\Git_FoodCost\Store Demo\bin\Debug\CRVsPackageLib.dll
 E:\Michael\Git_FoodCost\Store Demo\bin\Debug\Microsoft.VisualStudio.TemplateWizardInterface.dll
 E:\Michael\Git_FoodCost\Store Demo\bin\Debug\EnvDTE.dll
 E:\Michael\Git_FoodCost\Store Demo\bin\Debug\VSLangProj.dll

@@ -31,7 +31,6 @@ namespace Food_Cost
         {
             InitializeComponent();
             LoadAllResturant();
-            LoadAllBulkItems();
         }
         private void LoadAllResturant()
         {
@@ -127,6 +126,7 @@ namespace Food_Cost
             {
                 con.Close();
             }
+            LoadAllBulkItems();
             Details.Visibility = Visibility.Hidden;
             ItemsDetails.Visibility = Visibility.Visible;
         }
@@ -167,7 +167,6 @@ namespace Food_Cost
                         {
                             if(reader2["Qty"] !="")
                             {
-                                //dt.Rows.Add(false,reader["Code"], reader["[Manual Code]"], reader["Name"], reader2["Qty"]);
                                 dt.Rows.Add(false, reader["Code"], reader.GetValue(1), reader["Name"], (Convert.ToDouble(reader2["Qty"]) * Convert.ToDouble(reader["weight"])).ToString(),reader["Unit"],reader2["Current_Cost"]);
 
                             }
