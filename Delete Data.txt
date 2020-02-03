@@ -1,0 +1,26 @@
+delete PO
+delete PO_Items
+
+delete RO
+delete RO_Items
+
+delete Transfer_Kitchens
+delete Transfer_Kitchens_Items
+
+delete Requests_tbl
+delete Requests_Items
+
+delete GenerateRecipe_tbl
+delete GenerateRecipe_Items
+delete RecipeQty
+
+delete Adjacment_tbl
+delete Adjacment_Items
+
+delete PhysicalInventory_tbl
+delete PhysicalInventory_Items
+delete PhysicalInventory_QtyOnHand
+
+delete Setup_KitchenItems
+
+delete Items
