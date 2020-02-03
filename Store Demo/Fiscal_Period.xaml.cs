@@ -87,7 +87,11 @@ namespace Food_Cost
                 values += From.Text + "','" + To.Text + "','" + "0'";
                 Classes.InsertRow("Setup_Fiscal_Period", values);
             }
-
+            if (!CBCreatedYears.Items.Contains(Year.Text))
+            {
+                CBCreatedYears.Items.Add(Year.Text);
+            }
+            
             MessageBox.Show("Saved");
 
         }
@@ -200,6 +204,8 @@ namespace Food_Cost
                 {
                     Month13_StackPanel.Visibility = Visibility.Hidden;
                 }
+                Year.Text = CBCreatedYears.SelectedItem.ToString();
+                MonthType_cbx.Text = MonthsforYear.Rows[0]["Month Type"].ToString();
 
                 SetStatus = new HashSet<string>();
                 for (int i = 0; i < MonthsforYear.Rows.Count; i++)
@@ -235,8 +241,8 @@ namespace Food_Cost
                 BtnUndo.IsEnabled = true;
                 BtnSave.IsEnabled = true;
                 BtnDelete.IsEnabled = true;
-                MonthType_cbx.IsEnabled = false;
-                Year.IsEnabled = false;
+                MonthType_cbx.IsEnabled = true;
+                Year.IsEnabled = true;
                 BtnNew.IsEnabled = false;
                 BtnEdit.IsEnabled = false;
                 Open_All();
@@ -249,21 +255,23 @@ namespace Food_Cost
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            BtnNew.IsEnabled = true;
-            BtnExit.IsEnabled = true;
-            CBCreatedYears.IsEnabled = true;
-            BtnEdit.IsEnabled = false;
-            BtnSave.IsEnabled = false;
-            BtnDelete.IsEnabled = false;
-            BtnUndo.IsEnabled = false;
-            MonthType_cbx.IsEnabled = false;
-            Year.IsEnabled = false;
-            Clear_All();
-            Close_All();
             try
             {
                 if (Year.Text != "")
+                {
                     insert();
+                    Clear_All();
+                    Close_All();
+                    BtnNew.IsEnabled = true;
+                    BtnExit.IsEnabled = true;
+                    CBCreatedYears.IsEnabled = true;
+                    BtnEdit.IsEnabled = false;
+                    BtnSave.IsEnabled = false;
+                    BtnDelete.IsEnabled = false;
+                    BtnUndo.IsEnabled = false;
+                    MonthType_cbx.IsEnabled = false;
+                    Year.IsEnabled = false;
+                }
                 else
                     MessageBox.Show("Nrakz Shwya M3lsh");
             }
@@ -287,6 +295,7 @@ namespace Food_Cost
 
             string where = "Year = '" + CBCreatedYears.SelectedItem + "'";
             Classes.DeleteRows(where, "Setup_Fiscal_Period");
+            CBCreatedYears.Items.Remove(Year.Text);
             Clear_All();
             Close_All();
             MessageBox.Show("Done");

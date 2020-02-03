@@ -195,18 +195,22 @@ namespace Food_Cost
                 }
                 else if (Transactions.Rows[i]["Trantype"].ToString() == "Generate")
                 {
-                    if (item_cost.ContainsKey(itemCostKey))
-                    {
-                        Classes.UpdateRow("CurrentCost,Cost", item_cost[itemCostKey] + "," + item_cost[itemCostKey], where, "TransActions");
-                        tempwhere = "Item_ID = '" + Transactions.Rows[i]["Item_ID"].ToString() + "' AND Generate_ID = '" + Transactions.Rows[i]["ID"].ToString() + "'";
-                        Classes.UpdateCell("Cost", item_cost[itemCostKey], tempwhere, "GenerateRecipe_Items");
-                        Classes.UpdateCell("Net_Cost", "Cost * ItemQty", "GenerateRecipe_Items");
-                    }
-                    else
-                    {
-                        MessageBox.Show("Error in Time");
-                    }
+                    Classes.UpdateRow("CurrentCost,Cost", item_cost[itemCostKey] + "," + item_cost[itemCostKey], where, "TransActions");
+                    tempwhere = "Item_ID = '" + Transactions.Rows[i]["Item_ID"].ToString() + "' AND Generate_ID = '" + Transactions.Rows[i]["ID"].ToString() + "'";
+                    Classes.UpdateCell("Cost", item_cost[itemCostKey], tempwhere, "GenerateRecipe_Items");
+                    Classes.UpdateCell("Net_Cost", "Cost * ItemQty", "GenerateRecipe_Items");
+
                 }
+            }
+        }
+        private static void UpdateItems(DataRow DRCurrentMonth)
+        {
+            string where = "Year = '" + DRCurrentMonth["Year"].ToString() + "' AND Month = '" + DRCurrentMonth["Month"].ToString() + "'";
+            DataTable ItemsQtyCost = Classes.RetrieveData("*", where + " AND Qty > '0' " , "BeginningEndingMonth");
+            foreach (DataRow Item in ItemsQtyCost.Rows)
+            {
+                where = " RestaurantID = '" + Item["Restaurant_ID"] + "' AND KitchenID = '" + Item["Kitchen_ID"]+ "' AND ItemID = '" + Item["Item_ID"] + "'" ;
+                Classes.UpdateRow("Qty,Current_Cost", Item["Qty"] + "," + Item["Cost"], where, "Items");
             }
         }
 
@@ -216,12 +220,13 @@ namespace Food_Cost
             {
                 CalculateQty(DRCurrentMonth, DTPreviousMonth);
                 CalculateCost(DRCurrentMonth, DTPreviousMonth);
+                UpdateItems(DRCurrentMonth);
             }
             catch (Exception ee)
             {
                 MessageBox.Show(ee.ToString());
             }
-            MessageBox.Show("Qty And Cost have recalculated");
+            //MessageBox.Show("Qty And Cost have recalculated");
         }
 
         public static void CloseMonth(DataRow DRCurrentMonth)
