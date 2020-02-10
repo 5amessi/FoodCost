@@ -3904,3 +3904,4 @@ E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.exe.manifest
 E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.application
 E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.exe
 E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.pdb
+E:\Michael\Git_FoodCost\Store Demo\bin\Debug\CRVsPackageLib.dll
