@@ -1379,6 +1379,7 @@ namespace Food_Cost
         }
         private void KitchenReqcbx_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            ExpireDate.ItemExpireDate.Clear();
             SqlConnection con = new SqlConnection(Classes.DataConnString);
             try
             {
@@ -1680,6 +1681,7 @@ namespace Food_Cost
                 }
             }
             catch { }
+            ExpireDate.ItemExpireDate.Clear();
         }
         private void Edit_Req(SqlConnection con)
         {
