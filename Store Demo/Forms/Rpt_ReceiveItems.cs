@@ -55,16 +55,16 @@ namespace Food_Cost.Forms
             }
             if (CBKitchenTransfer.Checked)
             {
-                type.Add("'Recieve_Purchase'");
+                type.Add("'Transfer_Kitchen'");
             }
             if (CBRestaurantTransfer.Checked)
             {
-                type.Add("'Recieve_Purchase'");
+                type.Add("'Transfer_Resturant'");
             }
             if(type.Count != 0)
             {
                 string s = "";
-                Where += "Type IN (";
+                Where += "And Type IN (";
                 foreach(string st in type)
                 {
                     Where += s + st;

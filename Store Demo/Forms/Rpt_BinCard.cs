@@ -109,9 +109,7 @@ namespace Food_Cost.Forms
             }
 
             string Select = "*";
-
-
-            string WhereTA = Where + " And _Date between '" + dtp_from.Value.Date + "' AND '" + dtp_to.Value.Date + "'";
+            string WhereTA = Where + " And _Date between '" + dtp_from.Value.Date + "' AND '" + dtp_to.Value.Date.AddHours(23.999) + "'";
             string order = "Order by _Date";
             dt = Classes.RetrieveData(Select, WhereTA+ order, "TransActionsView");
             foreach (DataRow DR in dt.Rows)

@@ -12,9 +12,10 @@ using Food_Cost.Report;
 
 namespace Food_Cost
 {
+
     public class Recalculate
     {
-        static string where, cols, values,tempwhere;
+        static string where, cols, values, tempwhere;
         static double Qty, Cost;
         static Dictionary<string, string> changed_trasfers = new Dictionary<string, string>();
         static Dictionary<string, string> item_cost = new Dictionary<string, string>();
@@ -23,6 +24,7 @@ namespace Food_Cost
 
         private static void LoadITEM_COST(DataTable DTPreviousMonth)
         {
+            
             if (DTPreviousMonth.Rows.Count != 0)
             {
                 string Pyear = DTPreviousMonth.Rows[0]["Year"].ToString();
@@ -45,7 +47,7 @@ namespace Food_Cost
             {
                 values += s + "'" + BETable.Rows[k][i].ToString() + "'";
                 s = ",";
-            } 
+            }
             Classes.InsertRow("TransActions", cols, values);
         }
 
@@ -72,23 +74,23 @@ namespace Food_Cost
             TezMikel += ",Item_ID varchar(50),ItemName varchar(50),Qty bigint,Current_Qty bigint,Cost float,CurrentCost float";
             Classes.CreateTable("TransActions", TezMikel);
 
-            BETable = Classes.RetrieveStoredWithParamaeters("SPTransActions", "@StartDate,@EndDate", DRCurrentMonth["From"].ToString()+','+DRCurrentMonth["To"].ToString());
+            BETable = Classes.RetrieveStoredWithParamaeters("SPTransActions", "@StartDate,@EndDate", DRCurrentMonth["From"].ToString() + ',' + DRCurrentMonth["To"].ToString());
 
             where = "_DATE between '" + DRCurrentMonth["From"].ToString() + "' AND '" + DRCurrentMonth["To"].ToString() + "'";
 
-            Classes.DeleteRows(where,"TransActions");
+            Classes.DeleteRows(where, "TransActions");
 
             for (int k = 0; k < BETable.Rows.Count; k++)
             {
-                if(k == 0)
+                if (k == 0)
                 {
-                    GetPrevQty(k,DTPreviousMonth);
+                    GetPrevQty(k, DTPreviousMonth);
                 }
                 else if (BETable.Rows[k]["Trantype"].ToString() == "Adjactment")
                 {
-                    BETable.Rows[k]["Qty"] = (double.Parse(BETable.Rows[k]["Current_Qty"].ToString()) - double.Parse(BETable.Rows[k-1]["Current_Qty"].ToString())).ToString();
-                    string TempWhere = "Adjacment_ID = '" + BETable.Rows[k]["ID"].ToString() +  "' And Item_ID = '" + BETable.Rows[k]["Item_ID"].ToString() + "'";
-                    Classes.UpdateRow("Qty,Variance", BETable.Rows[k - 1]["Current_Qty"].ToString() + "," + BETable.Rows[k]["Qty"].ToString() , TempWhere, "Adjacment_Items");
+                    BETable.Rows[k]["Qty"] = (double.Parse(BETable.Rows[k]["Current_Qty"].ToString()) - double.Parse(BETable.Rows[k - 1]["Current_Qty"].ToString())).ToString();
+                    string TempWhere = "Adjacment_ID = '" + BETable.Rows[k]["ID"].ToString() + "' And Item_ID = '" + BETable.Rows[k]["Item_ID"].ToString() + "'";
+                    Classes.UpdateRow("Qty,Variance", BETable.Rows[k - 1]["Current_Qty"].ToString() + "," + BETable.Rows[k]["Qty"].ToString(), TempWhere, "Adjacment_Items");
                     Insert(k);
                 }
                 else if (BETable.Rows[k]["Item_ID"].ToString() == BETable.Rows[k - 1]["Item_ID"].ToString() && BETable.Rows[k]["KitchenName"].ToString() == BETable.Rows[k - 1]["KitchenName"].ToString())
@@ -109,7 +111,7 @@ namespace Food_Cost
             where = "_DATE between '" + DRCurrentMonth["From"].ToString() + "' AND '" + DRCurrentMonth["To"].ToString() + "'";
             string order = " order by Item_ID, _DATE ";
 
-            DataTable Transactions = Classes.RetrieveData("*", where+order,"TransActions");
+            DataTable Transactions = Classes.RetrieveData("*", where + order, "TransActions");
 
             for (int i = 0; i < Transactions.Rows.Count; i++)
             {
@@ -140,6 +142,11 @@ namespace Food_Cost
                     {
                         double CurrentCost;
                         double CurrentQty = double.Parse(Transactions.Rows[i]["Current_Qty"].ToString()) - double.Parse(Transactions.Rows[i]["Qty"].ToString());
+                        if (CurrentQty < 0)
+                        {
+                            MessageBox.Show("Time error in" + Transactions.Rows[i]["Trantype"]+ " " + Transactions.Rows[i]["ID"]);
+                            return ;
+                        }
                         Qty = double.Parse(Transactions.Rows[i]["Qty"].ToString());
                         if (item_cost.ContainsKey(itemCostKey))
                             CurrentCost = double.Parse(item_cost[itemCostKey]);
@@ -174,7 +181,7 @@ namespace Food_Cost
                         if (!item_cost[itemCostKey].Equals(Transactions.Rows[i]["Cost"].ToString()))
                         {
                             changed_trasfers[ChangedTranKye] = item_cost[itemCostKey];
-                            Classes.UpdateRow("CurrentCost,Cost", item_cost[itemCostKey]+","+ item_cost[itemCostKey], where, "TransActions");
+                            Classes.UpdateRow("CurrentCost,Cost", item_cost[itemCostKey] + "," + item_cost[itemCostKey], where, "TransActions");
 
                             //where = "Item_ID = '" + Transactions.Rows[i]["Item_ID"].ToString() + "' AND Transfer_ID = '" + Transactions.Rows[i]["ID"].ToString() + "'";
                             //Classes.UpdateCell("Cost", item_cost[itemCostKey], where, "Transfer_Kitchens_Items");
@@ -203,13 +210,14 @@ namespace Food_Cost
                 }
             }
         }
+
         private static void UpdateItems(DataRow DRCurrentMonth)
         {
             string where = "Year = '" + DRCurrentMonth["Year"].ToString() + "' AND Month = '" + DRCurrentMonth["Month"].ToString() + "'";
-            DataTable ItemsQtyCost = Classes.RetrieveData("*", where + " AND Qty > '0' " , "BeginningEndingMonth");
+            DataTable ItemsQtyCost = Classes.RetrieveData("*", where + " AND Qty > '0' ", "BeginningEndingMonth");
             foreach (DataRow Item in ItemsQtyCost.Rows)
             {
-                where = " RestaurantID = '" + Item["Restaurant_ID"] + "' AND KitchenID = '" + Item["Kitchen_ID"]+ "' AND ItemID = '" + Item["Item_ID"] + "'" ;
+                where = " RestaurantID = '" + Item["Restaurant_ID"] + "' AND KitchenID = '" + Item["Kitchen_ID"] + "' AND ItemID = '" + Item["Item_ID"] + "'";
                 Classes.UpdateRow("Qty,Current_Cost", Item["Qty"] + "," + Item["Cost"], where, "Items");
             }
         }
@@ -252,7 +260,7 @@ namespace Food_Cost
                 {
                     values = "";
                     string Dkitchen = ",'" + KitName["Name"].ToString() + "'";
-                    for ( int i=0; i< Items.Rows.Count; i++)
+                    for (int i = 0; i < Items.Rows.Count; i++)
                     {
                         where = " _Date <= '" + DRCurrentMonth["To"] + "' AND Item_ID = '" + Items.Rows[i][0].ToString() + "' AND KitchenName = '" + KitName["Name"].ToString() + "' order by  _DATE DESC";
                         DTTop = Classes.RetrieveData("top 1 * ", where, "TransActions");
@@ -270,19 +278,20 @@ namespace Food_Cost
                         string DQtyCost = ",'" + Items.Rows[i][0].ToString() + "','" + Qty.ToString() + "','" + Cost.ToString() + "'";
                         string RestKitchen = ",'" + KitName["RestaurantID"].ToString() + "','" + KitName["Code"].ToString() + "'";
                         values += Dvalues + RestKitchen + DQtyCost + "),";
-                        if(i%999 == 0 || i == Items.Rows.Count-1)
+                        if (i % 999 == 0 || i == Items.Rows.Count - 1)
                         {
                             Classes.InsertRow("BeginningEndingMonth", values.Substring(1, values.Length - 3));
                             values = "";
                         }
                     }
                 }
-                MessageBox.Show("Month Closed Successfully");
+                //MessageBox.Show("Month Closed Successfully");
             }
             catch (Exception ee)
             {
                 MessageBox.Show(ee.ToString());
             }
         }
+      
     }
 }

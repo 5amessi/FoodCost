@@ -25,7 +25,7 @@ namespace Food_Cost
 
         private void load_years()
         {
-            string cols = "Year varchar(50),Month varchar(50),[Month Type] varchar(50),[From] datetime,[To] datetime,isClosed bit";
+            string cols = "Year varchar(50),Month varchar(50),[Month Type] varchar(50),[From] date,[To] date,isClosed bit";
             Classes.CreateTable("Setup_Fiscal_Period", cols);
             DataTable Years = Classes.RetrieveData("DISTINCT(Year)", "Setup_Fiscal_Period");
             foreach (DataRow year in Years.Rows)
@@ -84,7 +84,7 @@ namespace Food_Cost
                 DatePicker From = FindName("from" + (i + 1)) as DatePicker;
                 DatePicker To = FindName("to" + (i + 1)) as DatePicker;
                 string values = "'" + Year.Text + "','" + (i + 1).ToString() + "','" + MonthType_cbx.Text + "','";
-                values += From.Text + "','" + To.Text + "','" + "0'";
+                values += Convert.ToDateTime(From.Text) + "','" + Convert.ToDateTime(To.Text).AddHours(23.9999) + "','" + "0'";
                 Classes.InsertRow("Setup_Fiscal_Period", values);
             }
             if (!CBCreatedYears.Items.Contains(Year.Text))

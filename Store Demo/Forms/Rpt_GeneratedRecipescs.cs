@@ -19,11 +19,7 @@ namespace Food_Cost.Forms
         }
         string Where = "";
         string Filter = "";
-        string s = "";
         string f = "";
-        string s2 = "";
-        DataTable Dt;
-        DataTable Dt2;
 
         private void btnRport_Click(object sender, EventArgs e)
         {
@@ -36,18 +32,24 @@ namespace Food_Cost.Forms
             else
             {
                 Where = " Restaurant_ID IN (1) AND Kitchen_ID IN (1)";
-                Filter = "Kitchen: My kitchen";
+                Filter = "Kitchen: My kitchen"; 
             }
             if (TxtItemCode.Text.ToString() != "")
             {
-                Where += " AND Item_ID = '" + TxtItemCode.Text.ToString() + "'";
+                Where += " AND Recipe_ID = '" + TxtItemCode.Text.ToString() + "'";
             }
-            Where += " And Receiving_Date between '" + dtp_from.Value + "' AND '" + dtp_to.Value + "'";
+            Where += " And Generate_Date between '" + dtp_from.Value + "' AND '" + dtp_to.Value + "'";
 
             DataTable dt = Classes.RetrieveData("*", Where, "GeneratedRecipesView");
-
+            for (int i=0; i< dt.Rows.Count; i++)
+            {
+                string tempwhere = "ID = '" + dt.Rows[i]["Generate_ID"] + "' AND Item_ID = '" + dt.Rows[i]["Item_ID"] + "' AND Trantype = 'Generate' ";
+                DataRow Tempdt = Classes.RetrieveData("*", tempwhere, "TransActions").Rows[0];
+                dt.Rows[i]["PrevQty"] = (double.Parse(Tempdt["Current_Qty"].ToString())- double.Parse(Tempdt["Qty"].ToString())).ToString();
+                dt.Rows[i]["CurrQty"] = Tempdt["Current_Qty"];
+            }
             ReportView Rec = new ReportView();
-            Rec.Rpt = new CR_ReceiveItemes();
+            Rec.Rpt = new CR_GeneratedRecipes();
             Rec.Rpt.SetDataSource(dt);
             Rec.Rpt.SetParameterValue("Rpt_Fdate", dtp_from.Value);
             Rec.Rpt.SetParameterValue("Rpt_Tdate", dtp_to.Value);
@@ -62,7 +64,7 @@ namespace Food_Cost.Forms
         private void BtnItem_Click(object sender, EventArgs e)
         {
             FrmSelection frm = new FrmSelection();
-            frm.loaddata("Code", "Name", "Setup_Items");
+            frm.loaddata("Code", "Name", "Setup_Recipes");
             frm.ShowDialog();
             if (frm.Code != "" && frm.Code != null)
             {

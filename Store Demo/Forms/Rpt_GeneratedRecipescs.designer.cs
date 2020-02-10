@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.CBMyKitchen = new System.Windows.Forms.CheckBox();
             this.uC_TVKitchens1 = new Food_Cost.Forms.UC_TVKitchens();
             this.BtnItem = new System.Windows.Forms.Button();
             this.TxtItemCode = new System.Windows.Forms.TextBox();
@@ -40,7 +41,6 @@
             this.dtp_to = new System.Windows.Forms.DateTimePicker();
             this.lblDateFrom = new System.Windows.Forms.Label();
             this.dtp_from = new System.Windows.Forms.DateTimePicker();
-            this.CBMyKitchen = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.GrpDateTimeRange.SuspendLayout();
             this.SuspendLayout();
@@ -61,6 +61,17 @@
             this.groupBox1.TabIndex = 555;
             this.groupBox1.TabStop = false;
             // 
+            // CBMyKitchen
+            // 
+            this.CBMyKitchen.AutoSize = true;
+            this.CBMyKitchen.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
+            this.CBMyKitchen.Location = new System.Drawing.Point(70, 197);
+            this.CBMyKitchen.Name = "CBMyKitchen";
+            this.CBMyKitchen.Size = new System.Drawing.Size(122, 20);
+            this.CBMyKitchen.TabIndex = 617;
+            this.CBMyKitchen.Text = "For My Kitchen";
+            this.CBMyKitchen.UseVisualStyleBackColor = true;
+            // 
             // uC_TVKitchens1
             // 
             this.uC_TVKitchens1.Location = new System.Drawing.Point(284, 19);
@@ -70,7 +81,7 @@
             // 
             // BtnItem
             // 
-            this.BtnItem.Location = new System.Drawing.Point(218, 143);
+            this.BtnItem.Location = new System.Drawing.Point(227, 143);
             this.BtnItem.Name = "BtnItem";
             this.BtnItem.Size = new System.Drawing.Size(41, 23);
             this.BtnItem.TabIndex = 600;
@@ -80,9 +91,9 @@
             // TxtItemCode
             // 
             this.TxtItemCode.Enabled = false;
-            this.TxtItemCode.Location = new System.Drawing.Point(45, 144);
+            this.TxtItemCode.Location = new System.Drawing.Point(70, 144);
             this.TxtItemCode.Name = "TxtItemCode";
-            this.TxtItemCode.Size = new System.Drawing.Size(44, 20);
+            this.TxtItemCode.Size = new System.Drawing.Size(38, 20);
             this.TxtItemCode.TabIndex = 599;
             // 
             // btnRport
@@ -103,19 +114,19 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(10, 147);
+            this.label1.Location = new System.Drawing.Point(10, 146);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(36, 16);
+            this.label1.Size = new System.Drawing.Size(58, 16);
             this.label1.TabIndex = 598;
-            this.label1.Text = "Item";
+            this.label1.Text = "Recipes";
             // 
             // TxtItemName
             // 
             this.TxtItemName.Enabled = false;
             this.TxtItemName.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TxtItemName.Location = new System.Drawing.Point(95, 143);
+            this.TxtItemName.Location = new System.Drawing.Point(114, 143);
             this.TxtItemName.Name = "TxtItemName";
-            this.TxtItemName.Size = new System.Drawing.Size(117, 22);
+            this.TxtItemName.Size = new System.Drawing.Size(104, 22);
             this.TxtItemName.TabIndex = 597;
             // 
             // GrpDateTimeRange
@@ -172,17 +183,6 @@
             this.dtp_from.Name = "dtp_from";
             this.dtp_from.Size = new System.Drawing.Size(166, 22);
             this.dtp_from.TabIndex = 50;
-            // 
-            // CBMyKitchen
-            // 
-            this.CBMyKitchen.AutoSize = true;
-            this.CBMyKitchen.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
-            this.CBMyKitchen.Location = new System.Drawing.Point(70, 197);
-            this.CBMyKitchen.Name = "CBMyKitchen";
-            this.CBMyKitchen.Size = new System.Drawing.Size(122, 20);
-            this.CBMyKitchen.TabIndex = 617;
-            this.CBMyKitchen.Text = "For My Kitchen";
-            this.CBMyKitchen.UseVisualStyleBackColor = true;
             // 
             // Rpt_GeneratedRecipescs
             // 

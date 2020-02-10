@@ -84,6 +84,7 @@ namespace Food_Cost.Forms
         private void BtnVendors_Click(object sender, EventArgs e)
         {
             Rpt_Vendors Frm = new Rpt_Vendors();
+
             Frm.Show();
         }
 
@@ -95,7 +96,7 @@ namespace Food_Cost.Forms
 
         private void BtnGenRecipes_Click(object sender, EventArgs e)
         {
-            Rpt_MonthClosing Frm = new Rpt_MonthClosing();
+            Rpt_GeneratedRecipescs Frm = new Rpt_GeneratedRecipescs();
             Frm.Show();
         }
     }

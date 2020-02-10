@@ -21,5 +21,6 @@
             <Button HorizontalAlignment="Right" Margin="0,6,15,8" Content="Close" Width="67" Height="30" Name="CloseBtn" Click="Close_Click"/>
 
         </Grid>
+        <ProgressBar Height="13" Margin="10,0" Name = "ProgressB" Minimum="0" Maximum="100" Value="{Binding WorkerState}"/>
     </StackPanel>
 </Window>

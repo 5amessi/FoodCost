@@ -22,9 +22,11 @@ namespace Food_Cost
     /// </summary>
     public partial class Close_Month : Window
     {
+        public static int TheIncrementValue = 0;
         string where, Month, Year, PMonth, PYear;
         Dictionary<string, List<string>> FilterDic = new Dictionary<string, List<string>>();
         DataTable DTCurrentMonth, DTPreviousMonth;
+
 
         private void Open_Click(object sender, RoutedEventArgs e)
         {
@@ -37,10 +39,15 @@ namespace Food_Cost
         {
             try
             {
+                ProgressB.Maximum = 10;
                 Recalculate.ReCalculate_Cost_Qty(DTCurrentMonth.Rows[0], DTPreviousMonth);
+                ProgressB.Value = 50;
+                ProgressB.UpdateLayout();
                 Recalculate.CloseMonth(DTCurrentMonth.Rows[0]);
+                ProgressB.Value = 90;
                 where = "Month = '" + Month + "' and Year = '" + Year + "'";
                 Classes.UpdateCell("isClosed", "1", where, "Setup_Fiscal_Period");
+                ProgressB.Value = 100;
                 LoadMonths();
             }
             catch (Exception ex)
@@ -48,11 +55,12 @@ namespace Food_Cost
                 MessageBox.Show(ex.ToString());
             }
         }
-
+       
         public Close_Month()
         {
             InitializeComponent();
             LoadMonths();
+            ProgressB.Value = 0;
         }
 
         private void LoadMonths()
@@ -73,9 +81,9 @@ namespace Food_Cost
                     {
                         PMonth = DTPreviousMonth.Rows[0]["Month"].ToString();
                         PYear = DTPreviousMonth.Rows[0]["Year"].ToString();
+
                         PrevMonth.Content = "Month" + PMonth + "," + PYear;
                         OpenBtn.Visibility = Visibility.Visible;
-
                     }
                     else
                     {
