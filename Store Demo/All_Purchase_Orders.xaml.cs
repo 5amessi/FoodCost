@@ -243,6 +243,7 @@ namespace Food_Cost
                     Dat.Columns.Add("ItemID");
                     Dat.Columns.Add("Name");
                     Dat.Columns.Add("Name2");
+                    Dat.Columns.Add("Expire Date", typeof(bool));
                     Dat.Columns.Add("Qty");
                     Dat.Columns.Add(recieveOrder.FromKitchenKitchentxt.Text + " Qty");
                     Dat.Columns.Add(recieveOrder.FromKitchenKitchentxt.Text + " Unit Cost");
@@ -299,12 +300,12 @@ namespace Food_Cost
                             try
                             {
                                 con2.Open();
-                                string S = "SELECT Name,Name2 FROM Setup_Items where Code='" + reader["Item_ID"].ToString() + "'";
+                                string S = "SELECT Name,Name2,ExpDate FROM Setup_Items where Code='" + reader["Item_ID"].ToString() + "'";
                                 SqlCommand cmd2 = new SqlCommand(S, con2);
                                 SqlDataReader reader2 = cmd2.ExecuteReader();
                                 while (reader2.Read())
                                 {
-                                    Dat.Rows.Add(IfItemRecieved, reader["Item_ID"], reader2["Name"], reader2["Name2"], reader["Qty"], from_rest_Qty, from_rest_Cost, NetCostFrom, to_rest_Qty, to_rest_Cost, NetCostTo);
+                                    Dat.Rows.Add(IfItemRecieved, reader["Item_ID"], reader2["Name"], reader2["Name2"], reader2["ExpDate"], reader["Qty"], from_rest_Qty, from_rest_Cost, NetCostFrom, to_rest_Qty, to_rest_Cost, NetCostTo);
                                 }
 
                                 reader2.Close();
@@ -400,6 +401,7 @@ namespace Food_Cost
                     Dat.Columns.Add("ItemID");
                     Dat.Columns.Add("Name");
                     Dat.Columns.Add("Name2");
+                    Dat.Columns.Add("Expire Date",typeof(bool));
                     Dat.Columns.Add("Qty");
                     Dat.Columns.Add(recieveOrder.FromKitchenIntertxt.Text + " Qty");
                     Dat.Columns.Add(recieveOrder.FromKitchenIntertxt.Text + " Unit Cost");
@@ -457,12 +459,12 @@ namespace Food_Cost
                             try
                             {
                                 con2.Open();
-                                string S = "SELECT Name,Name2 FROM Setup_Items where Code='" + reader["Item_ID"].ToString() + "'";
+                                string S = "SELECT Name,Name2,ExpDate FROM Setup_Items where Code='" + reader["Item_ID"].ToString() + "'";
                                 SqlCommand cmd2 = new SqlCommand(S, con2);
                                 SqlDataReader reader2 = cmd2.ExecuteReader();
                                 while (reader2.Read())
                                 {
-                                    Dat.Rows.Add(IfItemRecieved, reader["Item_ID"], reader2["Name"], reader2["Name2"], reader["Qty"], from_rest_Qty, from_rest_Cost, NetCostFrom, to_rest_Qty, to_rest_Cost, NetCostTo);
+                                    Dat.Rows.Add(IfItemRecieved, reader["Item_ID"], reader2["Name"], reader2["Name2"], reader2["ExpDate"], reader["Qty"], from_rest_Qty, from_rest_Cost, NetCostFrom, to_rest_Qty, to_rest_Cost, NetCostTo);
                                 }
 
                                 reader2.Close();

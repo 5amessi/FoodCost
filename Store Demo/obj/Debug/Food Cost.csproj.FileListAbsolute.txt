@@ -3900,3 +3900,5 @@ E:\Michael\Git_FoodCost\Store Demo\obj\Debug\Food_Cost.application
 E:\Michael\Git_FoodCost\Store Demo\obj\Debug\Food Cost.csproj.CopyComplete
 E:\Michael\Git_FoodCost\Store Demo\obj\Debug\Food_Cost.exe
 E:\Michael\Git_FoodCost\Store Demo\obj\Debug\Food_Cost.pdb
+E:\Michael\Git_FoodCost\Store Demo\obj\Debug\ExpireDate.g.cs
+E:\Michael\Git_FoodCost\Store Demo\obj\Debug\ExpireDate.baml

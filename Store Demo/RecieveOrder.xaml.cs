@@ -7,7 +7,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-
 namespace Food_Cost
 {
     /// <summary>
@@ -19,10 +18,12 @@ namespace Food_Cost
         public static string TransferKitchenID = "";
         string RestaurantId, KitchenId = "";
         int IndexOfRecord = 0;
+        string FiledSelection = ""; string Values = "";
+
         public RecieveOrder()
         {
             InitializeComponent();
-
+            ExpireDate.ItemExpireDate.Clear();
             LoadToDGV();
             IncrementPoNo();
             LoadTheResturant();
@@ -54,6 +55,8 @@ namespace Food_Cost
             else if (TabControl.SelectedIndex == 3)
             {
                 KitchenCbx.IsEnabled = false;
+                Delivery_dtWithout.IsEnabled = false;
+                Delivery_timeWithout.IsEnabled = false;
                 ResturantCbx.IsEnabled = false;
                 Manual_Recieve_NoWithout.IsEnabled = false;
                 commentWithouttxt.IsEnabled = false;
@@ -98,6 +101,8 @@ namespace Food_Cost
             }
             else if (TabControl.SelectedIndex == 2)
             {
+                Delivery_dtWithout.IsEnabled = true;
+                Delivery_timeWithout.IsEnabled = true;
                 ManualROInter.IsEnabled = true;
                 CommentRoInter.IsEnabled = true;
                 recieveTransferInter.IsEnabled = true;
@@ -106,6 +111,8 @@ namespace Food_Cost
             {
                 _NewBtn.IsEnabled = false;
                 Manual_Recieve_NoWithout.IsEnabled = true;
+                Delivery_dtWithout.IsEnabled = true;
+                Delivery_timeWithout.IsEnabled = true;
                 commentWithouttxt.IsEnabled = true;
                 AddItemBtn.IsEnabled = true;
                 DeleteItemBtn.IsEnabled = true;
@@ -170,6 +177,8 @@ namespace Food_Cost
                 Manual_Recieve_NoWithout.Text = "";
                 ResturantCbx.Text = "";
                 KitchenCbx.Text = "";
+                Delivery_dtWithout.Text = "";
+                Delivery_timeWithout.Text = "";
                 commentWithouttxt.Text = "";
                 Total_Price_Without_Tax.Text = "";
                 Total_Price_With_Tax.Text = "";
@@ -242,6 +251,16 @@ namespace Food_Cost
                     MessageBox.Show("Manual R.O# Can't Be Empty");
                     return false;
                 }
+                else if (Delivery_dtWithout.Text.Equals(""))
+                {
+                    MessageBox.Show("Date Can't Be Empty");
+                    return false;
+                }
+                else if (Delivery_timeWithout.Text==null)
+                {
+                    MessageBox.Show("Time Can't Be Empty");
+                    return false;
+                }
                 else if (ResturantCbx.Text.Equals(""))
                 {
                     MessageBox.Show("Resturant R.O# Can't Be Empty");
@@ -252,6 +271,7 @@ namespace Food_Cost
                     MessageBox.Show("Kitchen R.O# Can't Be Empty");
                     return false;
                 }
+
                 else if (ItemsWithoutDGV.Items.Count == 0)
                 {
                     MessageBox.Show("Items can not be empty");
@@ -287,11 +307,6 @@ namespace Food_Cost
             {
                 con.Open();
 
-                //if (IsReceived == "Receivied")
-                //{
-                //    codetxt.Text = Ro_No;
-                //    return;
-                //}
 
                 SqlCommand cmd = new SqlCommand(string.Format("select Top(1) RO_Serial from Ro where RO_Serial like '{0}%' order by  RO_Serial desc", Classes.IDs), con);
                 codetxt.Text = "0" + (Int64.Parse(cmd.ExecuteScalar().ToString()) + 1).ToString();
@@ -334,6 +349,7 @@ namespace Food_Cost
         }    //Done
         private void RecieveOrderDGV_Click(object sender, MouseButtonEventArgs e)
         {
+            ExpireDate.ItemExpireDate.Clear();
             IncrementPoNo();
             Recieve.IsEnabled = true;
             bool IfItemRecieved = true;
@@ -353,6 +369,7 @@ namespace Food_Cost
                     Dat.Columns.Add("Manual Code");
                     Dat.Columns.Add("Name");
                     Dat.Columns.Add("Name2");
+                    Dat.Columns.Add("Expire Date", typeof(bool));
                     Dat.Columns.Add("Is_TaxableItem", typeof(bool));
                     Dat.Columns.Add("Qty");
                     Dat.Columns.Add("Price Without Tax");
@@ -399,12 +416,12 @@ namespace Food_Cost
                             try
                             {
                                 con2.Open();
-                                string S = "SELECT Name,Name2,[Manual Code] FROM Setup_Items where Code='" + reader["Item_ID"].ToString() + "'";
+                                string S = "SELECT Name,Name2,[Manual Code],ExpDate FROM Setup_Items where Code='" + reader["Item_ID"].ToString() + "'";
                                 SqlCommand cmd2 = new SqlCommand(S, con2);
                                 SqlDataReader reader2 = cmd2.ExecuteReader();
                                 while (reader2.Read())
                                 {
-                                    Dat.Rows.Add(IfItemRecieved, reader["Item_ID"], reader2["Manual Code"], reader2["Name"], reader2["Name2"], reader["Tax_Included"], reader["Qty"], reader["Price_Without_Tax"], reader["Tax"], reader["Price_With_Tax"], reader["Net_Price"]);
+                                    Dat.Rows.Add(IfItemRecieved, reader["Item_ID"], reader2["Manual Code"], reader2["Name"], reader2["Name2"], reader2["ExpDate"], reader["Tax_Included"], reader["Qty"], reader["Price_Without_Tax"], reader["Tax"], reader["Price_With_Tax"], reader["Net_Price"]);
                                 }
                                 reader2.Close();
                             }
@@ -458,7 +475,7 @@ namespace Food_Cost
                 float Price = float.Parse((e.Row.Item as DataRowView).Row["Price_With_Tax"].ToString());
                 if (e.Column.Header.ToString() == "Qty")
                 {
-                    (e.Row.Item as DataRowView).Row["Net_Price"] = (double.Parse((e.EditingElement as TextBox).Text) * Convert.ToDouble(((DataRowView)ItemsDGV.SelectedItem).Row.ItemArray[9])).ToString();
+                    (e.Row.Item as DataRowView).Row["Net_Price"] = (double.Parse((e.EditingElement as TextBox).Text) * Convert.ToDouble(((DataRowView)ItemsDGV.SelectedItem).Row.ItemArray[10])).ToString();
                 }
                 Dat.Columns["Net_Price"].ReadOnly = true;
             }
@@ -467,7 +484,6 @@ namespace Food_Cost
         private void RecievedBtn_Click(object sender, RoutedEventArgs e)
         {
             string QTyonHand = ""; string CostOfItemsOnHand = ""; string QtyOnHandMultipleCost = "";
-            string FiledSelection = ""; string Values = "";
 
             if (!DoSomeChecks())
                 return;
@@ -509,10 +525,24 @@ namespace Food_Cost
                     FiledSelection = "Item_ID,RO_No,Qty,Unit,Price_Without_Tax,Tax,Price_With_Tax,Net_Price,QtyOnHand_To,Cost_To";
                     Values = "'" + dt.Rows[i]["Code"].ToString() + "','" + codetxt.Text + "'," + dt.Rows[i]["Qty"] + ",'" + "" + "'," + dt.Rows[i]["Price Without Tax"] + "," + dt.Rows[i]["Tax"] + "," + dt.Rows[i]["Price_With_Tax"] + "," + dt.Rows[i]["Net_Price"] + ",'" + QTyonHand + "','" + CostOfItemsOnHand + "'";
                     Classes.InsertRow("RO_Items", FiledSelection, Values);
-                    //s = "insert into RO_Items (Item_ID,RO_No,Qty,Unit,Price_Without_Tax,Tax,Price_With_Tax,Net_Price,QtyOnHand_To,Cost_To) values ('" + dt.Rows[i]["Code"].ToString() + "','" + codetxt.Text + "'," + dt.Rows[i]["Qty"] + ",'" + "" + "'," + dt.Rows[i]["Price Without Tax"] + "," + dt.Rows[i]["Tax"] + "," + dt.Rows[i]["Price_With_Tax"] + "," + dt.Rows[i]["Net_Price"] + ",'" + QTyonHand + "','" + CostOfItemsOnHand + "')";
-                    //_CMD = new SqlCommand(s, con);
-                    ////reader.Close();
-                    //_CMD.ExecuteNonQuery();
+
+                    try
+                    {
+                        foreach (Tuple<string, string> tuple in ExpireDate.ItemExpireDate[dt.Rows[i]["Code"].ToString()])
+                        {
+                            string q = string.Format("update ItemsExpireDate set Qty=Qty+'{0}' where RestaurantID='{1}' and KitchenID='{2}' and ItemID='{3}' and ExpireDate='{4}'", tuple.Item1, "1", "1", dt.Rows[i]["Code"].ToString(), tuple.Item2);
+                            SqlCommand TheCmd = new SqlCommand(q, con);
+                            int W = TheCmd.ExecuteNonQuery();
+
+                            if (W == 0)
+                            {
+                                FiledSelection = "RestaurantID,KitchenID,ItemID,QTy,ExpireDate";
+                                Values = string.Format("'{0}', '{1}', '{2}', '{3}', '{4}'", "1", "1", dt.Rows[i]["Code"], tuple.Item1, tuple.Item2);
+                                Classes.InsertRow("ItemsExpireDate", FiledSelection, Values);
+                            }
+                        }
+                    }
+                    catch (Exception ex) { MessageBox.Show(ex.ToString()); }
 
                     s = string.Format("Update Items set Qty = Qty + {1},Last_Cost = Current_Cost,Current_Cost = ((Current_Cost * Qty)+({1} * {3}))/(Qty+{1}),Units = '{4}',Net_Cost=((((Current_Cost * Qty)+({1} * {3}))/(Qty+{1})) * (Qty+{5})) where ItemID = '{0}' and RestaurantID ='{2}' and KitchenID = 1", dt.Rows[i]["Code"], dt.Rows[i]["QTy"], "1", dt.Rows[i]["Price_With_Tax"], "", dt.Rows[i]["Qty"]);
                     SqlCommand _cmd = new SqlCommand(s, con);
@@ -523,17 +553,13 @@ namespace Food_Cost
                         FiledSelection = "RestaurantID,KitchenID,ItemID,Qty,Units,Last_Cost,Current_Cost,Net_Cost";
                         Values = string.Format("'{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}'", "1", "1", dt.Rows[i]["Code"], dt.Rows[i]["Qty"], "", dt.Rows[i]["Price_With_Tax"], dt.Rows[i]["Price_With_Tax"], dt.Rows[i]["Net_Price"]);
                         Classes.InsertRow("Items", FiledSelection, Values);
-                        //s = string.Format("insert into Items(RestaurantID,KitchenID,ItemID,Qty,Units,Last_Cost,Current_Cost,Net_Cost) Values ('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}')", "1", "1", dt.Rows[i]["Code"], dt.Rows[i]["Qty"], "", dt.Rows[i]["Price_With_Tax"], dt.Rows[i]["Price_With_Tax"], dt.Rows[i]["Net_Price"]);
-                        //_cmd = new SqlCommand(s, con);
-                        //_cmd.ExecuteNonQuery();
                     }
+
                 }
 
                 FiledSelection = "RO_Serial,RO_No,Transactions_No,Status,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment,UserID,Create_Date";
                 Values = string.Format("'{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}',GETDATE()", codetxt.Text, Manual_Recieve_No.Text, (RecieveOrderDGV.SelectedItem as DataRowView).Row.ItemArray[0].ToString(), "Recieved", Delivery_dt.Text + " " + Delivery_time.Text, "1", "1", Classes.WS, "Recieve_Purchase", commenttxt.Text, MainWindow.UserID);
                 Classes.InsertRow("RO", FiledSelection, Values);
-                //cmd = new SqlCommand(string.Format("Insert into RO(RO_Serial,RO_No,Transactions_No,Status,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment,UserID)Values ('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}')", codetxt.Text, Manual_Recieve_No.Text, (RecieveOrderDGV.SelectedItem as DataRowView).Row.ItemArray[0].ToString(), "Recieved", Delivery_dt.Text, "1", "1", Classes.WS, "Recieve_Purchase", commenttxt.Text,MainWindow.UserID), con);
-                //cmd.ExecuteNonQuery();
 
             }
             catch (Exception ex) { MessageBox.Show(ex.ToString()); }
@@ -541,6 +567,7 @@ namespace Food_Cost
             finally
             {
                 MessageBox.Show("Order Recived Succesfully");
+                ExpireDate.ItemExpireDate.Clear();
                 con.Close();
             }
             EnableUI();
@@ -573,6 +600,30 @@ namespace Food_Cost
                     string s = "insert RO_Items (Item_ID,RO_No,Qty,Unit,Price_Without_Tax,Tax,Price_With_Tax,Net_Price,QtyOnHand_To,Cost_To,QtyOnHand_From,Cost_From) values ('" + dt.Rows[i]["ItemID"].ToString() + "','" + RoTransferKitchen.Text + "'," + dt.Rows[i]["Qty"] + ",'" + " " + "'," + dt.Rows[i][FromKitchenKitchentxt.Text + " Unit Cost"] + ",0 ," + dt.Rows[i][FromKitchenKitchentxt.Text + " Unit Cost"] + "," + netCost + "," + dt.Rows[i][ToKitchenKitchentxt.Text + " Unit Cost"] + "," + dt.Rows[i][ToKitchenKitchentxt.Text + " Qty"] + "," + dt.Rows[i][FromKitchenKitchentxt.Text + " Qty"] + "," + dt.Rows[i][FromKitchenKitchentxt.Text + " Unit Cost"] + ")";
                     SqlCommand _CMD = new SqlCommand(s, con);
                     _CMD.ExecuteNonQuery();
+
+                    try
+                    {
+                        foreach (Tuple<string, string> tuple in ExpireDate.ItemExpireDate[dt.Rows[i]["ItemID"].ToString()])
+                        {
+                            s = string.Format("update ItemsExpireDate set Qty=Qty-{0} where RestaurantID=(select Code From Store_Setup where Name='{1}') and KitchenID=(select Code From Kitchens_Setup where Name='{2}' and RestaurantID=(select Code From Store_Setup where Name='{1}'))  and ItemID='{3}' and ExpireDate='{4}'", tuple.Item1, FromResturanKitchenttxt.Text, FromKitchenKitchentxt.Text, dt.Rows[i]["ItemID"], tuple.Item2);
+                            SqlCommand TheCMD = new SqlCommand(s, con);
+                            TheCMD.ExecuteNonQuery();
+
+                            s = string.Format("update ItemsExpireDate set Qty=Qty+{0} where RestaurantID=(select Code From Store_Setup where Name='{1}') and KitchenID=(select Code From Kitchens_Setup where Name='{2}' and RestaurantID=(select Code From Store_Setup where Name='{1}')) and ItemID='{3}' and ExpireDate='{4}'", tuple.Item1, ToResturantKitchentxt.Text, ToKitchenKitchentxt.Text, dt.Rows[i]["ItemID"], tuple.Item2);
+                            TheCMD = new SqlCommand(s, con);
+                            int IfNot = TheCMD.ExecuteNonQuery();
+
+                            if (IfNot == 0)
+                            {
+                                s = string.Format("insert ItemsExpireDate values((select Code From Store_Setup where Name='{0}'),(select Code From Kitchens_Setup where Name='{1}' and RestaurantID=(select Code From Store_Setup where Name='{0}')),'{2}','{3}','{4}')", ToResturantKitchentxt.Text, ToKitchenKitchentxt.Text, dt.Rows[i]["ItemID"], tuple.Item1, tuple.Item2);
+                                TheCMD = new SqlCommand(s, con);
+                                TheCMD.ExecuteNonQuery();
+                            }
+
+                        }
+                    }
+                    catch { }
+
 
 
                     s = string.Format("Update Items set Qty= {1},Net_Cost={4} where ItemID = '{0}' and RestaurantID =(select Code From Store_Setup where Name='{2}') and KitchenID=(Select Code from Kitchens_Setup Where Name='{3}')", dt.Rows[i]["ItemID"], dt.Rows[i][FromKitchenKitchentxt.Text + " Qty"], FromResturanKitchenttxt.Text, FromKitchenKitchentxt.Text, dt.Rows[i][FromKitchenKitchentxt.Text + " total Cost"]);
@@ -611,7 +662,6 @@ namespace Food_Cost
             All_Purchase_Orders all_Purchase_Orders = new All_Purchase_Orders(this);
             all_Purchase_Orders.ShowDialog();
         }
-
         private void Recieve_Restaurant_Transfer_Change(object sender, DataGridCellEditEndingEventArgs e)
         {
             if (e.Column.Header == "Qty")
@@ -827,6 +877,30 @@ namespace Food_Cost
                     _CMD.ExecuteNonQuery();
 
 
+                    try
+                    {
+                        foreach (Tuple<string, string> tuple in ExpireDate.ItemExpireDate[dt.Rows[i]["ItemID"].ToString()])
+                        {
+                            s = string.Format("update ItemsExpireDate set Qty=Qty-{0} where RestaurantID=(select Code From Store_Setup where Name='{1}') and KitchenID=(select Code From Kitchens_Setup where Name='{2}' and RestaurantID=(select Code From Store_Setup where Name='{1}'))  and ItemID='{3}' and ExpireDate='{4}'", tuple.Item1, FromResturantIntertxt.Text, FromKitchenIntertxt.Text, dt.Rows[i]["ItemID"],tuple.Item2);
+                            SqlCommand TheCMD = new SqlCommand(s, con);
+                            TheCMD.ExecuteNonQuery();
+
+                            s = string.Format("update ItemsExpireDate set Qty=Qty+{0} where RestaurantID=(select Code From Store_Setup where Name='{1}') and KitchenID=(select Code From Kitchens_Setup where Name='{2}' and RestaurantID=(select Code From Store_Setup where Name='{1}')) and ItemID='{3}' and ExpireDate='{4}'", tuple.Item1, FromResturantIntertxt.Text, ToKitchenIntertxt.Text, dt.Rows[i]["ItemID"], tuple.Item2);
+                            TheCMD = new SqlCommand(s, con);
+                            int IfNot = TheCMD.ExecuteNonQuery();
+
+                            if (IfNot == 0)
+                            {
+                                s = string.Format("insert ItemsExpireDate values((select Code From Store_Setup where Name='{0}'),(select Code From Kitchens_Setup where Name='{1}' and RestaurantID=(select Code From Store_Setup where Name='{0}')),'{2}','{3}','{4}')", FromResturantIntertxt.Text, ToKitchenIntertxt.Text, dt.Rows[i]["ItemID"], tuple.Item1,tuple.Item2);
+                                TheCMD = new SqlCommand(s, con);
+                                TheCMD.ExecuteNonQuery();
+                            }
+
+                        }
+                    }
+                    catch { }
+
+
                     s = string.Format("Update Items set Qty= {1},Net_Cost={4} where ItemID = '{0}' and RestaurantID =(select Code From Store_Setup where Name='{2}') and KitchenID=(Select Code from Kitchens_Setup Where Name='{3}')", dt.Rows[i]["ItemID"], dt.Rows[i][FromKitchenIntertxt.Text + " Qty"], FromResturantIntertxt.Text, FromKitchenIntertxt.Text, dt.Rows[i][FromKitchenIntertxt.Text + " total Cost"]);
                     SqlCommand _cmd = new SqlCommand(s, con);
                     _cmd.ExecuteNonQuery();
@@ -861,6 +935,7 @@ namespace Food_Cost
         }
         private void SearchVoucharBn(object sender, RoutedEventArgs e)
         {
+            ExpireDate.ItemExpireDate.Clear();
             IncrementPoNo();
             All_Purchase_Orders items = new All_Purchase_Orders(this);
             items.ShowDialog();
@@ -871,13 +946,18 @@ namespace Food_Cost
         //Transfer Without Purshace 
         private void ItemDgv_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
+            DataTable dt = ItemsWithoutDGV.DataContext as DataTable;
+            for (int i = 0; i < dt.Columns.Count; i++)
+            {
+                dt.Columns[i].ReadOnly = false;
+            }
             try
             {
                 SqlConnection con = new SqlConnection(Classes.DataConnString);
 
                 if (e.Column.Header.ToString() == "Price")
                 {
-                    CalculatePrices(e);
+                    CalculatePrices(e, dt);
                 }
                 else if (e.Column.Header.ToString() == "Tax Included")
                 {
@@ -891,7 +971,7 @@ namespace Food_Cost
                                 string tax = cmd.ExecuteScalar().ToString();
                                 if (tax == "")
                                     tax = "0";
-                                (e.Row.Item as DataRowView).Row["Tax"] = tax + "%";
+                                dt.Rows[e.Row.GetIndex()]["Tax"] = tax + "%";
                             }
                         }
                         catch { }
@@ -901,18 +981,86 @@ namespace Food_Cost
                     {
                         (e.Row.Item as DataRowView).Row["Tax"] = "0%";
                     }
-                    CalculatePrices(e);
+                    CalculatePrices(e, dt);
                 }
                 else if (e.Column.Header.ToString() == "Qty")
                 {
-                    //CalculateQty3(e);
-                    CalculatePrices(e);
+                    CalculatePrices(e, dt);
                 }
-                else if (e.Column.Header.ToString() == "Qty_Unit3")
+            }
+            catch { }
+            for (int i = 0; i < dt.Columns.Count; i++)
+            {
+                dt.Columns[i].ReadOnly = true;
+            }
+            dt.Columns["Price"].ReadOnly = false;
+            dt.Columns["Qty"].ReadOnly = false;
+            dt.Columns["Tax Included"].ReadOnly = false;
+            ItemsWithoutDGV.DataContext = dt;
+        }
+        private void CalculatePrices(DataGridCellEditEndingEventArgs e, DataTable dt)
+        {
+            float Price, Qty, TaxPrec;
+            try
+            {
+                if (e.Column.Header.ToString() == "Price")
                 {
-                    //CalculateQty(e);
-                    CalculatePrices(e);
+                    Price = float.Parse((e.EditingElement as TextBox).Text);
+                    dt.Rows[e.Row.GetIndex()]["Price"] = Price;
+                }
+                else
+                    try
+                    {
+                        Price = float.Parse((dt.Rows[e.Row.GetIndex()]["Price"]).ToString());
+                    }
+                    catch { Price = 0; }
 
+
+                if (e.Column.Header.ToString() == "Qty")
+                {
+                    Qty = float.Parse((e.EditingElement as TextBox).Text);
+                    dt.Rows[e.Row.GetIndex()]["Qty"] = Qty;
+                }
+                else
+                    try
+                    {
+                        Qty = float.Parse((dt.Rows[e.Row.GetIndex()]["Qty"]).ToString());
+                    
+                    }
+                    catch { Qty = 0; }
+
+                TaxPrec = float.Parse(dt.Rows[e.Row.GetIndex()]["Tax"].ToString().Substring(0, (e.Row.Item as DataRowView).Row["Tax"].ToString().Length - 1)) / 100;
+
+                if ((e.Row.Item as DataRowView).Row["Tax Included"].ToString() == "True")
+                {
+                    dt.Rows[e.Row.GetIndex()]["Total Price With Tax"] = (Price * Qty).ToString();
+                    dt.Rows[e.Row.GetIndex()]["Total Price Without Tax"] = ((Price - Price * TaxPrec) * Qty).ToString();
+
+                    if ((e.Row.Item as DataRowView).Row["Qty"].ToString() != "0")
+                    {
+                        dt.Rows[e.Row.GetIndex()]["Unit Price With Tax"] = Price.ToString();
+                        dt.Rows[e.Row.GetIndex()]["Unit Price Without Tax"] = (Price - Price * TaxPrec).ToString();
+                    }
+                }
+                else
+                {
+                    dt.Rows[e.Row.GetIndex()]["Total Price With Tax"] = (Price * Qty).ToString();
+                    dt.Rows[e.Row.GetIndex()]["Total Price Without Tax"] = (Price * Qty).ToString();
+
+                    dt.Rows[e.Row.GetIndex()]["Unit Price With Tax"] = Price.ToString();
+                    dt.Rows[e.Row.GetIndex()]["Unit Price Without Tax"] = Price.ToString();
+
+                }
+
+                float totalPriceWithoutTax = 0;
+                float totalPriceWithTax = 0;
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    totalPriceWithoutTax += float.Parse(dt.Rows[i]["Total Price Without Tax"].ToString());
+                    Total_Price_Without_Tax.Text = totalPriceWithoutTax.ToString();
+
+                    totalPriceWithTax += float.Parse(dt.Rows[i]["Total Price With Tax"].ToString());
+                    Total_Price_With_Tax.Text = totalPriceWithTax.ToString();
                 }
             }
             catch { }
@@ -962,11 +1110,27 @@ namespace Food_Cost
                     catch { }
                     _reader.Close();
 
-                    s = "insert into RO_Items (Item_ID,RO_No,Qty,Unit,Price_Without_Tax,Tax,Price_With_Tax,Net_Price,QtyOnHand_To,Cost_To) values ('" + dt.Rows[i]["Code"].ToString() + "','" + codetxt.Text + "'," + dt.Rows[i]["Qty"] + ",'" + " " + "'," + dt.Rows[i]["Unit Price Without Tax"] + "," + dt.Rows[i]["Tax"].ToString().Substring(0, dt.Rows[i]["Tax"].ToString().Length - 1) + "," + dt.Rows[i]["Unit Price With Tax"] + "," + dt.Rows[i]["Total Price With Tax"] + ",'" + QTyonHand + "','" + CostOfItemsOnHand + "')";
-                    _CMD = new SqlCommand(s, con);
-                    //reader.Close();
-                    _CMD.ExecuteNonQuery();
+                    FiledSelection = "Item_ID,RO_No,Qty,Unit,Price_Without_Tax,Tax,Price_With_Tax,Net_Price,QtyOnHand_To,Cost_To";
+                    Values = "'" + dt.Rows[i]["Code"].ToString() + "','" + codeWithouttxt.Text + "'," + dt.Rows[i]["Qty"] + ",'" + "" + "'," + dt.Rows[i]["Unit Price Without Tax"] + "," + dt.Rows[i]["Tax"].ToString().Substring(0, dt.Rows[i]["Tax"].ToString().Length - 1) + "," + dt.Rows[i]["Unit Price With Tax"] + "," + dt.Rows[i]["Total Price With Tax"] + ",'" + QTyonHand + "','" + CostOfItemsOnHand + "'";
+                    Classes.InsertRow("RO_Items", FiledSelection, Values);
 
+                    try
+                    {
+                        foreach (Tuple<string, string> tuple in ExpireDate.ItemExpireDate[dt.Rows[i]["Code"].ToString()])
+                        {
+                            string q = string.Format("update ItemsExpireDate set Qty=Qty+'{0}' where RestaurantID='{1}' and KitchenID='{2}' and ItemID='{3}' and ExpireDate='{4}'", dt.Rows[i]["Qty"], RestaurantId, KitchenId, dt.Rows[i]["Code"].ToString(), tuple.Item2);
+                            SqlCommand TheCmd = new SqlCommand(q, con);
+                            int W = TheCmd.ExecuteNonQuery();
+
+                            if (W == 0)
+                            {
+                                FiledSelection = "RestaurantID,KitchenID,ItemID,QTy,ExpireDate";
+                                Values = string.Format("'{0}', '{1}', '{2}', '{3}', '{4}'", RestaurantId, KitchenId, dt.Rows[i]["Code"], tuple.Item1, tuple.Item2);
+                                Classes.InsertRow("ItemsExpireDate", FiledSelection, Values);
+                            }
+                        }
+                    }
+                    catch { }
 
                     s = string.Format("Update Items set Qty = Qty + {1},Last_Cost = Current_Cost,Current_Cost = ((Current_Cost * Qty)+({1} * {3}))/(Qty+{1}),Units = '{4}',Net_Cost=(((Current_Cost * Qty)+({1} * {3}))/(Qty+{1})*({1}+Qty)) where ItemID = '{0}' and RestaurantID ='{2}' and KitchenID ='{5}'", dt.Rows[i]["Code"], dt.Rows[i]["Qty"], RestaurantId, dt.Rows[i]["Unit Price With Tax"], " ", KitchenId);
                     SqlCommand _cmd = new SqlCommand(s, con);
@@ -974,15 +1138,15 @@ namespace Food_Cost
 
                     if (n == 0)
                     {
-                        s = string.Format("insert into Items(RestaurantID,KitchenID,ItemID,Qty,Units,Last_Cost,Current_Cost,Net_Cost) Values ('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}')", RestaurantId, KitchenId, dt.Rows[i]["Code"], dt.Rows[i]["Qty"], " ", dt.Rows[i]["Unit Price With Tax"], dt.Rows[i]["Unit Price With Tax"], dt.Rows[i]["Total Price With Tax"]);
-                        _cmd = new SqlCommand(s, con);
-                        _cmd.ExecuteNonQuery();
+                        FiledSelection = "RestaurantID,KitchenID,ItemID,Qty,Units,Last_Cost,Current_Cost,Net_Cost";
+                        Values = string.Format("'{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}'", RestaurantId, KitchenId, dt.Rows[i]["Code"], dt.Rows[i]["Qty"], " ", dt.Rows[i]["Unit Price With Tax"], dt.Rows[i]["Unit Price With Tax"], dt.Rows[i]["Total Price With Tax"]);
+                        Classes.InsertRow("Items", FiledSelection, Values);
                     }
                 }
 
-
-                cmd = new SqlCommand(string.Format("Insert into RO(RO_Serial,RO_No,Transactions_No,Status,Create_Date,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment,UserID)Values ('{0}','{1}','{2}','{3}',GETDATE(),'{4}','{5}','{6}','{7}','{8}','{9}','{10}')", codetxt.Text, Manual_Recieve_No.Text, PO.Text, "Recieved", Delivery_dt.Text, RestaurantId, KitchenId, Classes.WS, "Auto_Recieve", commenttxt.Text, MainWindow.UserID), con);
-                cmd.ExecuteNonQuery();
+                FiledSelection = "RO_Serial,RO_No,Transactions_No,Status,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment,UserID,Create_Date";
+                Values = string.Format("'{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}',GETDATE()", codeWithouttxt.Text, Manual_Recieve_NoWithout.Text,"0", "Recieved", Delivery_dtWithout.Text + " " + Delivery_timeWithout.Text, RestaurantId, KitchenId, Classes.WS, "Auto_Recieve", commenttxt.Text, MainWindow.UserID);
+                Classes.InsertRow("RO", FiledSelection, Values);
 
                 MainUiFormat();
                 MessageBox.Show("Order Recived Succesfully");
@@ -1038,7 +1202,6 @@ namespace Food_Cost
                 IndexOfRecord = grid.SelectedIndex;
             }
         }
-
         private void ResturantCbx_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString);
@@ -1070,7 +1233,7 @@ namespace Food_Cost
                 try
                 {
                     con.Open();
-                    string s = "select Name from Kitchens_Setup WHERE RestaurantID=" + RestaurantId ;
+                    string s = "select Name from Kitchens_Setup WHERE RestaurantID=" + RestaurantId + " AND Virtual='True'";
                     SqlCommand cmd = new SqlCommand(s, con);
                     reader = cmd.ExecuteReader();
                     while (reader.Read())
@@ -1090,9 +1253,9 @@ namespace Food_Cost
                 }
             }
         }
-
         private void KitchenCbx_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            ExpireDate.ItemExpireDate.Clear();
             SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString);
             try
             {
@@ -1108,6 +1271,29 @@ namespace Food_Cost
             finally
             {
                 con.Close();
+            }
+        }
+        private void ItemsWithoutDGV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender != null)
+            {
+                DataGrid grid = sender as DataGrid;
+                if (grid != null && grid.SelectedItems != null && grid.SelectedItems.Count == 1)
+                {
+                    if ((grid.SelectedItem as DataRowView).Row.ItemArray[4].ToString() == "True")
+                    {
+                        if ((grid.SelectedItem as DataRowView).Row.ItemArray[6].ToString() != "")
+                        {
+                            ExpireDate Expire_Date = new ExpireDate(((grid.SelectedItem as DataRowView).Row.ItemArray[0]).ToString(), ((grid.SelectedItem as DataRowView).Row.ItemArray[6]).ToString());
+                            Expire_Date.ShowDialog();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Please Enter The Qty First");
+                        }
+                    }
+
+                }
             }
         }
 
@@ -1171,7 +1357,7 @@ namespace Food_Cost
                 try
                 {
                     con.Open();
-                    string s = "select Name from Kitchens_Setup WHERE RestaurantID=" + RestaurantId;
+                    string s = "select Name from Kitchens_Setup WHERE RestaurantID=" + RestaurantId + " AND Virtual='True'";
                     SqlCommand cmd = new SqlCommand(s, con);
                     reader = cmd.ExecuteReader();
                     while (reader.Read())
@@ -1255,11 +1441,12 @@ namespace Food_Cost
             Reply.IsEnabled = true;
 
 
-            Dat.Columns.Add("Received", typeof(bool));
+            Dat.Columns.Add("Select", typeof(bool));
             Dat.Columns.Add("Code");
             Dat.Columns.Add("Manual Code");
             Dat.Columns.Add("Name");
             Dat.Columns.Add("Name2");
+            Dat.Columns.Add("Expire Date",typeof(bool));
             Dat.Columns.Add("Qty");
             Dat.Columns.Add(KitchenReqcbx.Text + " Qty");
             Dat.Columns.Add(KitchenReqcbx.Text + " Unit Cost");
@@ -1305,12 +1492,12 @@ namespace Food_Cost
                     try
                     {
                         con2.Open();
-                        string S = "SELECT [Manual Code],Name,Name2 FROM Setup_Items where Code='" + reader["Item_ID"].ToString() + "'";
+                        string S = "SELECT [Manual Code],Name,Name2,ExpDate FROM Setup_Items where Code='" + reader["Item_ID"].ToString() + "'";
                         SqlCommand cmd2 = new SqlCommand(S, con2);
                         SqlDataReader reader2 = cmd2.ExecuteReader();
                         while (reader2.Read())
                         {
-                            Dat.Rows.Add(false, reader["Item_ID"], reader2["Manual Code"], reader2["Name"], reader2["Name2"], reader["Qty"], from_rest_Qty, from_rest_Cost, NetCostFrom, to_rest_Qty, to_rest_Cost, NetCostTo);
+                            Dat.Rows.Add(false, reader["Item_ID"], reader2["Manual Code"], reader2["Name"], reader2["Name2"], reader2["ExpDate"], reader["Qty"], from_rest_Qty, from_rest_Cost, NetCostFrom, to_rest_Qty, to_rest_Cost, NetCostTo);
                         }
 
                         reader2.Close();
@@ -1335,7 +1522,7 @@ namespace Food_Cost
                 con.Close();
             }
 
-            Dat.Columns["Received"].ReadOnly = false;
+            Dat.Columns["Select"].ReadOnly = false;
             Dat.Columns["Qty"].ReadOnly = false;
             RequestsItemsDGV.DataContext = Dat;
             float Total_Price = 0;
@@ -1351,70 +1538,75 @@ namespace Food_Cost
 
         private void RequestsItemsDGV_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
-            float from_rest_Qty = 0; float from_rest_Cost = 0; float to_rest_Qty = 0; float to_rest_Cost = 0;
-            if (e.Column.Header.ToString() != "Received")
+            DataTable DT = RequestsItemsDGV.DataContext as DataTable;
+            if (e.Column.Header == "Qty")
             {
-                SqlConnection con = new SqlConnection(Classes.DataConnString);
-                SqlCommand cmd = new SqlCommand();
-                con.Open();
-                string ItemCode = (e.Row.Item as DataRowView).Row["Code"].ToString();
-                //string Qty = (e.EditingElement as TextBox).Text;
-
-                try
+                float from_rest_Qty = 0; float from_rest_Cost = 0; float to_rest_Qty = 0; float to_rest_Cost = 0;
+                if (e.Column.Header.ToString() != "Select")
                 {
-                    using (cmd = new SqlCommand(string.Format("select Qty,Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{1}') and KitchenID = (select Code from Kitchens_Setup where Name = '{2}') union all select Qty, Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{4}') and KitchenID = (select Code from Kitchens_Setup where Name = '{3}')", ItemCode, ResturantReqcbx.Text, KitchenReqcbx.Text, TOKitchenReq.Text, TOResturantReq.Text), con))
+                    SqlConnection con = new SqlConnection(Classes.DataConnString);
+                    SqlCommand cmd = new SqlCommand();
+                    con.Open();
+                    string ItemCode = (e.Row.Item as DataRowView).Row["Code"].ToString();
+                    //string Qty = (e.EditingElement as TextBox).Text;
+
+                    try
                     {
-                        try
+                        using (cmd = new SqlCommand(string.Format("select Qty,Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{1}') and KitchenID = (select Code from Kitchens_Setup where Name = '{2}') union all select Qty, Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{4}') and KitchenID = (select Code from Kitchens_Setup where Name = '{3}')", ItemCode, ResturantReqcbx.Text, KitchenReqcbx.Text, TOKitchenReq.Text, TOResturantReq.Text), con))
                         {
-                            SqlDataReader reader = cmd.ExecuteReader();
                             try
                             {
-                                reader.Read();
-                                from_rest_Qty = float.Parse(reader["Qty"].ToString());
-                                from_rest_Cost = float.Parse(reader["Current_Cost"].ToString());
+                                SqlDataReader reader = cmd.ExecuteReader();
+                                try
+                                {
+                                    reader.Read();
+                                    from_rest_Qty = float.Parse(reader["Qty"].ToString());
+                                    from_rest_Cost = float.Parse(reader["Current_Cost"].ToString());
 
-                                reader.Read();
-                                to_rest_Qty = float.Parse(reader["Qty"].ToString());
-                                to_rest_Cost = float.Parse(reader["Current_Cost"].ToString());
+                                    reader.Read();
+                                    to_rest_Qty = float.Parse(reader["Qty"].ToString());
+                                    to_rest_Cost = float.Parse(reader["Current_Cost"].ToString());
+                                }
+                                catch { }
+                                DT.Rows[e.Row.GetIndex()][KitchenReqcbx.Text + " Qty"] = (from_rest_Qty - float.Parse((e.EditingElement as TextBox).Text)).ToString();
+                                DT.Rows[e.Row.GetIndex()][KitchenReqcbx.Text + " Unit Cost"] = from_rest_Cost.ToString();
+                                DT.Rows[e.Row.GetIndex()][KitchenReqcbx.Text + " Total Cost"] = (from_rest_Cost * (from_rest_Qty - float.Parse((e.EditingElement as TextBox).Text))).ToString();
+
+                                DT.Rows[e.Row.GetIndex()][TOKitchenReq.Text + " Qty"] = (to_rest_Qty + float.Parse((e.EditingElement as TextBox).Text)).ToString();
+                                DT.Rows[e.Row.GetIndex()][TOKitchenReq.Text + " Unit Cost"] = (((to_rest_Cost * to_rest_Qty) + (float.Parse((e.EditingElement as TextBox).Text) * from_rest_Cost)) / (to_rest_Qty + (float.Parse((e.EditingElement as TextBox).Text)))).ToString();
+                                DT.Rows[e.Row.GetIndex()][TOKitchenReq.Text + " Total Cost"] = (((to_rest_Cost * to_rest_Qty) + (float.Parse((e.EditingElement as TextBox).Text) * from_rest_Cost)) / (to_rest_Qty + (float.Parse((e.EditingElement as TextBox).Text))) * (to_rest_Qty + float.Parse((e.EditingElement as TextBox).Text))).ToString();
                             }
-                            catch { }
-                            (e.Row.Item as DataRowView).Row[KitchenReqcbx.Text + " Qty"] = (from_rest_Qty - float.Parse((e.EditingElement as TextBox).Text)).ToString();
-                            (e.Row.Item as DataRowView).Row[KitchenReqcbx.Text + " Unit Cost"] = from_rest_Cost.ToString();
-                            (e.Row.Item as DataRowView).Row[KitchenReqcbx.Text + " Total Cost"] = (from_rest_Cost * (from_rest_Qty - float.Parse((e.EditingElement as TextBox).Text))).ToString();
-
-                            (e.Row.Item as DataRowView).Row[TOKitchenReq.Text + " Qty"] = (to_rest_Qty + float.Parse((e.EditingElement as TextBox).Text)).ToString();
-                            (e.Row.Item as DataRowView).Row[TOKitchenReq.Text + " Unit Cost"] = (((to_rest_Cost * to_rest_Qty) + (float.Parse((e.EditingElement as TextBox).Text) * from_rest_Cost)) / (to_rest_Qty + (float.Parse((e.EditingElement as TextBox).Text)))).ToString();
-                            (e.Row.Item as DataRowView).Row[TOKitchenReq.Text + " Total Cost"] = (((to_rest_Cost * to_rest_Qty) + (float.Parse((e.EditingElement as TextBox).Text) * from_rest_Cost)) / (to_rest_Qty + (float.Parse((e.EditingElement as TextBox).Text))) * (to_rest_Qty + float.Parse((e.EditingElement as TextBox).Text))).ToString();
+                            catch (Exception ex) { MessageBox.Show(ex.ToString()); }
                         }
-                        catch (Exception ex) { MessageBox.Show(ex.ToString()); }
                     }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                    (e.EditingElement as TextBox).Text = "";
-                }
-                finally { con.Close(); }
-
-                try
-                {
-
-                    double totalPrice = 0;
-                    for (int i = 0; i < RequestsItemsDGV.Items.Count; i++)
+                    catch (Exception ex)
                     {
-                        try
-                        {
-                            totalPrice += Convert.ToDouble(((DataRowView)RequestsItemsDGV.Items[i]).Row.ItemArray[11]);
-                        }
-                        catch
-                        {
-
-                        }
+                        MessageBox.Show(ex.ToString());
+                        (e.EditingElement as TextBox).Text = "";
                     }
-                    NUmberOfItemsReq.Text = (RequestsItemsDGV.Items.Count).ToString();
-                    Total_PriceReq.Text = (totalPrice).ToString();
+                    finally { con.Close(); }
+
+                    try
+                    {
+
+                        double totalPrice = 0;
+                        for (int i = 0; i < RequestsItemsDGV.Items.Count; i++)
+                        {
+                            try
+                            {
+                                totalPrice += Convert.ToDouble(DT.Rows[e.Row.GetIndex()][TOKitchenReq.Text + " Total Cost"]);
+                            }
+                            catch
+                            {
+
+                            }
+                        }
+                        NUmberOfItemsReq.Text = (RequestsItemsDGV.Items.Count).ToString();
+                        Total_PriceReq.Text = (totalPrice).ToString();
+                    }
+                    catch { }
                 }
-                catch { }
+                RequestsItemsDGV.DataContext = DT;
             }
         }
 
@@ -1426,7 +1618,7 @@ namespace Food_Cost
                 MessageBox.Show("Plese Enter the Date !");
                 return;
             }
-            else if (Request_Time.Text ==null)
+            else if (Request_Time.Text == "")
             {
                 MessageBox.Show("Please Enter the Time !");
                 return;
@@ -1478,6 +1670,10 @@ namespace Food_Cost
                     string W = string.Format("delete Requests_Items where Request_ID={0}", Serial_Request_NO.Text);
                     SqlCommand cmd2 = new SqlCommand(W, con);
                     cmd2.ExecuteNonQuery();
+                    W = string.Format("delete Requests_ItemsExpireDate where Request_ID={0}", Serial_Request_NO.Text);
+                    cmd2 = new SqlCommand(W, con);
+
+                    cmd2.ExecuteNonQuery();
                     Save_Req_Items(con);
                     Edit_Req(con);
                     MessageBox.Show("Transfer Edited Sussesfully");
@@ -1514,6 +1710,10 @@ namespace Food_Cost
                 DataTable dt = RequestsItemsDGV.DataContext as DataTable;
                 for (int i = 0; i < dt.Rows.Count; i++)
                 {
+                    if (dt.Rows[i]["Select"].ToString() == "False")
+                    {
+                        continue;
+                    }
                     string s = string.Format("select Qty,Current_Cost From Items where RestaurantID = (select code from Store_Setup where Name = '{1}') and KitchenID = (select code from Kitchens_Setup where Name = '{2}') and ItemID={0}", dt.Rows[i]["Code"].ToString(), ResturantReqcbx.Text, KitchenReqcbx.Text);
                     SqlCommand _CMD = new SqlCommand(s, con);
                     SqlDataReader _reader = _CMD.ExecuteReader();
@@ -1538,9 +1738,19 @@ namespace Food_Cost
                     To_CostOfItemsOnHand = ((Convert.ToDouble(To_QtyOnHandMultipleCost) + (Convert.ToDouble(dt.Rows[i]["Qty"].ToString()) * Convert.ToDouble(dt.Rows[i][KitchenReqcbx.Text + " Unit Cost"]))) / Convert.ToDouble(To_QTyonHand)).ToString();
                     _reader.Close();
                     //
-                    
-
                     float NetCost = float.Parse(dt.Rows[i]["Qty"].ToString()) * float.Parse(dt.Rows[i][6].ToString());
+
+                    try
+                    {
+                        foreach (Tuple<string, string> tuple in ExpireDate.ItemExpireDate[dt.Rows[i]["Code"].ToString()])
+                        {
+                            FiledSelection = "Item_ID,Request_ID,Qty,ExpireDate";
+                            Values = string.Format("'{0}', '{1}', '{2}', '{3}'", dt.Rows[i]["Code"], Serial_Request_NO.Text, tuple.Item1, tuple.Item2);
+                            Classes.InsertRow("Requests_ItemsExpireDate", FiledSelection, Values);
+                        }
+                    }
+                    catch { }
+
                     s = string.Format("insert into Requests_Items values('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}')", dt.Rows[i]["Code"], Serial_Request_NO.Text, dt.Rows[i]["Qty"], " ", i, dt.Rows[i][7], NetCost.ToString(), To_QTyonHand, To_CostOfItemsOnHand, From_QTyonHand, From_CostOfItemsOnHand);
                     SqlCommand cmd = new SqlCommand(s, con);
                     cmd.ExecuteNonQuery();
@@ -1712,62 +1922,6 @@ namespace Food_Cost
                 con.Close();
             }
         }
-
-        private void CalculatePrices(DataGridCellEditEndingEventArgs e)
-        {
-            commentWithouttxt.Focus();
-            try
-            {
-                DataTable dt = ItemsWithoutDGV.DataContext as DataTable;
-
-                float Qty;
-                try
-                {
-                    Qty = float.Parse((e.Row.Item as DataRowView).Row["Qty"].ToString());
-                }
-                catch { Qty = float.Parse((e.EditingElement as TextBox).Text); }
-
-
-                float Price = float.Parse((e.Row.Item as DataRowView).Row["Price"].ToString());
-                float TaxPrec = float.Parse((e.Row.Item as DataRowView).Row["Tax"].ToString().Substring(0, (e.Row.Item as DataRowView).Row["Tax"].ToString().Length - 1)) / 100;
-
-                if ((e.Row.Item as DataRowView).Row["Tax Included"].ToString() == "True")
-                {
-                    (e.Row.Item as DataRowView).Row["Total Price With Tax"] = (Price * Qty).ToString();
-                    (e.Row.Item as DataRowView).Row["Total Price Without Tax"] = ((Price - Price * TaxPrec) * Qty).ToString();
-
-                    if ((e.Row.Item as DataRowView).Row["Qty"].ToString() != "0")
-                    {
-                        (e.Row.Item as DataRowView).Row["Unit Price With Tax"] = Price.ToString();
-                        (e.Row.Item as DataRowView).Row["Unit Price Without Tax"] = (Price - Price * TaxPrec).ToString();
-                    }
-                }
-                else
-                {
-                    (e.Row.Item as DataRowView).Row["Total Price With Tax"] = (Price * Qty).ToString();
-                    (e.Row.Item as DataRowView).Row["Total Price Without Tax"] = (Price * Qty).ToString();
-
-                    //if ((e.Row.Item as DataRowView).Row["Qty"].ToString() != "0")
-                    //{
-                    (e.Row.Item as DataRowView).Row["Unit Price With Tax"] = Price.ToString();
-                    (e.Row.Item as DataRowView).Row["Unit Price Without Tax"] = Price.ToString();
-                    //}
-                }
-
-                float totalPriceWithoutTax = 0;
-                float totalPriceWithTax = 0;
-                for (int i = 0; i < dt.Rows.Count; i++)
-                {
-                    totalPriceWithoutTax += float.Parse(dt.Rows[i]["Total Price Without Tax"].ToString());
-                    Total_Price_Without_Tax.Text = totalPriceWithoutTax.ToString();
-
-                    totalPriceWithTax += float.Parse(dt.Rows[i]["Total Price With Tax"].ToString());
-                    Total_Price_With_Tax.Text = totalPriceWithTax.ToString();
-                }
-            }
-            catch { }
-        }
-
         private void UndoResturant_Click(object sender, RoutedEventArgs e)
         {
             ClearFields();
@@ -1799,6 +1953,81 @@ namespace Food_Cost
             if (e.Key == Key.Space)
                 e.Handled = true;
         }
+
+        private void ItemsDGV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender != null)
+            {
+                DataGrid grid = sender as DataGrid;
+                if (grid != null && grid.SelectedItems != null && grid.SelectedItems.Count == 1)
+                {
+                    if((grid.SelectedItem as DataRowView).Row.ItemArray[5].ToString() == "True")
+                    {
+                        ExpireDate Expire_Date = new ExpireDate(((grid.SelectedItem as DataRowView).Row.ItemArray[1]).ToString(), ((grid.SelectedItem as DataRowView).Row.ItemArray[7]).ToString());
+                        Expire_Date.ShowDialog();
+                    }
+                }
+            }
+            
+        }
+
+        private void RequestsItemsDGV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender != null)
+            {
+                DataGrid grid = sender as DataGrid;
+                if (grid != null && grid.SelectedItems != null && grid.SelectedItems.Count == 1)
+                {
+                    if ((grid.SelectedItem as DataRowView).Row.ItemArray[5].ToString() == "True")
+                    {
+                        if ((grid.SelectedItem as DataRowView).Row.ItemArray[6].ToString() != "")
+                        {
+                            ExpireDate Expire_Date = new ExpireDate(((grid.SelectedItem as DataRowView).Row.ItemArray[1]).ToString(), ((grid.SelectedItem as DataRowView).Row.ItemArray[6]).ToString(), RestaurantId, KitchenId);
+                            Expire_Date.ShowDialog();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void ItemRoInterDGV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender != null)
+            {
+                DataGrid grid = sender as DataGrid;
+                if (grid != null && grid.SelectedItems != null && grid.SelectedItems.Count == 1)
+                {
+                    if ((grid.SelectedItem as DataRowView).Row.ItemArray[4].ToString() == "True")
+                    {
+                        if ((grid.SelectedItem as DataRowView).Row.ItemArray[5].ToString() != "")
+                        {
+                            ExpireDate Expire_Date = new ExpireDate(TransferKitchenID, (grid.SelectedItem as DataRowView).Row.ItemArray[5].ToString(), (grid.SelectedItem as DataRowView).Row.ItemArray[1].ToString());
+                            Expire_Date.ShowDialog();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void ItemKitchenTransferDGV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender != null)
+            {
+                DataGrid grid = sender as DataGrid;
+                if (grid != null && grid.SelectedItems != null && grid.SelectedItems.Count == 1)
+                {
+                    if ((grid.SelectedItem as DataRowView).Row.ItemArray[4].ToString() == "True")
+                    {
+                        if ((grid.SelectedItem as DataRowView).Row.ItemArray[5].ToString() != "")
+                        {
+                            ExpireDate Expire_Date = new ExpireDate(TransferResturantID, (grid.SelectedItem as DataRowView).Row.ItemArray[5].ToString(), (grid.SelectedItem as DataRowView).Row.ItemArray[1].ToString());
+                            Expire_Date.ShowDialog();
+                        }
+                    }
+                }
+            }
+        }
+
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9.]+");

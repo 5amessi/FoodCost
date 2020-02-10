@@ -21,6 +21,8 @@ namespace Food_Cost
     /// </summary>
     public partial class LogIn : Window
     {
+        bool checkofCheckToLogin =false;
+        public static bool CheckToLogin;
         MainWindow mainWindow;
         string userName = "";
         string Password = "";
@@ -281,8 +283,7 @@ namespace Food_Cost
 
         private void LoginBtn_Click(object sender, RoutedEventArgs e)      
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             try
             {
                 con.Open();
@@ -321,14 +322,13 @@ namespace Food_Cost
                 MessageBox.Show(ex.ToString());
             }
         }
-
+      
         private void EnterBtn_Click(object sender, RoutedEventArgs e)
         {
-            if(MainWindow.ThetLogin.Count>0)
+            if (MainWindow.ThetLogin.Count>0)
             {
-                string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-                SqlConnection con = new SqlConnection(connString);
-                SqlConnection con2 = new SqlConnection(connString);
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                SqlConnection con2 = new SqlConnection(Classes.DataConnString);
                 SqlCommand cmd = new SqlCommand();
                 SqlCommand cmd2 = new SqlCommand();
                 SqlDataReader reader = null;
@@ -355,9 +355,10 @@ namespace Food_Cost
                             {
                                 MainWindow.UserID = MainWindow.ThetLogin[i].ToString();
                                 MainWindow.Authentication = cmd2.ExecuteScalar().ToString();
-                                this.Close();
+                                checkofCheckToLogin = true;
                                 MainWindow.AuthenticationData.Clear();
                                 SplitAuthentication();
+                                this.Close();
                                 return;
                             }
                         }
@@ -379,7 +380,15 @@ namespace Food_Cost
                 CheckPass.Visibility = Visibility.Hidden;
                 Login.Visibility = Visibility.Visible;
             }
-            
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            if (checkofCheckToLogin == true)
+                CheckToLogin = true;
+
+            else
+                CheckToLogin = false;
         }
     }
 }

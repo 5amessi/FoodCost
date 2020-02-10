@@ -31,21 +31,24 @@ namespace Food_Cost
         {
             LogIn logIn = new LogIn();
             logIn.ShowDialog();
-            if (MainWindow.AuthenticationData.ContainsKey("Purchase"))
+            if (LogIn.CheckToLogin == true)
             {
-                Authenticated = MainWindow.AuthenticationData["Purchase"];
-                if (Authenticated.Count == 0)
+                if (MainWindow.AuthenticationData.ContainsKey("Purchase"))
                 {
-                    MessageBox.Show("You Havent a Privilage to Open this Page");
-                    logIn = new LogIn();
-                    logIn.ShowDialog();
-                }
-                else
-                {
-                    InitializeComponent();
-                    LoadVendorFromSQL();
-                    DateTime now = DateTime.Now;
-                    MainUiFormat();
+                    Authenticated = MainWindow.AuthenticationData["Purchase"];
+                    if (Authenticated.Count == 0)
+                    {
+                        MessageBox.Show("You Havent a Privilage to Open this Page");
+                        logIn = new LogIn();
+                        logIn.ShowDialog();
+                    }
+                    else
+                    {
+                        InitializeComponent();
+                        LoadVendorFromSQL();
+                        DateTime now = DateTime.Now;
+                        MainUiFormat();
+                    }
                 }
             }
         }
@@ -80,7 +83,6 @@ namespace Food_Cost
             MainGrid.IsEnabled = false;
             SaveBtn.IsEnabled = false;
             UndoBtn.IsEnabled = false;
-            DeleteBtn.IsEnabled = false;
             NewBtn.IsEnabled = true;
             searchBtn.IsEnabled = true;
         }
@@ -93,7 +95,6 @@ namespace Food_Cost
             Delivery_dt.IsEnabled = true;
             SaveBtn.IsEnabled = true;
             UndoBtn.IsEnabled = true;
-            DeleteBtn.IsEnabled = true;
             NewBtn.IsEnabled = true;
             CopyBtn.IsEnabled = true;
         }
@@ -258,7 +259,6 @@ namespace Food_Cost
                 commenttxt.IsReadOnly = false;
                 ItemsDGV.IsReadOnly = false;
                 CopyBtn.IsEnabled = false;
-                DeleteBtn.IsEnabled = false;
                 searchBtn.IsEnabled = false;
                 NewBtn.IsEnabled = false;
                 ShipTo.Text = "Main Store";
@@ -398,7 +398,6 @@ namespace Food_Cost
 
                 NewBtn.IsEnabled = false;
                 CopyBtn.IsEnabled = false;
-                DeleteBtn.IsEnabled = false;
                 if(MainWindow.AuthenticationData2.Count>0)
                 {
                     MainWindow.AuthenticationData = MainWindow.AuthenticationData2;
@@ -457,7 +456,6 @@ namespace Food_Cost
             {
                 EnableUI();
                 NewBtn.IsEnabled = false;
-                DeleteBtn.IsEnabled = false;
                 searchBtn.IsEnabled = false;
                 SaveBtn.IsEnabled = false;
 
@@ -516,14 +514,8 @@ namespace Food_Cost
                 }
                 else if (e.Column.Header.ToString() == "Qty")
                 {
-                    //CalculateQty3(e);
                     CalculatePrices(e,dt);
                 }
-                //else if (e.Column.Header.ToString() == "Qty_Unit3")
-                //{
-                //    //CalculateQty(e);
-                //    CalculatePrices(e);
-                //}
             }
             catch { }
             for (int i = 0; i < dt.Columns.Count; i++)

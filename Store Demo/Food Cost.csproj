@@ -192,6 +192,9 @@
       <DependentUpon>ConnectionString.xaml</DependentUpon>
     </Compile>
     <Compile Include="DgvData.cs" />
+    <Compile Include="ExpireDate.xaml.cs">
+      <DependentUpon>ExpireDate.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Fiscal_Period.xaml.cs">
       <DependentUpon>Fiscal_Period.xaml</DependentUpon>
     </Compile>
@@ -508,6 +511,10 @@
     <Page Include="ConnectionString.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ExpireDate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Fiscal_Period.xaml">
       <Generator>MSBuild:Compile</Generator>

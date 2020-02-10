@@ -1,22 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Food_Cost
 {
@@ -70,7 +58,7 @@ namespace Food_Cost
                 DataTable dt = ItemsDGV.DataContext as DataTable;
                 for (int i = 0; i < dt.Rows.Count; i++)
                 {
-                    if(dt.Rows[i]["Qty"].ToString() == "")
+                    if (dt.Rows[i]["Qty"].ToString() == "")
                     {
                         ItemsDGV.CurrentCell = new DataGridCellInfo(ItemsDGV.Items[i], ItemsDGV.Columns[4]);
                         ItemsDGV.BeginEdit();
@@ -88,13 +76,13 @@ namespace Food_Cost
             Manual_transfer_No.Text = "";
             Transfer_dt.Text = "";
             Transfer_Time.Text = "";
-            commenttxt.Text="" ;
+            commenttxt.Text = "";
             Resturant.Text = "";
             From_Kitchen.Text = "";
             To_Kitchen.Text = "";
             NUmberOfItems.Text = "0";
             Total_Price.Text = "0";
-            ItemsDGV.DataContext = null; 
+            ItemsDGV.DataContext = null;
         }     //Done
         private void increment_transferNO()
         {
@@ -178,7 +166,7 @@ namespace Food_Cost
                         From_QTyonHand = "0";
                         From_CostOfItemsOnHand = "0";
                     }
-                    
+
 
                     From_QTyonHand = (Convert.ToDouble(From_QTyonHand) - Convert.ToDouble(dt.Rows[i]["Qty"].ToString())).ToString();
                     _reader.Close();
@@ -207,7 +195,7 @@ namespace Food_Cost
                     _reader.Close();
                     //
                     float NetCost = float.Parse(dt.Rows[i]["Qty"].ToString()) * float.Parse(dt.Rows[i][6].ToString());
-                    string Values = "'"+dt.Rows[i]["Code"] + "','" + transfer_No.Text + "','" + dt.Rows[i]["Qty"] + "'," + "' '" + ",'" + i + "','" + dt.Rows[i][6] + "','" + NetCost + "','" + To_QTyonHand + "','" + To_CostOfItemsOnHand + "','" + From_QTyonHand + "','" + From_CostOfItemsOnHand+"'";
+                    string Values = "'" + dt.Rows[i]["Code"] + "','" + transfer_No.Text + "','" + dt.Rows[i]["Qty"] + "'," + "' '" + ",'" + i + "','" + dt.Rows[i][6] + "','" + NetCost + "','" + To_QTyonHand + "','" + To_CostOfItemsOnHand + "','" + From_QTyonHand + "','" + From_CostOfItemsOnHand + "'";
                     Classes.InsertRow("Transfer_Kitchens_Items", Values);
                     //s = string.Format("insert into Transfer_Kitchens_Items values('{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}')", dt.Rows[i]["Code"], transfer_No.Text, dt.Rows[i]["Qty"], " ", i, dt.Rows[i][6], NetCost, To_QTyonHand, To_CostOfItemsOnHand, From_QTyonHand, From_CostOfItemsOnHand);
                     //SqlCommand cmd = new SqlCommand(s, con);
@@ -241,7 +229,7 @@ namespace Food_Cost
             try
             {
                 string FiledSlection = "Manual_Transfer_No,Transfer_Date,Comment,From_Resturant_ID,To_Resturant_ID,From_Kitchen_ID,To_Kitchen_ID,Type,Status,Modifiled_Date";
-                string Values = string.Format("'{0}','{1}','{2}',(select Code From Store_Setup where Name='{3}'),(select Code From Store_Setup where Name='{3}'),(select Code From Kitchens_Setup where Name='{4}' and RestaurantID=(select Code From Store_Setup where Name='{3}')),(select Code From Kitchens_Setup where Name='{5}' and RestaurantID=(select Code From Store_Setup where Name='{3}')),'{6}','{7}',GETDATE()", Manual_transfer_No.Text, Transfer_dt.Text+" "+Transfer_Time.Text, commenttxt.Text, Resturant.Text, From_Kitchen.Text, To_Kitchen.Text, "Transfer_Kitchen",Statustxt.Text);
+                string Values = string.Format("'{0}','{1}','{2}',(select Code From Store_Setup where Name='{3}'),(select Code From Store_Setup where Name='{3}'),(select Code From Kitchens_Setup where Name='{4}' and RestaurantID=(select Code From Store_Setup where Name='{3}')),(select Code From Kitchens_Setup where Name='{5}' and RestaurantID=(select Code From Store_Setup where Name='{3}')),'{6}','{7}',GETDATE()", Manual_transfer_No.Text, Transfer_dt.Text + " " + Transfer_Time.Text, commenttxt.Text, Resturant.Text, From_Kitchen.Text, To_Kitchen.Text, "Transfer_Kitchen", Statustxt.Text);
                 string Where = string.Format("Transfer_Serial={0}", transfer_No.Text);
                 Classes.UpdateRow(FiledSlection, Values, Where, "Transfer_Kitchens");
                 //string s = string.Format("update Transfer_Kitchens set Manual_Transfer_No='{0}',Transfer_Date='{1}',Comment='{2}',From_Resturant_ID=(select Code From Store_Setup where Name='{3}'),To_Resturant_ID=(select Code From Store_Setup where Name='{3}'),From_Kitchen_ID=(select Code From Kitchens_Setup where Name='{4}' and RestaurantID=(select Code From Store_Setup where Name='{3}')),To_Kitchen_ID=(select Code From Kitchens_Setup where Name='{5}' and RestaurantID=(select Code From Store_Setup where Name='{3}')),Type='Transfer_InterKitchen' Where Transfer_Serial={6}", Manual_transfer_No.Text, Transfer_dt.Text, commenttxt.Text, Resturant.Text, From_Kitchen.Text, To_Kitchen.Text, transfer_No.Text);
@@ -303,9 +291,9 @@ namespace Food_Cost
                     finally { con.Close(); }
                 }
             }
-            catch (Exception ex){ MessageBox.Show(ex.ToString()); }
+            catch (Exception ex) { MessageBox.Show(ex.ToString()); }
 
-           
+
 
         }
         private void Row_Changed(object sender, DataGridCellEditEndingEventArgs e)
@@ -403,7 +391,7 @@ namespace Food_Cost
                     Total_Price.Text = (totalPrice).ToString();
                 }
                 catch { }
-                for(int i=0;i<Dat.Columns.Count;i++)
+                for (int i = 0; i < Dat.Columns.Count; i++)
                 {
                     Dat.Columns[i].ReadOnly = true;
                 }
@@ -411,7 +399,7 @@ namespace Food_Cost
                 ItemsDGV.DataContext = Dat;
             }
         }
-       
+
         private void Resturant_Clicked(object sender, RoutedEventArgs e)
         {
             All_Resturants resturants = new All_Resturants(this, "Resturant");

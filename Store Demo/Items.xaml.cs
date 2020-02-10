@@ -102,9 +102,10 @@ namespace Food_Cost
                 con.Open();
 
                 string s = "";
-                if (ItemsFor == "Purchase" || ItemsFor == "Receieve")
+                if (ItemsFor == "Purchase")
                     s = "select Code,[Manual Code],Name,Name2 from Setup_Items where Is_ParentItem = 0";
-                //s = "select Code,Name,Name2,Is_MultiUnitTrack,Unit,Weight as Qty,Unit3,ConvUnit3 as Qty_Unit3 from Setup_Items where Is_ParentItem = 0";
+                else if(ItemsFor== "Receieve")
+                    s = "select Code,[Manual Code],Name,Name2,ExpDate from Setup_Items where Is_ParentItem = 0";
                else if (ItemsFor == "Transfer_Resturant")
                     s = string.Format(" select Code,[Manual Code],Name,Name2 from Setup_Items where Code in (select ItemID from setup_KitchenItems where RestaurantID = (select Code from Store_Setup where Name = '{0}') and KitchenID = (select Code from Kitchens_Setup where Name = '{1}') ) and Code in (select ItemID from setup_KitchenItems where RestaurantID = (select Code from Store_Setup where Name = '{3}') and KitchenID = (select Code from Kitchens_Setup where Name = '{2}'))", Transfer_Resturant.From_Resturant.Text, Transfer_Resturant.From_Kitchen.Text, Transfer_Resturant.To_Kitchen.Text, Transfer_Resturant.ToResturant.Text);
                 else if (ItemsFor == "Transfer_Kit")
@@ -183,11 +184,7 @@ namespace Food_Cost
                         dt = LoadTaxValue(dt);
                         //dt = MultiTatackUnit_Update(dt);
 
-                        try
-                        {
-                            dt.Columns.Remove("Is_MultiUnitTrack");
-                        }
-                        catch { }
+                        
                         for (int i = 0; i < dt.Columns.Count; i++)
                         {
                             dt.Columns[i].ReadOnly = true;
@@ -203,7 +200,6 @@ namespace Food_Cost
                     {
                         dt = RO.ItemsWithoutDGV.DataContext as DataTable;
                         DataRowView drv = grid.SelectedItem as DataRowView;
-
                         try
                         {
                             DataRow[] foundInstance = dt.Select("Code = " + drv.Row.ItemArray[0]);
@@ -214,7 +210,6 @@ namespace Food_Cost
                             }
                         }
                         catch { }
-
                         if (RO.ItemsWithoutDGV.DataContext == null)
                         {
                             dt = drv.DataView.ToTable().Clone();
@@ -230,29 +225,18 @@ namespace Food_Cost
                         else
                         {
                             dt = RO.ItemsWithoutDGV.DataContext as DataTable;
+                            dt.Columns["Tax"].ReadOnly = false;
                         }
-
                         dt.ImportRow(drv.Row);
                         dt.Rows[dt.Rows.Count - 1]["Qty"] = 0;
-
+                        dt = LoadTaxValue(dt);
                         for (int i = 0; i < dt.Columns.Count; i++)
                         {
-                            if (dt.Columns[i] == dt.Columns["Tax Included"])
-                                break;
-
                             dt.Columns[i].ReadOnly = true;
                         }
-
-                        //dt.Rows[dt.Rows.Count - 1]["Tax Included"] = true;
-
-                        dt = LoadTaxValue(dt);
-                        //dt = MultiTatackUnit_Update(dt);
-
-                        try
-                        {
-                            dt.Columns.Remove("Is_MultiUnitTrack");
-                        }
-                        catch { }
+                        dt.Columns["Tax Included"].ReadOnly = false;
+                        dt.Columns["Qty"].ReadOnly = false;
+                        dt.Columns["Price"].ReadOnly = false;
                         RO.ItemsWithoutDGV.DataContext = dt;
                         this.Close();
                     }
