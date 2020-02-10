@@ -29,6 +29,7 @@ namespace Food_Cost.Forms
             string s1;
             s1 = "";
             f = "";
+            Where = "(";
             foreach (TreeNode Node in TVKitchens.Nodes)
             {
                 foreach (TreeNode Child in Node.Nodes)
@@ -41,6 +42,7 @@ namespace Food_Cost.Forms
                     }
                 }
             }
+            Where += ")";
             if (s1 == "")
             {
                 MessageBox.Show("Please Select One Kitchen At Least need edit", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
