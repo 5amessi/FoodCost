@@ -128,6 +128,8 @@ namespace Food_Cost.Forms
                 Ndr["CurrentCost"] = DR["CurrentCost"].ToString();
                 Ndr["Unit"] = DR["Unit"].ToString();
                 Ndr["Trantype"] = DR["Trantype"].ToString();
+                Ndr["Item_ID"] = DR["Item_ID"].ToString();
+                Ndr["ItemName"] = DR["ItemName"].ToString();
 
                 Ndr["_Date"] = DR["_Date"].ToString();
                 Ndr["KitchenName"] = DR["KitchenName"].ToString();
