@@ -238,6 +238,28 @@ namespace Food_Cost
                     MessageBox.Show("Choose Items That You will Recieve");
                     return false;
                 }
+                for(int i=0;i< ItemsDGV.Items.Count;i++)
+                {
+                    int QtyofExpire = 0;
+                    if (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[5].ToString() == "True")
+                    {
+                        string ItemCode = ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[1].ToString();
+                        try
+                        {
+                            foreach (Tuple<string, string> tuple in ExpireDate.ItemExpireDate[ItemCode])
+                            {
+                                QtyofExpire += Convert.ToInt32(tuple.Item1);
+                            }
+                        }
+                        catch {  }
+                        if (QtyofExpire != Convert.ToInt32(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[7]))
+                        {
+                            MessageBox.Show("Please Check The Expire Dates !");
+                            return false;
+                        }
+                    }
+                    
+                }
             }
             else if (TabControl.SelectedIndex == 3)
             {
@@ -294,6 +316,28 @@ namespace Food_Cost
                             return false;
                         }
                     }
+                }
+                for (int i = 0; i < ItemsWithoutDGV.Items.Count; i++)
+                {
+                    int QtyofExpire = 0;
+                    if (((DataRowView)ItemsWithoutDGV.Items[i]).Row.ItemArray[4].ToString() == "True")
+                    {
+                        string ItemCode = ((DataRowView)ItemsWithoutDGV.Items[i]).Row.ItemArray[0].ToString();
+                        try
+                        {
+                            foreach (Tuple<string, string> tuple in ExpireDate.ItemExpireDate[ItemCode])
+                            {
+                                QtyofExpire += Convert.ToInt32(tuple.Item1);
+                            }
+                        }
+                        catch { }
+                        if (QtyofExpire != Convert.ToInt32(((DataRowView)ItemsWithoutDGV.Items[i]).Row.ItemArray[6]))
+                        {
+                            MessageBox.Show("Please Check The Expire Dates !");
+                            return false;
+                        }
+                    }
+                   
                 }
             }
 
@@ -942,7 +986,6 @@ namespace Food_Cost
         }
 
 
-
         //Transfer Without Purshace 
         private void ItemDgv_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
@@ -1536,7 +1579,6 @@ namespace Food_Cost
             RequestssDGV.Visibility = Visibility.Hidden;
             RequestsItemsDGV.Visibility = Visibility.Visible;
         }
-
         private void RequestsItemsDGV_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             DataTable DT = RequestsItemsDGV.DataContext as DataTable;
@@ -1610,7 +1652,6 @@ namespace Food_Cost
                 RequestsItemsDGV.DataContext = DT;
             }
         }
-
         private void Reply_Click(object sender, RoutedEventArgs e)
         {
             int Count = 0;
@@ -1701,7 +1742,6 @@ namespace Food_Cost
             }
             finally { con.Close(); }
         }
-
         private void Save_Req_Items(SqlConnection con)
         {
             string To_QTyonHand = ""; string To_CostOfItemsOnHand = ""; string To_QtyOnHandMultipleCost = "";
@@ -1955,7 +1995,6 @@ namespace Food_Cost
             if (e.Key == Key.Space)
                 e.Handled = true;
         }
-
         private void ItemsDGV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (sender != null)
@@ -1972,7 +2011,6 @@ namespace Food_Cost
             }
             
         }
-
         private void RequestsItemsDGV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (sender != null)
@@ -1991,7 +2029,6 @@ namespace Food_Cost
                 }
             }
         }
-
         private void ItemRoInterDGV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (sender != null)
@@ -2010,7 +2047,6 @@ namespace Food_Cost
                 }
             }
         }
-
         private void ItemKitchenTransferDGV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (sender != null)
@@ -2029,7 +2065,6 @@ namespace Food_Cost
                 }
             }
         }
-
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9.]+");
