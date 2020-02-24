@@ -40,8 +40,36 @@ namespace Food_Cost.Forms
                 Where = " Restaurant_ID IN (1) AND Kitchen_ID IN (1)";
                 Filter = "Kitchen: My kitchen";
             }
+            List<string> type = new List<string>();
+            if (CBPurchase.Checked)
+            {
+                type.Add("'Recieve_Purchase'");
+            }
+            if (CBAutoPurchase.Checked)
+            {
+                type.Add("'Auto_Recieve'");
+            }
+            if (CBKitchenTransfer.Checked)
+            {
+                type.Add("'Transfer_Kitchen'");
+            }
+            if (CBRestaurantTransfer.Checked)
+            {
+                type.Add("'Transfer_Resturant'");
+            }
+            if (type.Count != 0)
+            {
+                string s = "";
+                Where += "And Type IN (";
+                foreach (string st in type)
+                {
+                    Where += s + st;
+                    s = ",";
+                }
+                Where += ")";
+            }
 
-            Where += "And Receiving_Date between '" + dtp_from.Value + "' AND '" + dtp_to.Value + "'";
+            Where += "And Receiving_Date between '" + dtp_from.Value + "' AND '" + dtp_to.Value.AddHours(23.9999) + "'";
 
             DataTable dt = Classes.RetrieveData("*", Where, "ReceiveOrderView");
             ReportView Rec = new ReportView();

@@ -22,14 +22,13 @@ namespace Food_Cost.Forms
         string f = "";
         string s2 = "";
         DataTable Dt;
-        DataTable Dt2;
         Dictionary<string, string> dic = new Dictionary<string, string>();
         Dictionary<string, string> Stores = new Dictionary<string, string>();
         Dictionary<string, List<string>> FilterDic = new Dictionary<string, List<string>>();
 
         private void ShowBtn_Click(object sender, EventArgs e)
         {
-            if (CBMyKitchen.Checked)
+            if (!CBMyKitchen.Checked)
             {
                 Where = "";
                 Filter = "";
@@ -41,54 +40,32 @@ namespace Food_Cost.Forms
                 Filter = "Kitchen: My kitchen";
             }
 
-            if (TxtItemCode.Text.ToString() != "")
-            {
-                Where += " AND Item_ID = '" + TxtItemCode.Text.ToString() + "'";
-            }
-
-            DataTable KTdt = Classes.RetrieveData("*", Where, "TransferItemsFrom");
-            KTdt.Rows.Clear();
-
-            //Transfer from
-            string WhereTransfer = Where + " And Transfer_Date between '" + dtp_from.Value + "' AND '" + dtp_to.Value + "'";
-            Dt = Classes.RetrieveData("*", WhereTransfer, "TransferItemsFrom");
-            foreach (DataRow DR in Dt.Rows)
-            {
-                DataRow Ndr = KTdt.NewRow();
-                Ndr["RestaurantName"] = DR["RestaurantName"].ToString();
-                Ndr["KitchenName"] = DR["KitchenName"].ToString();
-                Ndr["ItemName"] = DR["ItemName"].ToString();
-                Ndr["Transfer_Date"] = DR["Transfer_Date"].ToString();
-                Ndr["Type"] = "Transferd from " + DR["FromRestaurantName"].ToString() + " Restaurant and " + DR["FromKitchenName"].ToString() + " Kitchen";
-                Ndr["Qty"] = DR["Qty"].ToString();
-                Ndr["Unit"] = DR["Unit"].ToString();
-                Ndr["Cost"] = DR["Cost"].ToString();
-                Ndr["Net Cost"] = DR["Net Cost"].ToString();
-                KTdt.Rows.Add(Ndr);
-            }
-            //Transfer to
-            Dt = Classes.RetrieveData("*", WhereTransfer, "TransferItemsTo");
-            foreach (DataRow DR in Dt.Rows)
-            {
-                DataRow Ndr = KTdt.NewRow();
-                Ndr["RestaurantName"] = DR["RestaurantName"].ToString();
-                Ndr["KitchenName"] = DR["KitchenName"].ToString();
-                Ndr["Transfer_Date"] = DR["Transfer_Date"].ToString();
-                Ndr["ItemName"] = DR["ItemName"].ToString();
-                Ndr["Type"] = "Transferd To " + DR["ToRestaurantName"].ToString() + " Restaurant and " + DR["ToKitchenName"].ToString() + " Kitchen";
-                Ndr["Qty"] = DR["Qty"].ToString();
-                Ndr["Unit"] = DR["Unit"].ToString();
-                Ndr["Cost"] = DR["Cost"].ToString();
-                Ndr["Net Cost"] = DR["Net Cost"].ToString();
-                KTdt.Rows.Add(Ndr);
-            }
+            Where += " And Transfer_Date between '" + dtp_from.Value + "' AND '" + dtp_to.Value + "'";
+        
             ReportView Rec = new ReportView();
-            Rec.Rpt = new CR_Transfer();
-            Rec.Rpt.SetDataSource(KTdt);
+
+            if (RbOrders.Checked == true)
+            {
+                Dt = Classes.RetrieveData("*", Where, "RequestTransferView");
+                Rec.Rpt = new CR_RequestTransferOrder();
+            }
+
+            else
+            {
+                if (TxtItemCode.Text.ToString() != "")
+                {
+                    Where += " AND Item_ID = '" + TxtItemCode.Text.ToString() + "'";
+                }
+                Dt = Classes.RetrieveData("*", Where, "RequestTransferItemsView");
+                Rec.Rpt = new CR_RequestTransferItems();
+            }
+
+            Rec.Rpt.SetDataSource(Dt);
             Rec.Rpt.SetParameterValue("Rpt_Fdate", dtp_from.Value);
             Rec.Rpt.SetParameterValue("Rpt_Tdate", dtp_to.Value);
             Rec.Rpt.SetParameterValue("Filter", Filter);
             Rec.Show();
+
         }
 
         private void BtnItem_Click(object sender, EventArgs e)
@@ -100,6 +77,22 @@ namespace Food_Cost.Forms
             {
                 TxtItemCode.Text = frm.selrow.Cells[0].Value.ToString();
                 TxtItemName.Text = frm.selrow.Cells[1].Value.ToString();
+            }
+        }
+
+        private void RbItems_CheckedChanged(object sender, EventArgs e)
+        {
+            if (RbItems.Checked == true)
+            {
+                GbItem.Visible = true;
+            }
+        }
+
+        private void RbOrders_CheckedChanged(object sender, EventArgs e)
+        {
+            if (RbOrders.Checked == true)
+            {
+                GbItem.Visible = false;
             }
         }
     }

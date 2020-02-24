@@ -61,11 +61,7 @@ namespace Food_Cost.Forms
                 Where = " (Restaurant_ID = 1 AND Kitchen_ID = 1)";
                 Filter = "Kitchen: My kitchen";
             }
-            if (TxtItemCode.Text.ToString() != "")
-            {
-                Where += " AND Item_ID = '" + TxtItemCode.Text.ToString() + "'";
-            }
-
+            
             if (BtnCreateDate.Checked == true)
             {
                 Where += " And Create_Date between '" + dtp_from.Value + "' AND '" + dtp_to.Value + "'";
@@ -76,11 +72,23 @@ namespace Food_Cost.Forms
                 Where += " And Delivery_Date between '" + dtp_from.Value + "' AND '" + dtp_to.Value + "'";
                 Filter += " \n" + "Date: Delivery_Date";
             }
+
             ReportView Rec = new ReportView();
-            Rec.Rpt = new CR_POitems();
-            string Select = "*";
-            DataTable dt = Classes.RetrieveData(Select, Where, "POItems");
-            Rec.Rpt.SetDataSource(dt);
+            if (RbOrders.Checked == true)
+            {
+                Dt = Classes.RetrieveData("*", Where, "POView");
+                Rec.Rpt = new CR_PO();
+            }
+            else
+            {
+                if (TxtItemCode.Text.ToString() != "")
+                {
+                    Where += " AND Item_ID = '" + TxtItemCode.Text.ToString() + "'";
+                }
+                Dt = Classes.RetrieveData("*", Where, "POItems");
+                Rec.Rpt = new CR_POitems();
+            }
+            Rec.Rpt.SetDataSource(Dt);
             Rec.Rpt.SetParameterValue("Rpt_Fdate", dtp_from.Value);
             Rec.Rpt.SetParameterValue("Rpt_Tdate", dtp_to.Value);
             Rec.Rpt.SetParameterValue("Filter", Filter);
@@ -97,6 +105,27 @@ namespace Food_Cost.Forms
                 TxtItemCode.Text = frm.selrow.Cells[0].Value.ToString();
                 TxtItemName.Text = frm.selrow.Cells[1].Value.ToString();
             }
+        }
+
+        private void RbItems_CheckedChanged(object sender, EventArgs e)
+        {
+            if (RbItems.Checked == true)
+            {
+                GbItem.Visible = true;
+            }
+        }
+
+        private void RbOrders_CheckedChanged(object sender, EventArgs e)
+        {
+            if (RbOrders.Checked == true)
+            {
+                GbItem.Visible = false;
+            }
+        }
+
+        private void Rpt_PurchaseItems_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

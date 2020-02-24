@@ -49,7 +49,7 @@ namespace Food_Cost.Forms
                 dt.Rows[i]["CurrQty"] = Tempdt["Current_Qty"];
             }
             ReportView Rec = new ReportView();
-            Rec.Rpt = new CR_GeneratedRecipes();
+            Rec.Rpt = new CR_GeneratedRecipes() ;
             Rec.Rpt.SetDataSource(dt);
             Rec.Rpt.SetParameterValue("Rpt_Fdate", dtp_from.Value);
             Rec.Rpt.SetParameterValue("Rpt_Tdate", dtp_to.Value);
@@ -73,5 +73,14 @@ namespace Food_Cost.Forms
             }
         }
 
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void CBMyKitchen_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

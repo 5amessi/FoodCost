@@ -60,6 +60,7 @@
             this.groupBox1.Size = new System.Drawing.Size(713, 423);
             this.groupBox1.TabIndex = 555;
             this.groupBox1.TabStop = false;
+            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
             // 
             // CBMyKitchen
             // 
@@ -71,6 +72,7 @@
             this.CBMyKitchen.TabIndex = 617;
             this.CBMyKitchen.Text = "For My Kitchen";
             this.CBMyKitchen.UseVisualStyleBackColor = true;
+            this.CBMyKitchen.CheckedChanged += new System.EventHandler(this.CBMyKitchen_CheckedChanged);
             // 
             // uC_TVKitchens1
             // 

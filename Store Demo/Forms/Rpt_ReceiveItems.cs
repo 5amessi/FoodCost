@@ -73,7 +73,7 @@ namespace Food_Cost.Forms
                 Where += ")";
             }
 
-            Where += " And Receiving_Date between '" + dtp_from.Value + "' AND '" + dtp_to.Value + "'";
+            Where += " And Receiving_Date between '" + dtp_from.Value + "' AND '" + dtp_to.Value.AddHours(23.9999) + "'";
 
             DataTable dt = Classes.RetrieveData("*", Where, "ReceiveItemsView");
 

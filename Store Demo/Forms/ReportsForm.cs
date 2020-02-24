@@ -99,5 +99,10 @@ namespace Food_Cost.Forms
             Rpt_GeneratedRecipescs Frm = new Rpt_GeneratedRecipescs();
             Frm.Show();
         }
+
+        private void ReportsForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

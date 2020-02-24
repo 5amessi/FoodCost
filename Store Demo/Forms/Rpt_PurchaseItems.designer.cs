@@ -39,16 +39,20 @@
             this.dtp_from = new System.Windows.Forms.DateTimePicker();
             this.BtnItem = new System.Windows.Forms.Button();
             this.TxtItemCode = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.LItem = new System.Windows.Forms.Label();
             this.TxtItemName = new System.Windows.Forms.TextBox();
             this.UC_TVKitchens2 = new Food_Cost.Forms.UC_TVKitchens();
             this.CBMyKitchen = new System.Windows.Forms.CheckBox();
+            this.RbOrders = new System.Windows.Forms.RadioButton();
+            this.RbItems = new System.Windows.Forms.RadioButton();
+            this.GbItem = new System.Windows.Forms.GroupBox();
             this.GrpDateTimeRange.SuspendLayout();
+            this.GbItem.SuspendLayout();
             this.SuspendLayout();
             // 
             // ShowBtn
             // 
-            this.ShowBtn.Location = new System.Drawing.Point(72, 248);
+            this.ShowBtn.Location = new System.Drawing.Point(83, 300);
             this.ShowBtn.Name = "ShowBtn";
             this.ShowBtn.Size = new System.Drawing.Size(107, 54);
             this.ShowBtn.TabIndex = 586;
@@ -59,13 +63,11 @@
             // rdbMyStore
             // 
             this.rdbMyStore.AutoSize = true;
-            this.rdbMyStore.Checked = true;
             this.rdbMyStore.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rdbMyStore.Location = new System.Drawing.Point(72, 124);
+            this.rdbMyStore.Location = new System.Drawing.Point(105, 127);
             this.rdbMyStore.Name = "rdbMyStore";
             this.rdbMyStore.Size = new System.Drawing.Size(107, 20);
             this.rdbMyStore.TabIndex = 594;
-            this.rdbMyStore.TabStop = true;
             this.rdbMyStore.Text = "For My Store";
             this.rdbMyStore.UseVisualStyleBackColor = true;
             // 
@@ -78,7 +80,7 @@
             this.GrpDateTimeRange.Controls.Add(this.lblDateFrom);
             this.GrpDateTimeRange.Controls.Add(this.dtp_from);
             this.GrpDateTimeRange.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.GrpDateTimeRange.Location = new System.Drawing.Point(5, 9);
+            this.GrpDateTimeRange.Location = new System.Drawing.Point(12, 12);
             this.GrpDateTimeRange.Name = "GrpDateTimeRange";
             this.GrpDateTimeRange.Size = new System.Drawing.Size(255, 135);
             this.GrpDateTimeRange.TabIndex = 595;
@@ -152,7 +154,7 @@
             // 
             // BtnItem
             // 
-            this.BtnItem.Location = new System.Drawing.Point(218, 163);
+            this.BtnItem.Location = new System.Drawing.Point(217, 22);
             this.BtnItem.Name = "BtnItem";
             this.BtnItem.Size = new System.Drawing.Size(41, 23);
             this.BtnItem.TabIndex = 615;
@@ -162,33 +164,33 @@
             // TxtItemCode
             // 
             this.TxtItemCode.Enabled = false;
-            this.TxtItemCode.Location = new System.Drawing.Point(45, 164);
+            this.TxtItemCode.Location = new System.Drawing.Point(44, 23);
             this.TxtItemCode.Name = "TxtItemCode";
             this.TxtItemCode.Size = new System.Drawing.Size(44, 20);
             this.TxtItemCode.TabIndex = 614;
             // 
-            // label1
+            // LItem
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
-            this.label1.Location = new System.Drawing.Point(10, 167);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(36, 16);
-            this.label1.TabIndex = 613;
-            this.label1.Text = "Item";
+            this.LItem.AutoSize = true;
+            this.LItem.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
+            this.LItem.Location = new System.Drawing.Point(5, 26);
+            this.LItem.Name = "LItem";
+            this.LItem.Size = new System.Drawing.Size(36, 16);
+            this.LItem.TabIndex = 613;
+            this.LItem.Text = "Item";
             // 
             // TxtItemName
             // 
             this.TxtItemName.Enabled = false;
             this.TxtItemName.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TxtItemName.Location = new System.Drawing.Point(95, 163);
+            this.TxtItemName.Location = new System.Drawing.Point(94, 22);
             this.TxtItemName.Name = "TxtItemName";
             this.TxtItemName.Size = new System.Drawing.Size(117, 22);
             this.TxtItemName.TabIndex = 612;
             // 
             // UC_TVKitchens2
             // 
-            this.UC_TVKitchens2.Location = new System.Drawing.Point(266, 9);
+            this.UC_TVKitchens2.Location = new System.Drawing.Point(299, 12);
             this.UC_TVKitchens2.Name = "UC_TVKitchens2";
             this.UC_TVKitchens2.Size = new System.Drawing.Size(306, 345);
             this.UC_TVKitchens2.TabIndex = 617;
@@ -197,31 +199,72 @@
             // 
             this.CBMyKitchen.AutoSize = true;
             this.CBMyKitchen.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
-            this.CBMyKitchen.Location = new System.Drawing.Point(72, 213);
+            this.CBMyKitchen.Location = new System.Drawing.Point(83, 265);
             this.CBMyKitchen.Name = "CBMyKitchen";
             this.CBMyKitchen.Size = new System.Drawing.Size(122, 20);
             this.CBMyKitchen.TabIndex = 616;
             this.CBMyKitchen.Text = "For My Kitchen";
             this.CBMyKitchen.UseVisualStyleBackColor = true;
             // 
+            // RbOrders
+            // 
+            this.RbOrders.AutoSize = true;
+            this.RbOrders.Checked = true;
+            this.RbOrders.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
+            this.RbOrders.Location = new System.Drawing.Point(55, 162);
+            this.RbOrders.Name = "RbOrders";
+            this.RbOrders.Size = new System.Drawing.Size(68, 20);
+            this.RbOrders.TabIndex = 618;
+            this.RbOrders.TabStop = true;
+            this.RbOrders.Text = "Orders";
+            this.RbOrders.UseVisualStyleBackColor = true;
+            this.RbOrders.CheckedChanged += new System.EventHandler(this.RbOrders_CheckedChanged);
+            // 
+            // RbItems
+            // 
+            this.RbItems.AutoSize = true;
+            this.RbItems.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
+            this.RbItems.Location = new System.Drawing.Point(181, 162);
+            this.RbItems.Name = "RbItems";
+            this.RbItems.Size = new System.Drawing.Size(60, 20);
+            this.RbItems.TabIndex = 619;
+            this.RbItems.Text = "Items";
+            this.RbItems.UseVisualStyleBackColor = true;
+            this.RbItems.CheckedChanged += new System.EventHandler(this.RbItems_CheckedChanged);
+            // 
+            // GbItem
+            // 
+            this.GbItem.Controls.Add(this.LItem);
+            this.GbItem.Controls.Add(this.TxtItemName);
+            this.GbItem.Controls.Add(this.TxtItemCode);
+            this.GbItem.Controls.Add(this.BtnItem);
+            this.GbItem.Location = new System.Drawing.Point(10, 188);
+            this.GbItem.Name = "GbItem";
+            this.GbItem.Size = new System.Drawing.Size(269, 54);
+            this.GbItem.TabIndex = 620;
+            this.GbItem.TabStop = false;
+            this.GbItem.Visible = false;
+            // 
             // Rpt_PurchaseItems
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(630, 422);
+            this.ClientSize = new System.Drawing.Size(643, 415);
+            this.Controls.Add(this.GbItem);
+            this.Controls.Add(this.RbItems);
+            this.Controls.Add(this.RbOrders);
             this.Controls.Add(this.UC_TVKitchens2);
             this.Controls.Add(this.CBMyKitchen);
-            this.Controls.Add(this.BtnItem);
-            this.Controls.Add(this.TxtItemCode);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.TxtItemName);
             this.Controls.Add(this.GrpDateTimeRange);
             this.Controls.Add(this.rdbMyStore);
             this.Controls.Add(this.ShowBtn);
             this.Name = "Rpt_PurchaseItems";
             this.Text = "Rpt_PurchaseItems";
+            this.Load += new System.EventHandler(this.Rpt_PurchaseItems_Load);
             this.GrpDateTimeRange.ResumeLayout(false);
             this.GrpDateTimeRange.PerformLayout();
+            this.GbItem.ResumeLayout(false);
+            this.GbItem.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -239,9 +282,12 @@
         private System.Windows.Forms.DateTimePicker dtp_from;
         private System.Windows.Forms.Button BtnItem;
         private System.Windows.Forms.TextBox TxtItemCode;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label LItem;
         private System.Windows.Forms.TextBox TxtItemName;
         private UC_TVKitchens UC_TVKitchens2;
         private System.Windows.Forms.CheckBox CBMyKitchen;
+        private System.Windows.Forms.RadioButton RbOrders;
+        private System.Windows.Forms.RadioButton RbItems;
+        private System.Windows.Forms.GroupBox GbItem;
     }
 }

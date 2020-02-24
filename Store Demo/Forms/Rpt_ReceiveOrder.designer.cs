@@ -36,6 +36,10 @@
             this.ShowBtn = new System.Windows.Forms.Button();
             this.uC_TVKitchens1 = new Food_Cost.Forms.UC_TVKitchens();
             this.CBMyKitchen = new System.Windows.Forms.CheckBox();
+            this.CBAutoPurchase = new System.Windows.Forms.CheckBox();
+            this.CBRestaurantTransfer = new System.Windows.Forms.CheckBox();
+            this.CBPurchase = new System.Windows.Forms.CheckBox();
+            this.CBKitchenTransfer = new System.Windows.Forms.CheckBox();
             this.GrpDateTimeRange.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -96,7 +100,7 @@
             // 
             // ShowBtn
             // 
-            this.ShowBtn.Location = new System.Drawing.Point(71, 208);
+            this.ShowBtn.Location = new System.Drawing.Point(72, 290);
             this.ShowBtn.Name = "ShowBtn";
             this.ShowBtn.Size = new System.Drawing.Size(107, 54);
             this.ShowBtn.TabIndex = 599;
@@ -115,18 +119,66 @@
             // 
             this.CBMyKitchen.AutoSize = true;
             this.CBMyKitchen.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
-            this.CBMyKitchen.Location = new System.Drawing.Point(71, 159);
+            this.CBMyKitchen.Location = new System.Drawing.Point(72, 264);
             this.CBMyKitchen.Name = "CBMyKitchen";
             this.CBMyKitchen.Size = new System.Drawing.Size(122, 20);
             this.CBMyKitchen.TabIndex = 604;
             this.CBMyKitchen.Text = "For My Kitchen";
             this.CBMyKitchen.UseVisualStyleBackColor = true;
             // 
+            // CBAutoPurchase
+            // 
+            this.CBAutoPurchase.AutoSize = true;
+            this.CBAutoPurchase.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
+            this.CBAutoPurchase.Location = new System.Drawing.Point(12, 160);
+            this.CBAutoPurchase.Name = "CBAutoPurchase";
+            this.CBAutoPurchase.Size = new System.Drawing.Size(119, 20);
+            this.CBAutoPurchase.TabIndex = 625;
+            this.CBAutoPurchase.Text = "Auto Purchase";
+            this.CBAutoPurchase.UseVisualStyleBackColor = true;
+            // 
+            // CBRestaurantTransfer
+            // 
+            this.CBRestaurantTransfer.AutoSize = true;
+            this.CBRestaurantTransfer.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
+            this.CBRestaurantTransfer.Location = new System.Drawing.Point(12, 186);
+            this.CBRestaurantTransfer.Name = "CBRestaurantTransfer";
+            this.CBRestaurantTransfer.Size = new System.Drawing.Size(150, 20);
+            this.CBRestaurantTransfer.TabIndex = 624;
+            this.CBRestaurantTransfer.Text = "Restaurant Transfer";
+            this.CBRestaurantTransfer.UseVisualStyleBackColor = true;
+            // 
+            // CBPurchase
+            // 
+            this.CBPurchase.AutoSize = true;
+            this.CBPurchase.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
+            this.CBPurchase.Location = new System.Drawing.Point(12, 131);
+            this.CBPurchase.Name = "CBPurchase";
+            this.CBPurchase.Size = new System.Drawing.Size(86, 20);
+            this.CBPurchase.TabIndex = 623;
+            this.CBPurchase.Text = "Purchase";
+            this.CBPurchase.UseVisualStyleBackColor = true;
+            // 
+            // CBKitchenTransfer
+            // 
+            this.CBKitchenTransfer.AutoSize = true;
+            this.CBKitchenTransfer.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
+            this.CBKitchenTransfer.Location = new System.Drawing.Point(12, 212);
+            this.CBKitchenTransfer.Name = "CBKitchenTransfer";
+            this.CBKitchenTransfer.Size = new System.Drawing.Size(130, 20);
+            this.CBKitchenTransfer.TabIndex = 622;
+            this.CBKitchenTransfer.Text = "Kitchen Transfer";
+            this.CBKitchenTransfer.UseVisualStyleBackColor = true;
+            // 
             // Rpt_ReceiveOrder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(694, 388);
+            this.Controls.Add(this.CBAutoPurchase);
+            this.Controls.Add(this.CBRestaurantTransfer);
+            this.Controls.Add(this.CBPurchase);
+            this.Controls.Add(this.CBKitchenTransfer);
             this.Controls.Add(this.CBMyKitchen);
             this.Controls.Add(this.uC_TVKitchens1);
             this.Controls.Add(this.GrpDateTimeRange);
@@ -148,5 +200,9 @@
         private System.Windows.Forms.Button ShowBtn;
         private UC_TVKitchens uC_TVKitchens1;
         private System.Windows.Forms.CheckBox CBMyKitchen;
+        private System.Windows.Forms.CheckBox CBAutoPurchase;
+        private System.Windows.Forms.CheckBox CBRestaurantTransfer;
+        private System.Windows.Forms.CheckBox CBPurchase;
+        private System.Windows.Forms.CheckBox CBKitchenTransfer;
     }
 }
