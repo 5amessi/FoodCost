@@ -29,35 +29,56 @@ namespace Food_Cost
     public partial class NewItems_Food_Cost : UserControl
     {
         TreeViewItem UndifinedExists = null;
-
-
+        string NumberofTreeItems = "";
+        List<TreeViewItem> classNodes = new List<TreeViewItem>();
+        List<TreeViewItem> subclassNodes = new List<TreeViewItem>();
+        List<TreeViewItem> ItemsNodes = new List<TreeViewItem>();
         public NewItems_Food_Cost()
         {
             InitializeComponent();
 
+            NumberofTreeItems = LoadNUmberofDefinition();
             LoadCategoryinTreeView();
-            List<TreeViewItem> classNodes = LoadDepartmentinTreeView();
-            List<TreeViewItem> subclassNodes = LoadClassesinTreeView(classNodes);
-            List<TreeViewItem> ItemsNodes = LoadSubClassesinTreeView(subclassNodes);
-            LoadItemsinTreeView(ItemsNodes);
+            if (NumberofTreeItems == "1")
+            {
+                classNodes = LoadDepartmentinTreeView();
+                LoadItemsinTreeView(classNodes);
+            }
+            if (NumberofTreeItems == "2")
+            {
+                classNodes = LoadDepartmentinTreeView();
+                subclassNodes = LoadClassesinTreeView(classNodes);
+                LoadItemsinTreeView(subclassNodes);
+            }
+            if (NumberofTreeItems == "3")
+            {
+                classNodes = LoadDepartmentinTreeView();
+                subclassNodes = LoadClassesinTreeView(classNodes);
+                ItemsNodes = LoadSubClassesinTreeView(subclassNodes);
+                LoadItemsinTreeView(ItemsNodes);
+            }
         }
 
         private void LoadItemsinTreeView(List<TreeViewItem> itemsNodes)
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
 
             try
             {
                 con.Open();
-                
-                string s;
+                string s = "";
                 for (int i = 0; i < itemsNodes.Count; i++)
                 {
-                    s = string.Format(@"SELECT dbo.Setup_Items.Name FROM Setup_Items WHERE Setup_Items.SUBClass = '{0}'", (itemsNodes[i].Header));
+                    s = "";
+                    if (NumberofTreeItems == "1")
+                        s = "select Name From Setup_Items where Active='True' and Department='{0}'";
+                    if (NumberofTreeItems == "2")
+                        s = "select Name From Setup_Items where Active='True' and Class='{0}'";
+                    if (NumberofTreeItems == "3")
+                        s = "select Name From Setup_Items where Active='True' and SUBClass='{0}'";
 
+                    s = string.Format(s, (itemsNodes[i].Header));
                     SqlCommand cmd = new SqlCommand(s, con);
-
                     SqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
@@ -103,15 +124,28 @@ namespace Food_Cost
             {
                 con.Close();
             }
-        }
+        }    //Done
 
         //functions
+
+        private string LoadNUmberofDefinition()
+        {
+            string TheValue = "";
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            try
+            {
+                con.Open();
+                string s = string.Format("select ItemDefinition From Setup_Restaurant");
+                SqlCommand cmd = new SqlCommand(s, con);
+                TheValue = cmd.ExecuteScalar().ToString();
+            }
+            catch { }
+            return TheValue;
+        }  //Done
         private void LoadCategoryinTreeView()
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlDataReader reader = null;
-
             try
             {
                 con.Open();
@@ -122,7 +156,6 @@ namespace Food_Cost
                 while (reader.Read())
                 {
                     string data = reader["Name"].ToString();
-                    //Departmentcbx.Items.Add(data);
 
                     TreeViewItem treeViewItem = new TreeViewItem();
                     treeViewItem.Header = data;
@@ -138,11 +171,10 @@ namespace Food_Cost
                 reader.Close();
                 con.Close();
             }
-        }
+        }  //Done
         private List<TreeViewItem> LoadDepartmentinTreeView()
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             List<TreeViewItem> treeViewItemscopy = new List<TreeViewItem>();
 
             try
@@ -151,11 +183,8 @@ namespace Food_Cost
 
                 for (int i = 0; i < treeViewItems.Items.Count; i++)
                 {
-                    string s = string.Format(@"SELECT Setup_Department.Name FROM Setup_Department INNER JOIN Setup_Category ON Setup_Category.Code = Setup_Department.CategoryID " +
-                                                "WHERE Setup_Category.Name = '{0}'", ((TreeViewItem)treeViewItems.Items[i]).Header);
-
+                    string s = string.Format("select Name from Setup_Department where CategoryID=(select Code From Setup_Category where Name='{0}')", ((TreeViewItem)treeViewItems.Items[i]).Header);
                     SqlCommand cmd = new SqlCommand(s, con);
-
                     SqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
@@ -178,11 +207,10 @@ namespace Food_Cost
                 con.Close();
             }
             return treeViewItemscopy;
-        }
+        }   //Done
         private List<TreeViewItem> LoadClassesinTreeView(List<TreeViewItem> classNodes)
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             List<TreeViewItem> treeViewItemscopy = new List<TreeViewItem>();
 
             try
@@ -191,11 +219,8 @@ namespace Food_Cost
 
                 for (int i = 0; i < classNodes.Count; i++)
                 {
-                    string s = string.Format(@"SELECT Setup_Class.Name FROM Setup_Class INNER JOIN Setup_Department ON Setup_Class.Level1_ID = Setup_Department.Code " +
-                                                "WHERE Setup_Department.Name = '{0}'", (classNodes[i].Header));
-
+                    string s = string.Format("select Name From Setup_Class where Level1_ID=(select Code From Setup_Department where Name='{0}')", (classNodes[i].Header));
                     SqlCommand cmd = new SqlCommand(s, con);
-
                     SqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
@@ -218,11 +243,10 @@ namespace Food_Cost
                 con.Close();
             }
             return treeViewItemscopy;
-        }
+        }   //Done
         private List<TreeViewItem> LoadSubClassesinTreeView(List<TreeViewItem> subclassNodes)
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             List<TreeViewItem> treeViewItemscopy = new List<TreeViewItem>();
 
             try
@@ -231,11 +255,8 @@ namespace Food_Cost
 
                 for (int i = 0; i < subclassNodes.Count; i++)
                 {
-                    string s = string.Format(@"SELECT Setup_SubClass.Name FROM Setup_SubClass INNER JOIN Setup_Class ON Setup_SubClass.Level2_ID = Setup_Class.Code " +
-                                                "WHERE Setup_Class.Name = '{0}'", (subclassNodes[i].Header));
-
+                    string s = string.Format("select Name from Setup_SubClass where Level2_ID=(select Code from Setup_Class where Name='{0}')", (subclassNodes[i].Header));
                     SqlCommand cmd = new SqlCommand(s, con);
-
                     SqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
@@ -258,7 +279,7 @@ namespace Food_Cost
                 con.Close();
             }
             return treeViewItemscopy;
-        }
+        }    //Done
 
         private List<TreeViewItem> FindTreeNodes()
         {
@@ -288,7 +309,7 @@ namespace Food_Cost
             }
 
             return treeNodes;
-        }
+        }   //Done
         private bool TreeView_SelectedItem_Checks()
         {
             if (treeViewItems.SelectedItem == null)
@@ -307,12 +328,11 @@ namespace Food_Cost
             }
 
             return false;
-        }
+        }  // Done
 
         private List<string> CodeSetupReturn()
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlDataReader reader = null;
             List<string> CodeSetup = new List<string>();
 
@@ -342,7 +362,7 @@ namespace Food_Cost
             }
 
             return CodeSetup;
-        }
+        }    //Donne
         private string TableCode(string tableName)
         {
             string CodeToReturn = "";
@@ -356,7 +376,7 @@ namespace Food_Cost
                 CodeToReturn = Codetxt.Text;
 
             return CodeToReturn;
-        }
+        }   //Done
         private string TableToDeleteFrom()
         {
             List<TreeViewItem> treeNodes = FindTreeNodes();
@@ -367,11 +387,25 @@ namespace Food_Cost
                 TableName = "Setup_Department";
 
             else if (treeViewItems.SelectedItem == treeNodes[2])
-                TableName = "Setup_Class";
+            {
+                if(NumberofTreeItems=="1")
+                {
+                    TableName = "Setup_Items";
+                }
+                else
+                    TableName = "Setup_Class";
+            }
 
 
             else if (treeViewItems.SelectedItem == treeNodes[3])
-                TableName = "Setup_SubClass";
+            {
+                if(NumberofTreeItems=="2")
+                {
+                    TableName = "Setup_Items";
+                }
+                else
+                    TableName = "Setup_SubClass";
+            }
 
 
             else if (treeViewItems.SelectedItem == treeNodes[4])
@@ -387,7 +421,6 @@ namespace Food_Cost
                 CategoryIDtxt.Text = "";
                 CategoryName.Text = "";
                 CategoryName2.Text = "";
-                CategoryCreatedDatetxt.Text = "";
             }
 
             else if (DepartmentGroupBox.IsVisible)
@@ -396,8 +429,6 @@ namespace Food_Cost
                 depIDtxt.Text = "";
                 depNametxt.Text = "";
                 depName2txt.Text = "";
-                depCreatedDatetxt.Text = "";
-                depModifiedDatetxt.Text = "";
                 depDescriptiontxt.Text = "";
             }
 
@@ -406,8 +437,6 @@ namespace Food_Cost
                 classIDtxt.Text = "";
                 classNametxt.Text = "";
                 className2txt.Text = "";
-                classCreatedDatetxt.Text = "";
-                classModifiedDatetxt.Text = "";
                 classDesctxt.Text = "";
             }
 
@@ -416,8 +445,6 @@ namespace Food_Cost
                 subclassIDtxt.Text = "";
                 subclassNametxt.Text = "";
                 subclassName2txt.Text = "";
-                subclassCreatedDatetxt.Text = "";
-                subclassModifiedtxt.Text = "";
                 subclassDesctxt.Text = "";
             }
 
@@ -450,7 +477,7 @@ namespace Food_Cost
                 ItemImage.Source = new BitmapImage(new Uri(Directory.GetCurrentDirectory() + "\\gray.jpg"));
                 Imagetxt.Visibility = Visibility.Visible;
             }
-        }
+        }    //Done
         private bool DoSomeChecks()
         {
             if (Codetxt.Text == "")
@@ -481,6 +508,16 @@ namespace Food_Cost
                 MessageBox.Show("Yield is Empty!!!");
                 return false;
             }
+            else if(Convert.ToInt32(TI_Value.Text)<0)
+            {
+                MessageBox.Show("Tax can't Be zero");
+                return false;
+            }
+            else if (Convert.ToInt32(Yieldtxt.Text) > 100 || Convert.ToInt32(Yieldtxt.Text) < 0)
+            {
+                MessageBox.Show("Yiled shoud be Between 0 : 100");
+                return false;
+            }
             else if (Weight.Text == "")
             {
                 MessageBox.Show("Weight is Empty!!!");
@@ -492,11 +529,10 @@ namespace Food_Cost
                 return false;
             }
             return true;
-        }
+        }    //Done
         private void SaveDepartment()
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
 
             TreeViewItem item = treeViewItems.SelectedItem as TreeViewItem;
             TreeViewItem parentItem = item.Parent as TreeViewItem;
@@ -504,7 +540,14 @@ namespace Food_Cost
             try
             {
                 con.Open();
-
+                string s = string.Format("update Setup_Items set Department='{0}' where Department=(select Name from Setup_Department where Code='{1}')", depNametxt.Text, depCodetxt.Text);
+                SqlCommand cmd = new SqlCommand(s, con);
+                cmd.ExecuteNonQuery();
+            }
+            catch {}
+            
+            try
+            {
                 string s = string.Format("select Code from Setup_Category where Name = '{0}'", parentItem.Header);
 
                 SqlCommand cmd = new SqlCommand(s, con);
@@ -512,15 +555,14 @@ namespace Food_Cost
 
 
                 if (item.Header.Equals("Undefined"))
-                    s = "insert into Setup_Department(Code,Name,Name2,Description,CreateDate,ModifiedDate,CategoryID,CategoryName) values ('" + depCodetxt.Text + "','" + depNametxt.Text + "','" + depName2txt.Text + "','" + depDescriptiontxt.Text + "','" + depCreatedDatetxt.Text + "','" +
-                        depModifiedDatetxt.Text + "','" + categoryID + "','" + parentItem.Header + "')";
+                    s = "insert into Setup_Department(Code,Name,Name2,Description,CreateDate,CategoryID,CategoryName) values ('" + depCodetxt.Text + "',N'" + depNametxt.Text + "',N'" + depName2txt.Text + "','" + depDescriptiontxt.Text + "',GETDATE(),'" +
+                        categoryID + "','" + parentItem.Header + "')";
                 else
-                    s = "Update Setup_Department SET Name = '" + depNametxt.Text +
-                                                "',Name2='" + depName2txt.Text +
+                    s = "Update Setup_Department SET Name = N'" + depNametxt.Text +
+                                                "',Name2=N'" + depName2txt.Text +
                                                 "',Description='" + depDescriptiontxt.Text +
-                                                "',CreateDate='" + depCreatedDatetxt.Text +
-                                                "',ModifiedDate='" + depModifiedDatetxt.Text +
-                                                "',CategoryID='" + categoryID +
+                                                "',ModifiedDate=GETDATE()" +
+                                                ",CategoryID='" + categoryID +
                                                 "' Where Code =" + depCodetxt.Text;
 
                 cmd = new SqlCommand(s, con);
@@ -534,20 +576,26 @@ namespace Food_Cost
             {
                 con.Close();
             }
+          
             MessageBox.Show("Saved Successfully");
         }
         private void SaveClass()
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
 
             TreeViewItem item = treeViewItems.SelectedItem as TreeViewItem;
             TreeViewItem parentItem = item.Parent as TreeViewItem;
-
             try
             {
                 con.Open();
+                string s = string.Format("update Setup_Items set Class='{0}' where Class=(select Name from Setup_Class where Code='{1}')", depNametxt.Text, classCodetxt.Text);
+                SqlCommand cmd = new SqlCommand(s, con);
+                cmd.ExecuteNonQuery();
+            }
+            catch { }
 
+            try
+            {
                 string s = string.Format("select Code from Setup_Department where Name = '{0}'", parentItem.Header);
 
                 SqlCommand cmd = new SqlCommand(s, con);
@@ -555,15 +603,13 @@ namespace Food_Cost
 
 
                 if (item.Header.Equals("Undefined"))
-                    s = "insert into Setup_Class(Code,Name,Name2,Description,CreateDate,ModifiedDate,Level1_ID,Level1_Name) values ('" + classCodetxt.Text + "','" + classNametxt.Text + "','" + className2txt.Text + "','" + classDesctxt.Text + "','" + classCreatedDatetxt.Text + "','" +
-                        classModifiedDatetxt.Text + "','" + departmentID + "','" + parentItem.Header + "')";
+                    s = "insert into Setup_Class(Code,Name,Name2,Description,CreateDate,Level1_ID,Level1_Name) values ('" + classCodetxt.Text + "',N'" + classNametxt.Text + "','N" + className2txt.Text + "','" + classDesctxt.Text + "',GETDATE(),'" + departmentID + "','" + parentItem.Header + "')";
                 else
-                    s = "Update Setup_Department SET Name = '" + classNametxt.Text +
-                                                "',Name2='" + className2txt.Text +
+                    s = "Update Setup_Department SET Name = N'" + classNametxt.Text +
+                                                "',Name2=N'" + className2txt.Text +
                                                 "',Description='" + classDesctxt.Text +
-                                                "',CreateDate='" + classCreatedDatetxt.Text +
-                                                "',ModifiedDate='" + classModifiedDatetxt.Text +
-                                                "',CategoryID='" + departmentID +
+                                                "',ModifiedDate=GETDATE()"+
+                                                ",CategoryID='" + departmentID +
                                                 "' Where Code =" + classCodetxt.Text;
 
                 cmd = new SqlCommand(s, con);
@@ -577,20 +623,27 @@ namespace Food_Cost
             {
                 con.Close();
             }
+
+
             MessageBox.Show("Saved Successfully");
         }
         private void SaveSubClass()
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
 
             TreeViewItem item = treeViewItems.SelectedItem as TreeViewItem;
             TreeViewItem parentItem = item.Parent as TreeViewItem;
-
             try
             {
                 con.Open();
+                string s = string.Format("update Setup_Items set SUBClass='{0}' where SUBClass=(select Name from Setup_SubClass where Code='{1}')", depNametxt.Text, subclassCodetxt.Text);
+                SqlCommand cmd = new SqlCommand(s, con);
+                cmd.ExecuteNonQuery();
+            }
+            catch { }
 
+            try
+            {
                 string s = string.Format("select Code from Setup_Class where Name = '{0}'", parentItem.Header);
 
                 SqlCommand cmd = new SqlCommand(s, con);
@@ -598,15 +651,13 @@ namespace Food_Cost
 
 
                 if (item.Header.Equals("Undefined"))
-                    s = "insert into Setup_SubClass(Code,Name,Name2,Description,CreateDate,ModifiedDate,Level2_ID,Level2_Name) values ('" + subclassCodetxt.Text + "','" + subclassNametxt.Text + "','" + subclassName2txt.Text + "','" + subclassDesctxt.Text + "','" + subclassCreatedDatetxt.Text + "','" +
-                        subclassModifiedtxt.Text + "','" + classID + "','" + parentItem.Header + "')";
+                    s = "insert into Setup_SubClass(Code,Name,Name2,Description,CreateDate,ModifiedDate,Level2_ID,Level2_Name) values ('" + subclassCodetxt.Text + "',N'" + subclassNametxt.Text + "',N'" + subclassName2txt.Text + "','" + subclassDesctxt.Text + "',GETDATE(),'"  + classID + "','" + parentItem.Header + "')";
                 else
-                    s = "Update Setup_SubClass SET Name = '" + subclassNametxt.Text +
-                                                "',Name2='" + subclassName2txt.Text +
+                    s = "Update Setup_SubClass SET Name = N'" + subclassNametxt.Text +
+                                                "',Name2=N'" + subclassName2txt.Text +
                                                 "',Description='" + subclassDesctxt.Text +
-                                                "',CreateDate='" + subclassCreatedDatetxt.Text +
-                                                "',ModifiedDate='" + subclassModifiedtxt.Text +
-                                                "',Level2_ID='" + classID +
+                                                "',ModifiedDate=GETDATE()" +
+                                                ",Level2_ID='" + classID +
                                                 "' Where Code =" + subclassCodetxt.Text;
 
                 cmd = new SqlCommand(s, con);
@@ -620,15 +671,15 @@ namespace Food_Cost
             {
                 con.Close();
             }
+          
             MessageBox.Show("Saved Successfully");
         }
         private void SaveItem()
         {
             if (!DoSomeChecks())
                 return;
-
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
 
             //string s = string.Format("select * from Setup_Items where Code = {0}", Codetxt.Text);
             //SqlCommand cmd = new SqlCommand(s, con);
@@ -650,7 +701,6 @@ namespace Food_Cost
                 try
                 {
                     weight2 = float.Parse(Weight.Text) * float.Parse(ConvUnit2.Text);
-                    //weight3 = float.Parse(Weight.Text) * float.Parse(Conv//Unit3.Text);
                 }
                 catch { }
 
@@ -659,21 +709,20 @@ namespace Food_Cost
                     taxable_prec_value = "0";
                 if (ConvUnit2.Text == "")
                     ConvUnit2.Text = "0";
-                //if (ConvUnit3.Text == "")
-                //    ConvUnit3.Text = "0";
+
                 string s = "";
                 if (item.Header.Equals("Undefined"))
                 {
                     if(unit.Text == unit2.Text)
                     {
-                        s = string.Format("insert into Setup_Items Values ('{0}','{1}','{2}','{3}','{4}',(select Code from Vendors where Name = '{5}'),'{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}','{15}','{16}','{17}'," +
+                        s = string.Format("insert into Setup_Items Values ('{0}','{1}','{2}',N'{3}',N'{4}',(select Code from Vendors where Name = '{5}'),'{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}','{15}','{16}','{17}'," +
                           "'{18}','{19}','{20}','{21}','{22}','{23}','{24}','{25}','{26}',GETDATE(),NULL,'{27}','{28}','{29}','{30}')", Codetxt.Text, Manual_Code_txt.Text, BarCodetxt.Text, Name1txt.Text, Name2txt.Text, PrefVendortxt.Text, Categorytxt.Text, Departmenttxt.Text, Classtxt.Text, SubClasstxt.Text,
                           MUT_cb.IsChecked,ExpDate_cb.IsChecked, Specstxt.Text, Yieldtxt.Text, Weight.Text, unit.Text, unit_txt1.Text, ConvUnit2.Text, unit3.Text, '1', CW_cb.IsChecked, BI_cb.IsChecked, PI_cb.IsChecked, HI_cb.IsChecked,
                           TI_cb.IsChecked, taxable_prec_value, ItemImage.Source.ToString(),MainWindow.UserID,"", Inventory_Item.IsChecked,Activecbx.IsChecked);
                     }
                     else
                     {
-                        s = string.Format("insert into Setup_Items Values ('{0}','{1}','{2}','{3}','{4}',(select Code from Vendors where Name = '{5}'),'{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}','{15}','{16}','{17}'," +
+                        s = string.Format("insert into Setup_Items Values ('{0}','{1}','{2}',N'{3}',N'{4}',(select Code from Vendors where Name = '{5}'),'{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}','{15}','{16}','{17}'," +
                           "'{18}','{19}','{20}','{21}','{22}','{23}','{24}','{25}','{26}',GETDATE(),NULL,'{27}','{28}','{29}','{30}')", Codetxt.Text, Manual_Code_txt.Text, BarCodetxt.Text, Name1txt.Text, Name2txt.Text, PrefVendortxt.Text, Categorytxt.Text, Departmenttxt.Text, Classtxt.Text, SubClasstxt.Text,
                           MUT_cb.IsChecked, ExpDate_cb.IsChecked, Specstxt.Text, Yieldtxt.Text, Weight.Text, unit.Text, unit2.Text, ConvUnit2.Text, unit3.Text, '1', CW_cb.IsChecked, BI_cb.IsChecked, PI_cb.IsChecked, HI_cb.IsChecked,
                           TI_cb.IsChecked, taxable_prec_value, ItemImage.Source.ToString(), MainWindow.UserID, "", Inventory_Item.IsChecked,Activecbx.IsChecked);
@@ -686,8 +735,8 @@ namespace Food_Cost
                     {
                         s = "Update Setup_Items SET [Manual Code] = '" + Manual_Code_txt.Text +
                                                "',BarCode='" + BarCodetxt.Text +
-                                               "',Name='" + Name1txt.Text +
-                                               "',Name2='" + Name2txt.Text +
+                                               "',Name=N'" + Name1txt.Text +
+                                               "',Name2=N'" + Name2txt.Text +
                                                "',VendorID=" + string.Format("(Select Code from Vendors Where Name='{0}')", PrefVendortxt.Text) +
                                                ",Category='" + Categorytxt.Text +
                                                "',Department='" + Departmenttxt.Text +
@@ -720,8 +769,8 @@ namespace Food_Cost
                     {
                         s = "Update Setup_Items SET [Manual Code] = '" + Manual_Code_txt.Text +
                                                "',BarCode='" + BarCodetxt.Text +
-                                               "',Name='" + Name1txt.Text +
-                                               "',Name2='" + Name2txt.Text +
+                                               "',Name=N'" + Name1txt.Text +
+                                               "',Name2=N'" + Name2txt.Text +
                                                "',VendorID=" + string.Format("(Select Code from Vendors Where Name='{0}')", PrefVendortxt.Text) +
                                                ",Category='" + Categorytxt.Text +
                                                "',Department='" + Departmenttxt.Text +
@@ -755,7 +804,7 @@ namespace Food_Cost
                 cmd.ExecuteNonQuery();
                 MessageBox.Show("Saved Successfully");
 
-                s = "select count(Code) FROM Store_Setup";
+                s = "select count(Code) FROM Setup_Restaurant";
                 cmd = new SqlCommand(s, con);
                 string CountofSTores = cmd.ExecuteScalar().ToString();
                 for (int i = 1; i <= (Convert.ToInt32(CountofSTores)); i++)
@@ -798,7 +847,7 @@ namespace Food_Cost
             SubClassGroupBox.Visibility = Visibility.Hidden;
             ItemsGroupBox.Visibility = Visibility.Hidden;
             CategoryGroupBox.Visibility = Visibility.Visible;
-        }
+        }    //Done
         private void LoadDepartmentData()
         {
             DepartmentGroupBox.Visibility = Visibility.Visible;
@@ -806,7 +855,7 @@ namespace Food_Cost
             SubClassGroupBox.Visibility = Visibility.Hidden;
             ItemsGroupBox.Visibility = Visibility.Hidden;
             CategoryGroupBox.Visibility = Visibility.Hidden;
-        }
+        }    //Done
         private void LoadClassData()
         {
             DepartmentGroupBox.Visibility = Visibility.Hidden;
@@ -814,7 +863,7 @@ namespace Food_Cost
             SubClassGroupBox.Visibility = Visibility.Hidden;
             ItemsGroupBox.Visibility = Visibility.Hidden;
             CategoryGroupBox.Visibility = Visibility.Hidden;
-        }
+        }   //Done
         private void SubClassLoadClassData()
         {
             DepartmentGroupBox.Visibility = Visibility.Hidden;
@@ -822,7 +871,7 @@ namespace Food_Cost
             SubClassGroupBox.Visibility = Visibility.Visible;
             ItemsGroupBox.Visibility = Visibility.Hidden;
             CategoryGroupBox.Visibility = Visibility.Hidden;
-        }
+        }   //Done
         private void LoadItemData()
         {
             DepartmentGroupBox.Visibility = Visibility.Hidden;
@@ -830,12 +879,23 @@ namespace Food_Cost
             SubClassGroupBox.Visibility = Visibility.Hidden;
             ItemsGroupBox.Visibility = Visibility.Visible;
             CategoryGroupBox.Visibility = Visibility.Hidden;
-        }
+            if(NumberofTreeItems=="1")
+            {
+                TheClass.Visibility = Visibility.Hidden;
+                Classtxt.Visibility = Visibility.Hidden;
+                TheSubClass.Visibility = Visibility.Hidden;
+                SubClasstxt.Visibility = Visibility.Hidden;
+            }
+            else if(NumberofTreeItems=="2")
+            {
+                TheSubClass.Visibility = Visibility.Hidden;
+                SubClasstxt.Visibility = Visibility.Hidden;
+            }
+        }   //Done
 
         private void LoadData(string TableName, string header)
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlDataReader reader = null;
 
             try
@@ -852,7 +912,6 @@ namespace Food_Cost
                         CategoryCodetxt.Text = reader["Code"].ToString();
                         CategoryName.Text = reader["Name"].ToString();
                         CategoryName2.Text = reader["Name2"].ToString();
-                        CategoryCreatedDatetxt.Text = reader["CreateDate"].ToString();
                     }
 
                     else if (TableName.Equals("Setup_Department"))
@@ -860,10 +919,7 @@ namespace Food_Cost
                         depCodetxt.Text = reader["Code"].ToString();
                         depNametxt.Text = reader["Name"].ToString();
                         depName2txt.Text = reader["Name2"].ToString();
-                        depCreatedDatetxt.Text = reader["CreateDate"].ToString();
                         depDescriptiontxt.Text = reader["Description"].ToString();
-                        depModifiedDatetxt.Text = reader["ModifiedDate"].ToString();
-                        depChildOf.Text = reader["CategoryName"].ToString();
                     }
 
                     else if (TableName.Equals("Setup_Class"))
@@ -871,10 +927,7 @@ namespace Food_Cost
                         classCodetxt.Text = reader["Code"].ToString();
                         classNametxt.Text = reader["Name"].ToString();
                         className2txt.Text = reader["Name2"].ToString();
-                        classCreatedDatetxt.Text = reader["CreateDate"].ToString();
                         classDesctxt.Text = reader["Description"].ToString();
-                        classModifiedDatetxt.Text = reader["ModifiedDate"].ToString();
-                        classChildOf.Text = reader["Level1_Name"].ToString();
                     }
 
                     else if (TableName.Equals("Setup_SubClass"))
@@ -882,15 +935,12 @@ namespace Food_Cost
                         subclassCodetxt.Text = reader["Code"].ToString();
                         subclassNametxt.Text = reader["Name"].ToString();
                         subclassName2txt.Text = reader["Name2"].ToString();
-                        subclassCreatedDatetxt.Text = reader["CreateDate"].ToString();
                         subclassDesctxt.Text = reader["Description"].ToString();
-                        subclassModifiedtxt.Text = reader["ModifiedDate"].ToString();
-                        subclassChildOf.Text = reader["Level2_Name"].ToString();
                     }
 
                     else if (TableName.Equals("Setup_Items"))
                     {
-                        SqlConnection con2 = new SqlConnection(connString);
+                        SqlConnection con2 = new SqlConnection(Classes.DataConnString);
                         con2.Open();
                         cmd = new SqlCommand(string.Format("select Name From Vendors Where Code ='{0}'",reader["VendorID"].ToString()),con2);
 
@@ -965,7 +1015,7 @@ namespace Food_Cost
                 reader.Close();
                 con.Close();
             }
-        }
+        }   //Done
 
         //events
         private void AddClicked(object sender, RoutedEventArgs e)
@@ -1008,34 +1058,89 @@ namespace Food_Cost
                 }
                 else if (DepartmentGroupBox.IsVisible)
                 {
-                    string depCode = depCodetxt.Text;
+                    if (NumberofTreeItems == "1")
+                    {
+                        string ItemCode = depCodetxt.Text;
+                        for (int i = 0; i < Convert.ToInt32(CodeSetup[2]) + Convert.ToInt32(CodeSetup[3]); i++)
+                            ItemCode += "0";
+                        //select added node
+                        Activecbx.IsChecked = true;
+                        ((TreeViewItem)treeViewItems.SelectedItem).IsExpanded = true;
+                        treeViewItem.IsSelected = true;
 
-                    //select added node
-                    ((TreeViewItem)treeViewItems.SelectedItem).IsExpanded = true;
-                    treeViewItem.IsSelected = true;
+                        string CodeDigits = "";
+                        for (int i = 0; i < int.Parse(CodeSetup[1]) - itemPositon.ToString().Count(); i++)
+                            CodeDigits += "0";
+                        CodeDigits += itemPositon.ToString();
 
-                    string CodeDigits = "";
-                    for (int i = 0; i < int.Parse(CodeSetup[1]) - itemPositon.ToString().Count(); i++)
-                        CodeDigits += "0";
-                    CodeDigits += itemPositon.ToString();
+                        Codetxt.Text = ItemCode + CodeDigits;
 
-                    classCodetxt.Text = depCode + CodeDigits;
+                        List<TreeViewItem> ParentsNode = FindTreeNodes();
+                        Categorytxt.Text = ParentsNode[0].Header.ToString();
+                        Departmenttxt.Text = ParentsNode[1].Header.ToString();
+                        Classtxt.Visibility = Visibility.Hidden;
+                        SubClasstxt.Visibility = Visibility.Hidden;
+                        //Classtxt.Text = ParentsNode[2].Header.ToString();
+                        //SubClasstxt.Text = ParentsNode[3].Header.ToString();
+                    }
+                    else
+                    {
+                        string depCode = depCodetxt.Text;
+
+                        //select added node
+                        ((TreeViewItem)treeViewItems.SelectedItem).IsExpanded = true;
+                        treeViewItem.IsSelected = true;
+
+                        string CodeDigits = "";
+                        for (int i = 0; i < int.Parse(CodeSetup[1]) - itemPositon.ToString().Count(); i++)
+                            CodeDigits += "0";
+                        CodeDigits += itemPositon.ToString();
+
+                        classCodetxt.Text = depCode + CodeDigits;
+                    }
 
                 }
                 else if (ClassGroupBox.IsVisible)
                 {
-                    string ClassCode = classCodetxt.Text;
+                    if(NumberofTreeItems=="2")
+                    {
+                        string ItemCode = classCodetxt.Text;
+                        for (int i = 0; i < Convert.ToInt32(CodeSetup[3]) + Convert.ToInt32(CodeSetup[4]); i++)
+                            ItemCode += "0";
+                        //select added node
+                        Activecbx.IsChecked = true;
+                        ((TreeViewItem)treeViewItems.SelectedItem).IsExpanded = true;
+                        treeViewItem.IsSelected = true;
 
-                    //select added node
-                    ((TreeViewItem)treeViewItems.SelectedItem).IsExpanded = true;
-                    treeViewItem.IsSelected = true;
+                        string CodeDigits = "";
+                        for (int i = 0; i < int.Parse(CodeSetup[2]) - itemPositon.ToString().Count(); i++)
+                            CodeDigits += "0";
+                        CodeDigits += itemPositon.ToString();
 
-                    string CodeDigits = "";
-                    for (int i = 0; i < int.Parse(CodeSetup[2]) - itemPositon.ToString().Count(); i++)
-                        CodeDigits += "0";
-                    CodeDigits += itemPositon.ToString();
+                        Codetxt.Text = ItemCode + CodeDigits;
 
-                    subclassCodetxt.Text = ClassCode + CodeDigits;
+                        List<TreeViewItem> ParentsNode = FindTreeNodes();
+                        Categorytxt.Text = ParentsNode[0].Header.ToString();
+                        Departmenttxt.Text = ParentsNode[1].Header.ToString();
+                        Classtxt.Text = ParentsNode[2].Header.ToString();
+                        SubClasstxt.Visibility = Visibility.Hidden;
+                       // SubClasstxt.Text = ParentsNode[3].Header.ToString();
+                    }
+                    else
+                    {
+                        string ClassCode = classCodetxt.Text;
+
+                        //select added node
+                        ((TreeViewItem)treeViewItems.SelectedItem).IsExpanded = true;
+                        treeViewItem.IsSelected = true;
+
+                        string CodeDigits = "";
+                        for (int i = 0; i < int.Parse(CodeSetup[2]) - itemPositon.ToString().Count(); i++)
+                            CodeDigits += "0";
+                        CodeDigits += itemPositon.ToString();
+
+                        subclassCodetxt.Text = ClassCode + CodeDigits;
+                    }
 
                 }
                 else if (SubClassGroupBox.IsVisible)
@@ -1074,27 +1179,42 @@ namespace Food_Cost
                 MessageBox.Show(error.ToString());
             }
 
-        }
+        }   //Done
         private void ReloadClicked(object sender, RoutedEventArgs e)
         {
+            List<TreeViewItem> classNodes = new List<TreeViewItem>();
+            List<TreeViewItem> subclassNodes = new List<TreeViewItem>();
+            List<TreeViewItem> ItemsNodes = new List<TreeViewItem>();
             //MessageBox.Show("reload");
             treeViewItems.Items.Clear();
             LoadCategoryinTreeView();
-            List<TreeViewItem> classNodes = LoadDepartmentinTreeView();
-            List<TreeViewItem> subclassNodes = LoadClassesinTreeView(classNodes);
-            List<TreeViewItem> ItemsNodes = LoadSubClassesinTreeView(subclassNodes);
-            LoadItemsinTreeView(ItemsNodes);
-
+            if (NumberofTreeItems == "1")
+            {
+                classNodes = LoadDepartmentinTreeView();
+                LoadItemsinTreeView(classNodes);
+            }
+            if (NumberofTreeItems == "2")
+            {
+                classNodes = LoadDepartmentinTreeView();
+                subclassNodes = LoadClassesinTreeView(classNodes);
+                LoadItemsinTreeView(subclassNodes);
+            }
+            if (NumberofTreeItems == "3")
+            {
+                classNodes = LoadDepartmentinTreeView();
+                subclassNodes = LoadClassesinTreeView(classNodes);
+                ItemsNodes = LoadSubClassesinTreeView(subclassNodes);
+                LoadItemsinTreeView(ItemsNodes);
+            }
             UndifinedExists = null;
 
             Manual_Code_txt.Text = "";
             CodeLabel.Visibility = Visibility.Visible;
             Codetxt.Visibility = Visibility.Visible;
-        }
+        }    //Done
         private void DeleteClicked(object sender, RoutedEventArgs e)
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
 
             if((treeViewItems.SelectedItem as TreeViewItem).HasItems)
             {
@@ -1138,7 +1258,7 @@ namespace Food_Cost
 
             Reload.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             //ClearGroupBox();
-        }
+        }  //Done
         private void SaveBtn_Clicked(object sender, RoutedEventArgs e)
         {
             if (DepartmentGroupBox.IsVisible)
@@ -1213,14 +1333,30 @@ namespace Food_Cost
 
             else if (senderObject.SelectedItem == treeNodes[2])
             {
-                LoadClassData();
-                LoadData("Setup_Class", treeNodes[2].Header.ToString());
+                if (NumberofTreeItems == "1")
+                {
+                    LoadItemData();
+                    LoadData("Setup_Items", treeNodes[2].Header.ToString());
+                }
+                else
+                {
+                    LoadClassData();
+                    LoadData("Setup_Class", treeNodes[2].Header.ToString());
+                }
             }
 
             else if (senderObject.SelectedItem == treeNodes[3])
             {
-                SubClassLoadClassData();
-                LoadData("Setup_SubClass", treeNodes[3].Header.ToString());
+                if (NumberofTreeItems == "2")
+                {
+                    LoadItemData();
+                    LoadData("Setup_Items", treeNodes[3].Header.ToString());
+                }
+                else
+                {
+                    SubClassLoadClassData();
+                    LoadData("Setup_SubClass", treeNodes[3].Header.ToString());
+                }
             }
 
             else if (senderObject.SelectedItem == treeNodes[4])
@@ -1229,7 +1365,7 @@ namespace Food_Cost
                 LoadData("Setup_Items", treeNodes[4].Header.ToString());
             }
 
-        }
+        }      //Done
         private void TreeViewItems_SelectedItemChanged_1(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             List<TreeViewItem> treeNodes = FindTreeNodes();
@@ -1247,19 +1383,25 @@ namespace Food_Cost
 
             else if (senderObject.SelectedItem == treeNodes[2])
             {
-                LoadClassData();
+                if (NumberofTreeItems == "1")
+                    LoadItemData();
+                else
+                    LoadClassData();
             }
 
             else if (senderObject.SelectedItem == treeNodes[3])
             {
-                SubClassLoadClassData();
+                if (NumberofTreeItems == "2")
+                    LoadItemData();
+                else
+                    SubClassLoadClassData();
             }
 
             else if (senderObject.SelectedItem == treeNodes[4])
                 LoadItemData();
 
             ClearGroupBox();
-        }
+        }       //Done
 
         private void ItemImage_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
@@ -1276,7 +1418,7 @@ namespace Food_Cost
                 Imagetxt.Visibility = Visibility.Hidden;
                 ItemImage.Source = new BitmapImage(new Uri(openFileDialog.FileName));
             }
-        }
+        }   //Done
 
         private void MUT_cb_Clicked(object sender, RoutedEventArgs e)
         {
@@ -1285,20 +1427,19 @@ namespace Food_Cost
                 Unit_Conversion2.Visibility = Visibility.Visible;
             else
                 Unit_Conversion2.Visibility = Visibility.Hidden;
-        }
+        }  //Done
         
-
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9.]+");
             e.Handled = regex.IsMatch(e.Text);
-        }
+        }   //Done
 
         private void NeglectWhiteSpace(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Space)
                 e.Handled = true;
-        }
+        }   //Done
 
         private void TI_cb_Clicked(object sender, RoutedEventArgs e)
         {
@@ -1313,7 +1454,7 @@ namespace Food_Cost
                 TI_Prec_icon.Visibility = Visibility.Hidden;
 
             }
-        }
+        }    //Done
 
         private void BI_cb_Click(object sender, RoutedEventArgs e)
         {
@@ -1327,7 +1468,7 @@ namespace Food_Cost
                 BulkWindow bulkWindow = new BulkWindow(Codetxt.Text, Name1txt.Text);
                 bulkWindow.ShowDialog();
             }
-        }
+        }    //Done
 
         private void PI_cb_Checked(object sender, RoutedEventArgs e)
         {
@@ -1340,7 +1481,7 @@ namespace Food_Cost
                 ParentWindow parentWindow = new ParentWindow(Codetxt.Text);
                 parentWindow.ShowDialog();
             }
-        }
+        }     //Done
 
         private void unit2_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -1361,8 +1502,11 @@ namespace Food_Cost
                 }
             }
             catch { }
-        }
+        }    //Done
 
-       
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

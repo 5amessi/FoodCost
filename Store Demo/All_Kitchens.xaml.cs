@@ -43,11 +43,9 @@ namespace Food_Cost
             LoadKitchens("Transfer_Kitchens");
         }
 
-
-        private void LoadKitchens( string kitchens)
+        private void LoadKitchens(string kitchens)
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             try
             {
                 con.Open();
@@ -55,13 +53,13 @@ namespace Food_Cost
                     if (kitchens == "Transfer_Resturant")
                     {
                         if (Kitchen == "From_Resturant")
-                            s = string.Format("select Code,Name,Name2,IsActive as Active from Kitchens_Setup where RestaurantID = (select Code from Store_Setup where Name = '{0}') ", resturant, Transfer_Resturant.From_Kitchen.Text);
+                            s = string.Format("select Code,Name,Name2,IsActive as Active from Setup_Kitchens where IsActive='True' and RestaurantID = (select Code from Setup_Restaurant where Name = '{0}') ", resturant, Transfer_Resturant.From_Kitchen.Text);
                         else
-                            s = string.Format("select Code,Name,Name2,IsActive as Active from Kitchens_Setup where RestaurantID = (select Code from Store_Setup where Name = '{0}') ", resturant, Transfer_Resturant.From_Kitchen.Text);
+                            s = string.Format("select Code,Name,Name2,IsActive as Active from Setup_Kitchens where IsActive='True' and RestaurantID = (select Code from Setup_Restaurant where Name = '{0}') ", resturant, Transfer_Resturant.From_Kitchen.Text);
                     }
                     else
                     {
-                        s = string.Format("select Code,Name,Name2,IsActive as Active from Kitchens_Setup where RestaurantID = (select Code from Store_Setup where Name = '{0}')  AND Name <> '{1}' order by Code", resturant, transfer_Kitchens.From_Kitchen.Text);
+                        s = string.Format("select Code,Name,Name2,IsActive as Active from Setup_Kitchens where IsActive='True' and RestaurantID = (select Code from Setup_Restaurant where Name = '{0}')  AND Name <> '{1}' order by Code", resturant, transfer_Kitchens.From_Kitchen.Text);
                     }
                     DataTable dt = new DataTable();
 
@@ -83,8 +81,7 @@ namespace Food_Cost
 
         private void TextDataChange(object sender, TextChangedEventArgs e)
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             if ((RadioByCode.IsChecked == true || RadioByName.IsChecked == true) && SearchTxt.Text != "")
             {
                 if (RadioByCode.IsChecked == true && RadioByName.IsChecked == false)
@@ -93,7 +90,7 @@ namespace Food_Cost
                     try
                     {
                         con.Open();
-                        string s = string.Format("select Code,Name,Name2,IsActive as Active from Kitchens_Setup where RestaurantID = (select Code from Store_Setup where Name = '{1}') AND Code Like '%{0}%' order by Code", SearchTxt.Text, resturant);
+                        string s = string.Format("select Code,Name,Name2,IsActive as Active from Setup_Kitchens where  IsActive='True' and RestaurantID = (select Code from Setup_Restaurant where Name = '{1}') AND Code Like '%{0}%' order by Code", SearchTxt.Text, resturant);
                         DataTable dt = new DataTable();
 
                         using (SqlDataAdapter da = new SqlDataAdapter(s, con))
@@ -116,7 +113,7 @@ namespace Food_Cost
                     try
                     {
                         con.Open();
-                        string s = string.Format("select Code,Name,Name2,IsActive as Active from Kitchens_Setup where RestaurantID = (select Code from Store_Setup where Name = '{1}') AND Name Like '%{0}%' order by Code", SearchTxt.Text, resturant);
+                        string s = string.Format("select Code,Name,Name2,IsActive as Active from Setup_Kitchens where  IsActive='True' and RestaurantID = (select Code from Setup_Restaurant where Name = '{1}') AND Name Like '%{0}%' order by Code", SearchTxt.Text, resturant);
                         DataTable dt = new DataTable();
 
                         using (SqlDataAdapter da = new SqlDataAdapter(s, con))
@@ -140,7 +137,7 @@ namespace Food_Cost
                 try
                 {
                     con.Open();
-                    string s = string.Format("select Code,Name,Name2,IsActive as Active from Kitchens_Setup where RestaurantID = (select Code from Store_Setup where Name = '{0}') order by Code", resturant);
+                    string s = string.Format("select Code,Name,Name2,IsActive as Active from Setup_Kitchens where  IsActive='True' and RestaurantID = (select Code from Setup_Restaurant where Name = '{0}') order by Code", resturant);
                     DataTable dt = new DataTable();
 
                     using (SqlDataAdapter da = new SqlDataAdapter(s, con))

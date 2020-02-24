@@ -4,22 +4,35 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:local="clr-namespace:Food_Cost"
-        mc:Ignorable="d"
-        Title="setup" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Width="500" Height="400">
+        xmlns:local="clr-namespace:Food_Cost" mc:Ignorable="d" 
+        Title="setup" ResizeMode="NoResize" WindowStartupLocation="CenterScreen"  >
+    <TabControl >
+        <TabItem Header="Application" FontSize="15">
+            <UniformGrid Rows="2" Columns="3">
+                <Button Margin="10" Height="100" Background="Transparent" Foreground="Black" FontSize="14" Click="Button_Click" Content="station setup" HorizontalContentAlignment="Center"/>
 
-    <UniformGrid Rows="2" Columns="3">
-        <Button Margin="10" Height="100" Background="Transparent" Foreground="Black" FontSize="14" Click="Button_Click" Content="station setup" HorizontalContentAlignment="Center"/>
+                <Button Margin="10" Height="100" Background="Transparent" Foreground="Black" FontSize="14" Click="Button_Click_1" Content=" fiscal period"/>
+            </UniformGrid>
+        </TabItem>
 
-        <Button Margin="10" Height="100" Background="Transparent" Foreground="Black" FontSize="14" Content="cost calculation" HorizontalContentAlignment="Center"/>
+        <TabItem Header="Items" FontSize="15">
+            <UniformGrid Rows="2" Columns="3">
+                <Button Margin="10" Height="100" Background="Transparent" Foreground="Black" FontSize="14" Content="Setup Items Definition" Click="Button_Click_3" HorizontalContentAlignment="Center"/>
+                
+                <Button Margin="10" Height="100" Background="Transparent" Foreground="Black" FontSize="14" Content="cost calculation" HorizontalContentAlignment="Center"/>
 
-        <Button Margin="10" Height="100" Background="Transparent" Foreground="Black" FontSize="14" Content=" close month" Click="Button_Click_2"/>
+                <Button Margin="10" Height="100" Background="Transparent" Foreground="Black" FontSize="14" Content=" close month" Click="Button_Click_2"/>
+            </UniformGrid>
+        </TabItem>
 
-        <Button Margin="10" Height="100" Background="Transparent" Foreground="Black" FontSize="14" Click="Button_Click_1" Content=" fiscal period"/>
+        <TabItem Header="Setup" FontSize="15">
+            <UniformGrid Rows="2" Columns="3">
+                <Button Margin="10" Height="100" Background="Transparent" Foreground="Black" FontSize="14" Click="Connection_Click" Content="Connection String"/>
 
-        <Button Margin="10" Height="100" Background="Transparent" Foreground="Black" FontSize="14" Click="Connection_Click" Content="Connection String"/>
+                <Button Margin="10" Height="100" Background="Transparent" Foreground="Black" FontSize="14" Click="Reports_Click" Content=" reports"/>
+            </UniformGrid>
+        </TabItem>
+    </TabControl>
 
-        <Button Margin="10" Height="100" Background="Transparent" Foreground="Black" FontSize="14" Click="Reports_Click" Content=" reports"/>
 
-    </UniformGrid>
 </Window>

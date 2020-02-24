@@ -38,7 +38,7 @@ namespace Food_Cost
             try
             {
                 con.Open();
-                string s = "select Name from Store_Setup";
+                string s = "select Name from Setup_Restaurant";
                 SqlCommand cmd = new SqlCommand(s, con);
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -65,7 +65,7 @@ namespace Food_Cost
             try
             {
                 con.Open();
-                string s = "select Code from Store_Setup Where Name='" + StoreIDcbx.SelectedItem + "'";
+                string s = "select Code from Setup_Restaurant Where Name='" + StoreIDcbx.SelectedItem + "'";
                 SqlCommand cmd = new SqlCommand(s, con);
                 ValOfResturant = cmd.ExecuteScalar().ToString();
             }
@@ -87,7 +87,7 @@ namespace Food_Cost
             try
             {
                 con.Open();
-                string s = "select Name from Kitchens_Setup Where RestaurantID=" + CodeOfResturant;
+                string s = "select Name from Setup_Kitchens Where RestaurantID=" + CodeOfResturant;
                 SqlCommand cmd = new SqlCommand(s, con);
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -151,11 +151,11 @@ namespace Food_Cost
             SqlConnection con3 = new SqlConnection(connString);
             con3.Open();
 
-            string s = string.Format("select Code from Kitchens_Setup where Name = '{0}'", Kitchencbx.Text);
+            string s = string.Format("select Code from Setup_Kitchens where Name = '{0}'", Kitchencbx.Text);
             SqlCommand cmd = new SqlCommand(s, con3);
             string kit = cmd.ExecuteScalar().ToString();
 
-            s = string.Format(" select Code from Store_Setup where Name = '{0}'", StoreIDcbx.Text);
+            s = string.Format(" select Code from Setup_Restaurant where Name = '{0}'", StoreIDcbx.Text);
             cmd = new SqlCommand(s, con3);
             string rest = cmd.ExecuteScalar().ToString();
 

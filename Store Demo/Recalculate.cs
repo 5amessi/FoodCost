@@ -252,7 +252,7 @@ namespace Food_Cost
 
                 DataTable DTTop = new DataTable();
 
-                DataTable Kitchens = Classes.RetrieveData("*", "Kitchens_Setup");
+                DataTable Kitchens = Classes.RetrieveData("*", "Setup_Kitchens");
 
                 string Dvalues = "('" + DRCurrentMonth["Year"] + "','" + DRCurrentMonth["Month"].ToString() + "','" + DRCurrentMonth["From"] + "','" + DRCurrentMonth["To"] + "'";
 

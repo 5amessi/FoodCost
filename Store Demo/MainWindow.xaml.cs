@@ -39,6 +39,7 @@ namespace Food_Cost
 
             InitializeComponent();
             Classes.GetWS();
+            Classes.UpdateDateFormat();
             //Calculation.Calculate();
             NameofForm.Text = "Food Cost";
             //int num = (DateTime.Now.Hour* DateTime.Now.Day) +0x21;

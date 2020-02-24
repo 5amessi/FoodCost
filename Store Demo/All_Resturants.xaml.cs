@@ -25,7 +25,6 @@ namespace Food_Cost
         Transfer_Kitchens transfer_Kitchens;
         Transfer_Resturant Transfer_Resturant;
         string Resturant;
-
         public All_Resturants(Transfer_Resturant _Transfer_Resturant,string _resturant)
         {
             InitializeComponent();
@@ -33,8 +32,6 @@ namespace Food_Cost
             Resturant = _resturant;
             LoadResturants("Transfer_Resturant");
         }
-
-       
         public All_Resturants(Transfer_Kitchens _transfer_Kitchens, string _Resturant)
         {
             InitializeComponent();
@@ -46,20 +43,19 @@ namespace Food_Cost
         private void LoadResturants( string Transfer)
         {
             MainWindow main = Application.Current.MainWindow as MainWindow;
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             try
             {
                 con.Open();
                 string s = "";
                 if (Transfer == "TransferKitchen")
-                     s = "select * from Store_Setup";
+                     s = "select Code,Name,Name2,IsMain,IsActive from Setup_Restaurant where IsActive='True'";
                 else if (Transfer == "Transfer_Resturant")
                 {
                     if (Resturant == "From_Resturant")
-                        s = "select * from Store_Setup";
+                        s = "select Code,Name,Name2,IsMain,IsActive from Setup_Restaurant where IsActive='True'";
                     else
-                        s = string.Format("select * from Store_Setup where Name <> '{0}'", Transfer_Resturant.From_Resturant.Text);
+                        s = string.Format("select Code,Name,Name2,IsMain,IsActive from Setup_Restaurant where IsActive='True' and Name <> '{0}'", Transfer_Resturant.From_Resturant.Text);
                 }
                 DataTable dt = new DataTable();
 

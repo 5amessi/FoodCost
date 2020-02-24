@@ -125,7 +125,7 @@ namespace Food_Cost
             {
                 con.Open();
 
-                string s = "insert into Vendors(Code,Name,IsActive) values (" + Code_txt.Text + ",'" + Name_txt.Text + 
+                string s = "insert into Vendors(Code,Name,IsActive) values (" + Code_txt.Text + ",N'" + Name_txt.Text + 
                     "','" + Active_chbx.IsChecked.ToString() + "')";
 
                 SqlCommand cmd = new SqlCommand(s, con);
@@ -155,7 +155,7 @@ namespace Food_Cost
             {
                 con.Open();
 
-                string s = "Update Vendors SET " + "Name = '" + Name_txt.Text + "', IsActive = '" + Active_chbx.IsChecked + "' Where Code = " + Code_txt.Text;
+                string s = "Update Vendors SET " + "Name = N'" + Name_txt.Text + "', IsActive = '" + Active_chbx.IsChecked + "' Where Code = " + Code_txt.Text;
 
                 SqlCommand cmd = new SqlCommand(s, con);
 

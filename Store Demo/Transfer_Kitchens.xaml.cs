@@ -18,7 +18,7 @@ namespace Food_Cost
         {
             InitializeComponent();
             increment_transferNO();
-        }
+        } 
         private bool DoSomeChecks()
         {
             if (transfer_No.Text.Equals(""))
@@ -33,10 +33,10 @@ namespace Food_Cost
             {
                 MessageBox.Show("Transfer Date Can't Be Empty");
             }
-            else if (Transfer_Time.Text == null)
-            {
-                MessageBox.Show("Transfer Time Can't Be Empty");
-            }
+            //else if (Transfer_Time.Text == null)
+            //{
+            //    MessageBox.Show("Transfer Time Can't Be Empty");
+            //}
             else if (Statustxt.Text.Equals(""))
             {
                 MessageBox.Show("Status Can't Be Empty");
@@ -152,7 +152,7 @@ namespace Food_Cost
                 DataTable dt = ItemsDGV.DataContext as DataTable;
                 for (int i = 0; i < dt.Rows.Count; i++)
                 {
-                    string s = string.Format("select Qty,Current_Cost From Items where RestaurantID = (select code from Store_Setup where Name = '{1}') and KitchenID = (select code from Kitchens_Setup where Name = '{2}') and ItemID={0}", dt.Rows[i]["Code"].ToString(), Resturant.Text, From_Kitchen.Text);
+                    string s = string.Format("select Qty,Current_Cost From Items where RestaurantID = (select code from Setup_Restaurant where Name = '{1}') and KitchenID = (select code from Setup_Kitchens where Name = '{2}') and ItemID={0}", dt.Rows[i]["Code"].ToString(), Resturant.Text, From_Kitchen.Text);
                     SqlCommand _CMD = new SqlCommand(s, con);
                     SqlDataReader _reader = _CMD.ExecuteReader();
                     _reader.Read();
@@ -171,7 +171,7 @@ namespace Food_Cost
                     From_QTyonHand = (Convert.ToDouble(From_QTyonHand) - Convert.ToDouble(dt.Rows[i]["Qty"].ToString())).ToString();
                     _reader.Close();
 
-                    s = string.Format("select Qty, Current_Cost From Items where RestaurantID = (select code from Store_Setup where Name = '{1}') and KitchenID = (select code from Kitchens_Setup where Name = '{2}') and ItemID={0}", dt.Rows[i]["Code"].ToString(), Resturant.Text, To_Kitchen.Text);
+                    s = string.Format("select Qty, Current_Cost From Items where RestaurantID = (select code from Setup_Restaurant where Name = '{1}') and KitchenID = (select code from Setup_Kitchens where Name = '{2}') and ItemID={0}", dt.Rows[i]["Code"].ToString(), Resturant.Text, To_Kitchen.Text);
                     _CMD = new SqlCommand(s, con);
                     _reader = _CMD.ExecuteReader();
                     while (_reader.Read())
@@ -213,14 +213,14 @@ namespace Food_Cost
             try
             {
                 string FiledSelection = "Transfer_Serial,Manual_Transfer_No,Transfer_Date,Comment,From_Resturant_ID,To_Resturant_ID,From_Kitchen_ID,To_Kitchen_ID,Create_Date,Type,UserID,WS,Status";
-                string values = string.Format("'{0}', '{1}', '{2}', '{3}', (select Code from Store_Setup where Name = '{4}'),(select Code from Store_Setup where Name = '{5}'),(select Code from Kitchens_Setup where Name = '{6}'),(select Code from Kitchens_Setup where Name = '{7}'), GETDATE(),'{8}','{9}',{10},'{11}'", transfer_No.Text, Manual_transfer_No.Text, Transfer_dt.Text + " " + Transfer_Time.Text, commenttxt.Text, Resturant.Text, Resturant.Text, From_Kitchen.Text, To_Kitchen.Text, "Transfer_Kitchen", MainWindow.UserID, Classes.WS, Statustxt.Text);
+                string values = string.Format("'{0}', '{1}', '{2}', '{3}', (select Code from Setup_Restaurant where Name = '{4}'),(select Code from Setup_Restaurant where Name = '{5}'),(select Code from Setup_Kitchens where Name = '{6}'),(select Code from Setup_Kitchens where Name = '{7}'), GETDATE(),'{8}','{9}',{10},'{11}'", transfer_No.Text, Manual_transfer_No.Text,Convert.ToDateTime(Transfer_dt.Text).ToString("MM-dd-yyyy") , commenttxt.Text, Resturant.Text, Resturant.Text, From_Kitchen.Text, To_Kitchen.Text, "Transfer_Kitchen", MainWindow.UserID, Classes.WS, Statustxt.Text);
                 Classes.InsertRow("Transfer_Kitchens", FiledSelection, values);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
             }
-            //string s = string.Format("insert into Transfer_Kitchens(Transfer_Serial,Manual_Transfer_No,Transfer_Date,Comment,From_Resturant_ID,To_Resturant_ID,From_Kitchen_ID,To_Kitchen_ID,Post_Date,Type,UserID) values('{0}','{1}','{2}','{3}',(select Code from Store_Setup where Name = '{4}'),(select Code from Store_Setup where Name = '{5}'),(select Code from Kitchens_Setup where Name = '{6}'),(select Code from Kitchens_Setup where Name = '{7}'),GETDATE(),'{8}','{9}')", transfer_No.Text, Manual_transfer_No.Text, Transfer_dt.Text, commenttxt.Text, Resturant.Text, Resturant.Text, From_Kitchen.Text,To_Kitchen.Text,"Transfer_Kitchen",MainWindow.UserID);
+            //string s = string.Format("insert into Transfer_Kitchens(Transfer_Serial,Manual_Transfer_No,Transfer_Date,Comment,From_Resturant_ID,To_Resturant_ID,From_Kitchen_ID,To_Kitchen_ID,Post_Date,Type,UserID) values('{0}','{1}','{2}','{3}',(select Code from Setup_Restaurant where Name = '{4}'),(select Code from Setup_Restaurant where Name = '{5}'),(select Code from Setup_Kitchens where Name = '{6}'),(select Code from Setup_Kitchens where Name = '{7}'),GETDATE(),'{8}','{9}')", transfer_No.Text, Manual_transfer_No.Text, Transfer_dt.Text, commenttxt.Text, Resturant.Text, Resturant.Text, From_Kitchen.Text,To_Kitchen.Text,"Transfer_Kitchen",MainWindow.UserID);
             //SqlCommand cmd = new SqlCommand(s, con);
             //cmd.ExecuteNonQuery();
         }
@@ -229,10 +229,10 @@ namespace Food_Cost
             try
             {
                 string FiledSlection = "Manual_Transfer_No,Transfer_Date,Comment,From_Resturant_ID,To_Resturant_ID,From_Kitchen_ID,To_Kitchen_ID,Type,Status,Modifiled_Date";
-                string Values = string.Format("'{0}','{1}','{2}',(select Code From Store_Setup where Name='{3}'),(select Code From Store_Setup where Name='{3}'),(select Code From Kitchens_Setup where Name='{4}' and RestaurantID=(select Code From Store_Setup where Name='{3}')),(select Code From Kitchens_Setup where Name='{5}' and RestaurantID=(select Code From Store_Setup where Name='{3}')),'{6}','{7}',GETDATE()", Manual_transfer_No.Text, Transfer_dt.Text + " " + Transfer_Time.Text, commenttxt.Text, Resturant.Text, From_Kitchen.Text, To_Kitchen.Text, "Transfer_Kitchen", Statustxt.Text);
+                string Values = string.Format("'{0}','{1}','{2}',(select Code From Setup_Restaurant where Name='{3}'),(select Code From Setup_Restaurant where Name='{3}'),(select Code From Setup_Kitchens where Name='{4}' and RestaurantID=(select Code From Setup_Restaurant where Name='{3}')),(select Code From Setup_Kitchens where Name='{5}' and RestaurantID=(select Code From Setup_Restaurant where Name='{3}')),'{6}','{7}',GETDATE()", Manual_transfer_No.Text,Convert.ToDateTime(Transfer_dt.Text).ToString("MM-dd-yyyy") , commenttxt.Text, Resturant.Text, From_Kitchen.Text, To_Kitchen.Text, "Transfer_Kitchen", Statustxt.Text);
                 string Where = string.Format("Transfer_Serial={0}", transfer_No.Text);
                 Classes.UpdateRow(FiledSlection, Values, Where, "Transfer_Kitchens");
-                //string s = string.Format("update Transfer_Kitchens set Manual_Transfer_No='{0}',Transfer_Date='{1}',Comment='{2}',From_Resturant_ID=(select Code From Store_Setup where Name='{3}'),To_Resturant_ID=(select Code From Store_Setup where Name='{3}'),From_Kitchen_ID=(select Code From Kitchens_Setup where Name='{4}' and RestaurantID=(select Code From Store_Setup where Name='{3}')),To_Kitchen_ID=(select Code From Kitchens_Setup where Name='{5}' and RestaurantID=(select Code From Store_Setup where Name='{3}')),Type='Transfer_InterKitchen' Where Transfer_Serial={6}", Manual_transfer_No.Text, Transfer_dt.Text, commenttxt.Text, Resturant.Text, From_Kitchen.Text, To_Kitchen.Text, transfer_No.Text);
+                //string s = string.Format("update Transfer_Kitchens set Manual_Transfer_No='{0}',Transfer_Date='{1}',Comment='{2}',From_Resturant_ID=(select Code From Setup_Restaurant where Name='{3}'),To_Resturant_ID=(select Code From Setup_Restaurant where Name='{3}'),From_Kitchen_ID=(select Code From Setup_Kitchens where Name='{4}' and RestaurantID=(select Code From Setup_Restaurant where Name='{3}')),To_Kitchen_ID=(select Code From Setup_Kitchens where Name='{5}' and RestaurantID=(select Code From Setup_Restaurant where Name='{3}')),Type='Transfer_InterKitchen' Where Transfer_Serial={6}", Manual_transfer_No.Text, Transfer_dt.Text, commenttxt.Text, Resturant.Text, From_Kitchen.Text, To_Kitchen.Text, transfer_No.Text);
                 //SqlCommand cmd = new SqlCommand(s, con);
                 //cmd.ExecuteNonQuery();
             }
@@ -241,7 +241,6 @@ namespace Food_Cost
                 MessageBox.Show(ex.ToString());
             }
         }
-
         private void TransferBtn_Click(object sender, RoutedEventArgs e)
         {
             if (!DoSomeChecks())
@@ -300,7 +299,6 @@ namespace Food_Cost
         {
             if (e.Column.Header == "Qty")
             {
-
                 DataTable Dat = ItemsDGV.DataContext as DataTable;
                 for (int i = 0; i < Dat.Columns.Count; i++)
                 {
@@ -314,7 +312,7 @@ namespace Food_Cost
 
                 try
                 {
-                    using (SqlCommand cmd = new SqlCommand(string.Format("select Qty,Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{1}') and KitchenID = (select Code from Kitchens_Setup where Name = '{2}') union all select Qty, Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{1}') and KitchenID = (select Code from Kitchens_Setup where Name = '{3}')", ItemCode, Resturant.Text, From_Kitchen.Text, To_Kitchen.Text), con))
+                    using (SqlCommand cmd = new SqlCommand(string.Format("select Qty,Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Setup_Restaurant where Name = '{1}') and KitchenID = (select Code from Setup_Kitchens where Name = '{2}') union all select Qty, Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Setup_Restaurant where Name = '{1}') and KitchenID = (select Code from Setup_Kitchens where Name = '{3}')", ItemCode, Resturant.Text, From_Kitchen.Text, To_Kitchen.Text), con))
                     {
                         //Manual_transfer_No.Focus();
 
@@ -399,7 +397,6 @@ namespace Food_Cost
                 ItemsDGV.DataContext = Dat;
             }
         }
-
         private void Resturant_Clicked(object sender, RoutedEventArgs e)
         {
             All_Resturants resturants = new All_Resturants(this, "Resturant");
@@ -415,7 +412,6 @@ namespace Food_Cost
             All_Kitchens resturants = new All_Kitchens(this, "To_Kitchen", Resturant.Text);
             resturants.ShowDialog();
         }   //Done
-
         private void ItemsDGV_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             DataGrid grid = sender as DataGrid;
@@ -424,14 +420,12 @@ namespace Food_Cost
                 codeTodelete = grid.SelectedIndex;
             }
         }  //Done
-
         private void RemoveItemBtn_Click(object sender, RoutedEventArgs e)
         {
             DataTable dt = ItemsDGV.DataContext as DataTable;
             dt.Rows.RemoveAt(codeTodelete);
             ItemsDGV.DataContext = dt;
         }  //Done
-
         private void SearchBtn_Click(object sender, RoutedEventArgs e)
         {
             NewBtn.IsEnabled = false;

@@ -216,6 +216,9 @@
     <Compile Include="Forms\Rpt_RecipesItemsView.designer.cs">
       <DependentUpon>Rpt_RecipesItemsView.cs</DependentUpon>
     </Compile>
+    <Compile Include="ItemsDefinitionSetup.xaml.cs">
+      <DependentUpon>ItemsDefinitionSetup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LogIn.xaml.cs">
       <DependentUpon>LogIn.xaml</DependentUpon>
     </Compile>
@@ -525,6 +528,10 @@
     <Page Include="Fiscal_Period.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ItemsDefinitionSetup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LogIn.xaml">
       <SubType>Designer</SubType>

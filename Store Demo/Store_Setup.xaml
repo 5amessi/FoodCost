@@ -10,15 +10,15 @@
     <Grid Background="White" Margin="80 65 0 0">
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="4*"/>
-            <ColumnDefinition Width="6*"/>
+            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="5*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <GroupBox Foreground="Black" Name="StoreGBX" Margin="10"  BorderBrush="#D0D3D4" BorderThickness="2" Header="Stores" FontSize="18" >
+        <GroupBox Foreground="Black" Name="StoreGBX" Margin="10" BorderBrush="#D0D3D4" BorderThickness="2" Header="Restaurant">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="4*"/>
@@ -35,8 +35,8 @@
                     <RowDefinition Height="2*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock FontWeight="Bold" Text="Code" FontSize="14" Foreground="#FFCD0E0E" />
-                <TextBox Name="Code_txt" Grid.Row="1" Grid.ColumnSpan="2" FontSize="13"/>
+                <TextBlock FontWeight="Bold" Text="Code" Foreground="#FFCD0E0E"/>
+                <TextBox Name="Code_txt" Grid.Row="1" Grid.ColumnSpan="2"/>
 
                 <StackPanel  Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <CheckBox Name="Active_chbx" VerticalAlignment="Bottom" HorizontalAlignment="Right">
@@ -45,50 +45,49 @@
                     </CheckBox>
                 </StackPanel>
 
-                <TextBlock FontWeight="Bold" Grid.Row="2" VerticalAlignment="Center" Foreground="#FFCD0E0E" Text="Name" FontSize="14" />
-                <TextBox  Grid.Row="3" Grid.ColumnSpan="2" Name="Name_txt" FontSize="13"/>
+                <TextBlock FontWeight="Bold" Grid.Row="2" VerticalAlignment="Center" Foreground="#FFCD0E0E" Text="Name"/>
+                <TextBox  Grid.Row="3" Grid.ColumnSpan="2" Name="Name_txt" />
 
-                <TextBlock Text="Name2" Grid.Row="4"  FontSize="14" VerticalAlignment="Center" Foreground="#FFCD0E0E" FontWeight="Bold" />
-                <TextBox Name="Name2_txt" Grid.Row="5" Grid.ColumnSpan="2" FontSize="13" />
+                <TextBlock Text="Name2" Grid.Row="4" VerticalAlignment="Center" Foreground="#FFCD0E0E" FontWeight="Bold" />
+                <TextBox Name="Name2_txt" Grid.Row="5" Grid.ColumnSpan="2"/>
                 
-                <Button Content="Kitchens" Name="KitchenBtn" Grid.Row="6" FontSize="15" FontWeight="Bold" Background="Gray" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" Click="Button_Click"/>
-                <CheckBox Name="IsMain" Grid.Row="6" Grid.Column="1" Content="Main restaurant" HorizontalAlignment="Right" FontSize="15" FontWeight="Bold"/>
+                <Button Content="Kitchens" Name="KitchenBtn" Grid.Row="6" FontWeight="Bold" Background="Gray" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" Click="Button_Click"/>
+                <CheckBox Name="IsMain" Grid.Row="6" Grid.Column="1" Content="Main restaurant" HorizontalAlignment="Right" FontWeight="Bold"/>
 
                 <Grid Grid.Row="7" Grid.ColumnSpan="2">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="14*"/>
-                        <ColumnDefinition Width="71*"/>
-                        <ColumnDefinition Width="83*"/>
-                        <ColumnDefinition Width="94*"/>
-                        <ColumnDefinition Width="88*"/>
-                        <ColumnDefinition Width="89*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="0" Name="NewBtn" Foreground="Black" Background="#cacfd2"  Click="NewButtonClicked" FontSize="12" Margin="5" Grid.ColumnSpan="2" >
+                    <Button Grid.Column="0" Name="NewBtn" Foreground="Black" Background="#cacfd2" Click="NewButtonClicked" Margin="3" >
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <materialDesign:PackIcon Kind="Plus" HorizontalAlignment="Left"/>
                             <TextBlock HorizontalAlignment="Right"> New</TextBlock>
                         </StackPanel>
                     </Button>
-                    <Button Name="SaveBtn" Grid.Column="2" Background="Green" FontSize="12" Margin="5" Click="SaveBtn_Click">
+                    <Button Name="SaveBtn" Grid.Column="1" Background="Green" Margin="3" Click="SaveBtn_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <materialDesign:PackIcon Kind="CheckboxMarkedCircle" HorizontalAlignment="Left"/>
                             <TextBlock HorizontalAlignment="Right"> Save</TextBlock>
                         </StackPanel>
                     </Button>
-                    <Button Name="UpdateBtn" Grid.Column="3" Background="Green" FontSize="12" Margin="3,5" Click="UpdateBtn_Click">
+                    <Button Name="UpdateBtn" Grid.Column="2" Background="Green" Margin="3" Click="UpdateBtn_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <materialDesign:PackIcon Kind="ArrowDown" HorizontalAlignment="Left"  />
                             <TextBlock HorizontalAlignment="Right"> Update</TextBlock>
                         </StackPanel>
                     </Button>
-                    <Button Grid.Column="4" Name="UndoBtn" FontSize="12" Margin="5" Click="UndoBtn_Click">
+                    <Button Grid.Column="3" Name="UndoBtn" Margin="3" Click="UndoBtn_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <materialDesign:PackIcon Kind="Undo" HorizontalAlignment="Left" />
                             <TextBlock HorizontalAlignment="Right"> Undo</TextBlock>
                         </StackPanel>
                     </Button>
-                    <Button Name="DeleteBtn" Grid.Column="5" Foreground="White" Background="#cb4335" FontSize="12" Margin="3,5" Click="DeleteBtn_Click">
+                    <Button Name="DeleteBtn" Grid.Column="4" Foreground="White" Background="#cb4335" Margin="3" Click="DeleteBtn_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <materialDesign:PackIcon Kind="Delete" HorizontalAlignment="Left" />
                             <TextBlock HorizontalAlignment="Right"> Delete</TextBlock>
@@ -99,18 +98,9 @@
         </GroupBox>
 
         <DataGrid Name="Stores_DGV" Grid.Column="1" Grid.RowSpan="2" Margin="10" ItemsSource="{Binding}" AutoGenerateColumns="True" VerticalAlignment="Stretch" ScrollViewer.CanContentScroll="True"
-                          ScrollViewer.VerticalScrollBarVisibility="Auto"
-                          ScrollViewer.HorizontalScrollBarVisibility="Auto" 
-                          Padding="0 0 0 160"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Padding="0 0 0 160" CanUserAddRows="False"
                           Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ActualHeight}" MouseLeftButtonUp="RowClicked">
 
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Code" IsReadOnly="True" Binding="{Binding Code}" Width="*"></DataGridTextColumn>
-                <DataGridTextColumn Header="Name" IsReadOnly="True"  Binding="{Binding Name}" Width="*"></DataGridTextColumn>
-                <DataGridTextColumn Header="Name2" IsReadOnly="True"  Binding="{Binding Name2}" Width="*"></DataGridTextColumn>
-                <DataGridTextColumn Header="IsMain" IsReadOnly="True"  Binding="{Binding IsMain}" Width="*"></DataGridTextColumn>
-                <DataGridTextColumn Header="Is Active" IsReadOnly="True"  Binding="{Binding IsActive}" Width="*"></DataGridTextColumn>
-            </DataGrid.Columns>
         </DataGrid>
 
     </Grid>

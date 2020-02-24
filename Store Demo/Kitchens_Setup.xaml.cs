@@ -13,33 +13,32 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Data;
 
 namespace Food_Cost
 {
     /// <summary>
-    /// Interaction logic for Kitchens_Setup.xaml
+    /// Interaction logic for Setup_Kitchens.xaml
     /// </summary>
-    public partial class Kitchens_Setup : Window
+    public partial class Setup_Kitchens : Window
     {
-        string code;
-        public Kitchens_Setup(Store_Sertup _this)
+        string ResturantCode = "";
+        public Setup_Kitchens(string _RestaurantCode)
         {
+            ResturantCode = _RestaurantCode;
             InitializeComponent();
-
-            code = _this.Code_txt.Text;
-
-            ParentStore();
-            FillDGV(code);
+            ParentStore(_RestaurantCode);
+            FillDGV(_RestaurantCode);
             MainUiFormat();
         }
 
-        private void ParentStore()
+        private void ParentStore(string Code)
         {
             SqlConnection con = new SqlConnection(Classes.DataConnString);
             try
             {
                 con.Open();
-                string s = string.Format("select Name from Store_Setup where Code = {0}", code);
+                string s = string.Format("select Name from Setup_Restaurant where Code = {0}", Code);
                 SqlCommand cmd = new SqlCommand(s, con);
                 ParentStore_cbx.Text = cmd.ExecuteScalar().ToString();
             }
@@ -52,23 +51,29 @@ namespace Food_Cost
                 con.Close();
             }
         }
-
-        private void FillDGV(string code)
+        private void FillDGV(string Code)
         {
+            DataTable DT = new DataTable();
+            DT.Columns.Add("Code");
+            DT.Columns.Add("Name");
+            DT.Columns.Add("Name2");
+            DT.Columns.Add("Main", typeof(bool));
+            DT.Columns.Add("Outlet", typeof(bool));
+            DT.Columns.Add("Active", typeof(bool));
             SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlDataReader reader = null;
 
             try
             {
                 con.Open();
-                string s = string.Format("select Code,Name,Name2,IsMain,IsOutlet,IsActive from Kitchens_Setup where RestaurantID = {0} order by Code", code);
+                string s = string.Format("select Code,Name,Name2,IsMain,IsOutlet,IsActive from Setup_Kitchens where RestaurantID = {0} order by Code", Code);
                 SqlCommand cmd = new SqlCommand(s, con);
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    var data = new DgvData { Code = reader["Code"].ToString(), Name = reader["Name"].ToString(), Name2 = reader["Name2"].ToString(), IsMain = reader["IsMain"].ToString(), IsOutlet = reader["IsOutlet"].ToString(), IsActive = reader["IsActive"].ToString() };
-                    Stores_DGV.Items.Add(data);
+                    DT.Rows.Add(reader["Code"].ToString(), reader["Name"].ToString(), reader["Name2"].ToString(), reader["IsMain"].ToString(), reader["IsOutlet"].ToString(), reader["IsActive"].ToString());
                 }
+                Stores_DGV.DataContext = DT;
             }
             catch (Exception ex)
             {
@@ -80,7 +85,6 @@ namespace Food_Cost
                 con.Close();
             }
         }
-
         private void MainUiFormat()
         {
             Code_txt.IsEnabled = false;
@@ -93,6 +97,7 @@ namespace Food_Cost
             UpdateBtn.IsEnabled = false;
             UndoBtn.IsEnabled = false;
             DeleteBtn.IsEnabled = false;
+            Active_chbx.IsChecked = false;
             NewBtn.IsEnabled = true;
         }
         public void EnableUI()
@@ -122,39 +127,49 @@ namespace Food_Cost
         {
             EnableUI();
             ClearUIFields();
+            Active_chbx.IsChecked = true;
             NewBtn.IsEnabled = false;
             UpdateBtn.IsEnabled = false;
             DeleteBtn.IsEnabled = false;
         }
-        
+
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
+            DataTable DT = new DataTable();
             if (Code_txt.Text == "")
             {
                 MessageBox.Show("Code Field Can't Be Empty");
                 return;
             }
 
-            foreach (DgvData item in Stores_DGV.Items)
+            for (int i = 0; i < Stores_DGV.Items.Count; i++)
             {
-                if (item.Code.Equals(Code_txt.Text))
+                if (Code_txt.Text == ((DataRowView)Stores_DGV.Items[i]).Row.ItemArray[0].ToString())
                 {
                     MessageBox.Show("This Code Is Not Avaliable");
                     return;
                 }
             }
 
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
+            if(IsMain.IsChecked==true)
+            {
+                con.Open();
+                string s = string.Format("select IsMain from Setup_Kitchens where IsMain='True' and RestaurantID='{0}'", ResturantCode);
+                SqlCommand cmd = new SqlCommand(s, con);
+                if(cmd.ExecuteScalar()!=null)
+                {
+                    MessageBox.Show("Can't be more Than Main Kitchen !");
+                    return;
+                }
+            }
 
             try
             {
-                con.Open();
-
-                string s = "insert into Kitchens_Setup(Code,Name,Name2,IsMain,IsOutlet,IsActive,RestaurantID) values (" + Code_txt.Text + ",'" + Name_txt.Text + "','" +
-                    Name2_txt.Text + "','" + IsMain.IsChecked + "','" + IsOutlet.IsChecked + "','" + Active_chbx.IsChecked + "',(" + string.Format("select Code from Store_Setup where Name = '{0}'",ParentStore_cbx.Text) + "))";
-                SqlCommand cmd = new SqlCommand(s, con);
-                cmd.ExecuteNonQuery();
+                string FiledSelection = "Code,Name,Name2,IsMain,IsOutlet,IsActive,RestaurantID,Create_Date,WS,UserID";
+                string values = string.Format("'{0}', N'{1}', N'{2}', '{3}','{4}','{5}','{6}',{7},'{8}','{9}'", Code_txt.Text, Name_txt.Text, Name2_txt.Text, IsMain.IsChecked, IsOutlet.IsChecked, Active_chbx.IsChecked, ResturantCode, "GETDATE()", Classes.WS, MainWindow.UserID);
+                Classes.InsertRow("Setup_Kitchens", FiledSelection, values);
             }
             catch (Exception ex)
             {
@@ -165,27 +180,45 @@ namespace Food_Cost
                 con.Close();
                 MainUiFormat();
 
-                Stores_DGV.Items.Clear();
-                FillDGV(code);
+                Stores_DGV.DataContext = null;
+                FillDGV(ResturantCode);
             }
-            if(IsMain.IsChecked == true)
+            if (IsMain.IsChecked == true || IsOutlet.IsChecked == true)
             {
+                string FiledSelectionKitchenItems = "KitchenID,ItemID,RestaurantID";
+                string FiledSelectionItems = "KitchenID,ItemID,RestaurantID,Qty,Units,Last_Cost,Current_Cost,Net_Cost";
+                string valuesItems = "";string ValuesKitchenItems = "";string Comma = "";
                 try
                 {
-                    con.Open();
-                    string s = "SELECT Code,Unit FROM Setup_Items";
-                    SqlCommand cmd = new SqlCommand(s, con);
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    con2.Open();
-                    while (reader.Read())
+                    DT = Classes.RetrieveData("Code", "Setup_Items");
+                    int NumOfItemsPerRec = DT.Rows.Count % 1000;
+                    int NumOfItems = 0;
+                    if (DT.Rows.Count > 1000)
                     {
-                        string w = "INSERT INTO Setup_KitchenItems(KitchenID,ItemID,RestaurantID) values (" + Code_txt.Text + ",'" + reader["Code"] + "',(" + string.Format("select Code from Store_Setup where Name = '{0}'", ParentStore_cbx.Text) + "))";
-                        SqlCommand cmd2 = new SqlCommand(w, con2);
-                        cmd2.ExecuteNonQuery();
-                        
-                        w = "INSERT INTO Items(KitchenID,ItemID,RestaurantID,Qty,Units,Last_Cost,Current_Cost,Net_Cost) values (" + Code_txt.Text + ",'" + reader["Code"] + "',(" + string.Format("select Code from Store_Setup where Name = '{0}'", ParentStore_cbx.Text) + ")," + "0,'" + reader["Unit"] + "',0," + "0," + "0" + ")";
-                        cmd2 = new SqlCommand(w, con2);
-                        cmd2.ExecuteNonQuery();
+                        for (int i = 0; i <= NumOfItemsPerRec; i++)
+                        {
+                            for (int q = NumOfItems; q < (i + 1) * 1000; q++)
+                            {
+                                ValuesKitchenItems = Comma + string.Format("('{0}','{1}','{2}')", Code_txt.Text, DT.Rows[0].ItemArray[0], ResturantCode);
+                                valuesItems = Comma + string.Format("('{0}','{1}','{2}','0','','','0','')", Code_txt.Text, DT.Rows[0].ItemArray[0], ResturantCode);
+                                Comma = ",";
+                            }
+                            NumOfItems = (i + 1) * 1000;
+                        }
+                        Classes.InsertRows("Setup_KitchenItems", FiledSelectionKitchenItems, ValuesKitchenItems);
+                        Classes.InsertRows("Items", FiledSelectionItems, valuesItems);
+                    }
+                    else
+                    {
+
+                        for(int i=0;i<DT.Rows.Count;i++)
+                        {
+                            ValuesKitchenItems += Comma + string.Format("('{0}','{1}','{2}')", Code_txt.Text, DT.Rows[0].ItemArray[0] , ResturantCode);
+                            valuesItems += Comma + string.Format("('{0}','{1}','{2}','0','','','','')", Code_txt.Text, DT.Rows[0].ItemArray[0], ResturantCode);
+                            Comma = ",";
+                        }
+                        Classes.InsertRows("Setup_KitchenItems", FiledSelectionKitchenItems, ValuesKitchenItems);
+                        Classes.InsertRows("Items", FiledSelectionItems, valuesItems);
                     }
                 }
                 catch(Exception ex)
@@ -205,12 +238,24 @@ namespace Food_Cost
         {
             SqlConnection con = new SqlConnection(Classes.DataConnString);
 
-            try
+            if (IsMain.IsChecked == true)
             {
                 con.Open();
-                string s = "Update Kitchens_Setup SET " + "Name = '" + Name_txt.Text + "', Name2 = '" + Name2_txt.Text + "', IsMain = '" + IsMain.IsChecked + "', IsOutlet = '" + IsOutlet.IsChecked + "', IsActive = '" + Active_chbx.IsChecked + "', RestaurantID = " + string.Format("(select Code from Store_Setup where Name = '{0}')", ParentStore_cbx.Text) + " Where Code = " + Code_txt.Text + " and RestaurantID = " + string.Format("(select Code from Store_Setup where Name = '{0}')", ParentStore_cbx.Text);
+                string s = string.Format("select IsMain from Setup_Kitchens where IsMain='True' and RestaurantID='{0}'", ResturantCode);
                 SqlCommand cmd = new SqlCommand(s, con);
-                cmd.ExecuteNonQuery();
+                if (cmd.ExecuteScalar() != null)
+                {
+                    MessageBox.Show("Can't be more Than Main Kitchen !");
+                    return;
+                }
+            }
+
+            try
+            {
+                string FiledSlection = "Name,Name2,IsMain,IsOutlet,IsActive,Last_Modified_Date";
+                string values = string.Format("N'{0}', N'{1}', '{2}', '{3}','{4}',{5}", Name_txt.Text, Name2_txt.Text, IsMain.IsChecked,IsOutlet.IsChecked, Active_chbx.IsChecked, "GETDATE()");
+                string Where = string.Format("Code={0} and RestaurantID='{1}'", Code_txt.Text,ResturantCode);
+                Classes.UpdateRow(FiledSlection, values, Where, "Setup_Kitchens");
             }
             catch (Exception ex)
             {
@@ -221,8 +266,8 @@ namespace Food_Cost
                 con.Close();
                 MainUiFormat();
 
-                Stores_DGV.Items.Clear();
-                FillDGV(code);
+                Stores_DGV.DataContext = null;
+                FillDGV(ResturantCode);
             }
             MessageBox.Show("Updated Successfully");
         }
@@ -238,8 +283,17 @@ namespace Food_Cost
             try
             {
                 con.Open();
-                string s = "delete from Kitchens_Setup where Code = " + Code_txt.Text;
+                string s = string.Format("delete Setup_Kitchens where Code='{0}' and RestaurantID='{1}'", Code_txt.Text, ResturantCode);
                 SqlCommand cmd = new SqlCommand(s, con);
+                cmd.ExecuteNonQuery();
+
+                s =string.Format("delete Setup_KitchenItems where KitchenID='{0}' and RestaurantID='{1}'",Code_txt.Text,ResturantCode);
+                cmd = new SqlCommand(s, con);
+                cmd.ExecuteNonQuery();
+
+
+                s = string.Format("delete Items where KitchenID='{0}' and RestaurantID='{1}'", Code_txt.Text, ResturantCode);
+                cmd = new SqlCommand(s, con);
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -251,8 +305,8 @@ namespace Food_Cost
                 con.Close();
                 MainUiFormat();
 
-                Stores_DGV.Items.Clear();
-                FillDGV(code);
+                Stores_DGV.DataContext = null;
+                FillDGV(ResturantCode);
             }
             MessageBox.Show("Deleted Successfully");
         }
@@ -265,14 +319,12 @@ namespace Food_Cost
 
                 if (data != null && data.SelectedItems != null && data.SelectedItems.Count == 1)
                 {
-                    DgvData dgvData = (DgvData)data.SelectedItem;
-
-                    Code_txt.Text = dgvData.Code;
-                    Name_txt.Text = dgvData.Name;
-                    Name2_txt.Text = dgvData.Name2;
-                    Active_chbx.IsChecked = dgvData.IsActive.ToLower().Equals("true");
-                    IsMain.IsChecked = dgvData.IsMain.ToLower().Equals("true");
-                    IsOutlet.IsChecked = dgvData.IsOutlet.ToLower().Equals("true");
+                    Code_txt.Text = ((DataRowView)Stores_DGV.SelectedItem).Row.ItemArray[0].ToString();
+                    Name_txt.Text = ((DataRowView)Stores_DGV.SelectedItem).Row.ItemArray[1].ToString();
+                    Name2_txt.Text = ((DataRowView)Stores_DGV.SelectedItem).Row.ItemArray[2].ToString();
+                    Active_chbx.IsChecked = Convert.ToBoolean(((DataRowView)Stores_DGV.SelectedItem).Row.ItemArray[5]);
+                    IsOutlet.IsChecked = Convert.ToBoolean(((DataRowView)Stores_DGV.SelectedItem).Row.ItemArray[4]);
+                    IsMain.IsChecked = Convert.ToBoolean(((DataRowView)Stores_DGV.SelectedItem).Row.ItemArray[3]);
 
                     EnableUI();
                     Code_txt.IsEnabled = false;

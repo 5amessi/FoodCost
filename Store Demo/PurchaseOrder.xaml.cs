@@ -25,6 +25,7 @@ namespace Food_Cost
     /// </summary>
     public partial class PurchaseOrder : UserControl
     {
+        string RestaurantCode = "";string KitchenCode = "";
         List<string> Authenticated = new List<string>();
         int IndexOfRecord = 0;
         public PurchaseOrder()
@@ -46,10 +47,45 @@ namespace Food_Cost
                     {
                         InitializeComponent();
                         LoadVendorFromSQL();
+                        LoadTheMainRestaurant();
                         DateTime now = DateTime.Now;
                         MainUiFormat();
                     }
                 }
+            }
+        }
+        private void LoadTheMainRestaurant()                
+        {
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            SqlDataReader reader = null;
+            try
+            {
+                con.Open();
+                string s = "select Code,Name from Setup_Restaurant where IsMain='True'";
+                SqlCommand cmd = new SqlCommand(s, con);
+                reader = cmd.ExecuteReader();
+                reader.Read();
+                RestaurantCode = reader["Code"].ToString();
+                ShipTo.Text= reader["Name"].ToString();
+            }
+            catch
+            {
+                MessageBox.Show("First You should create Main Restaurant");
+            }
+            reader.Close();
+            reader = null;
+
+            try
+            {
+                string s = string.Format("select Code from Setup_Kitchens where RestaurantID='{0}' and IsMain='True'", RestaurantCode);
+                SqlCommand cmd = new SqlCommand(s, con);
+                reader = cmd.ExecuteReader();
+                reader.Read();
+                KitchenCode = reader["Code"].ToString();
+            }
+            catch
+            {
+                MessageBox.Show("First You should create Main Kitchen as Main Restaurant");
             }
         }
         private void LoadVendorFromSQL()
@@ -117,10 +153,10 @@ namespace Food_Cost
             {
                 MessageBox.Show("Delivery Date Can't Be Empty");
             }
-            else if (Delivery_time.Text ==null)
-            {
-                MessageBox.Show("Delivery Time Can't Be Empty");
-            }
+            //else if (Delivery_time.Text ==null)
+            //{
+            //    MessageBox.Show("Delivery Time Can't Be Empty");
+            //}
 
             else if (ItemsDGV.Items.Count == 0)
             {
@@ -193,22 +229,20 @@ namespace Food_Cost
             Total_Price_Without_Tax.Text = "0";
             Total_Price_With_Tax.Text = "0";
             Serial_PO_NO.Text = "";
-            ShipTo.Text = "";
             Vendor.Text = "";
             Delivery_dt.Text = "";
             commenttxt.Text = "";
             ItemsDGV.DataContext = null;
         }
-
         private void Save_PO_Details(SqlConnection con)
         {
             try
             {
                 con.Open();
                 string FiledSelection = "PO_Serial,PO_No,Ship_To,Vendor_ID,Create_Date,Delivery_Date,WS,Comment,Total_Price,Restaurant_ID,Kitchen_ID,UserID,Status";
-                string Values = "'"+Serial_PO_NO.Text + "'," + PO_NO.Text +",(select Code from Store_Setup where Name = '"+ ShipTo.Text + "'),(select VendorID from Vendors where Name = '"+ Vendor.Text+ "'),GETDATE(),'"+ Delivery_dt.Text + " " + Delivery_time.Text + "'," + Classes.WS + ",'" + commenttxt.Text + "'," + Total_Price_With_Tax.Text + ",1,1," + MainWindow.UserID + ",'" + Statustxt.Text+"'";
-                Classes.InsertRow("PO", FiledSelection, Values);
-                //string s = string.Format("insert into PO(PO_Serial,PO_No,Ship_To,Vendor_ID,Create_Date,Delivery_Date,WS,Comment,Total_Price,Restaurant_ID,Kitchen_ID,UserID,Status) values('{0}','{1}',(select Code from Store_Setup where Name = '{2}'),(select VendorID from Vendors where Name = '{3}'),GETDATE(),'{4}','{5}','{6}',{7},1,1,{8},'{9}')", Serial_PO_NO.Text, PO_NO.Text, ShipTo.Text, Vendor.Text, Delivery_dt.Text+" "+Delivery_time.Text, WorkstationId, commenttxt.Text, Total_Price_With_Tax.Text, MainWindow.UserID, Statustxt.Text);
+                string values = string.Format("'{0}','{1}',{2},(select VendorID from Vendors where Name = '{3}'),GETDATE(),'{4}','{5}','{6}','{7}',{2},{8},'{9}','{10}'", Serial_PO_NO.Text, PO_NO.Text, RestaurantCode, Vendor.Text,Convert.ToDateTime(Delivery_dt.Text).ToString("MM-dd-yyyy"), Classes.WS, commenttxt.Text, Total_Price_With_Tax.Text, KitchenCode, MainWindow.UserID, Statustxt.Text);
+                Classes.InsertRow("PO", FiledSelection, values);
+                //string s = string.Format("insert into PO(PO_Serial,PO_No,Ship_To,Vendor_ID,Create_Date,Delivery_Date,WS,Comment,Total_Price,Restaurant_ID,Kitchen_ID,UserID,Status) values('{0}','{1}',(select Code from Setup_Restaurant where Name = '{2}'),(select VendorID from Vendors where Name = '{3}'),GETDATE(),'{4}','{5}','{6}',{7},1,1,{8},'{9}')", Serial_PO_NO.Text, PO_NO.Text, ShipTo.Text, Vendor.Text, Delivery_dt.Text+" "+Delivery_time.Text, WorkstationId, commenttxt.Text, Total_Price_With_Tax.Text, MainWindow.UserID, Statustxt.Text);
                 //SqlCommand cmd = new SqlCommand(s, con);
                 //int record_no = cmd.ExecuteNonQuery();
             }
@@ -218,7 +252,6 @@ namespace Food_Cost
             }
             finally { con.Close(); }
         }
-
         private void Save_PO_Items(SqlConnection con)
         {
             try
@@ -261,7 +294,6 @@ namespace Food_Cost
                 CopyBtn.IsEnabled = false;
                 searchBtn.IsEnabled = false;
                 NewBtn.IsEnabled = false;
-                ShipTo.Text = "Main Store";
                 Total_Price_With_Tax.Text = "0";
             }
         }
@@ -271,10 +303,10 @@ namespace Food_Cost
             {
                 con.Open();
                 string FiledSelection = "PO_No,Ship_To,Vendor_ID,Delivery_Date,Last_Modified_Date,Comment,Total_Price,Status";
-                string Values = string.Format("'{0}',(select Code from Store_Setup where Name = '{1}'),(select VendorID from Vendors where Name = '{2}'),'{3}',GETDATE(),'{4}','{5}','{6}'", PO_NO.Text, ShipTo.Text, Vendor.Text, Delivery_dt.Text + " " + Delivery_time.Text, commenttxt.Text, Total_Price_With_Tax.Text, Statustxt.Text);
+                string Values = string.Format("'{0}',(select Code from Setup_Restaurant where Name = '{1}'),(select VendorID from Vendors where Name = '{2}'),'{3}',GETDATE(),'{4}','{5}','{6}'", PO_NO.Text, ShipTo.Text, Vendor.Text,Convert.ToDateTime(Delivery_dt.Text).ToString("MM-dd-yyyy") , commenttxt.Text, Total_Price_With_Tax.Text, Statustxt.Text);
                 string where = string.Format("PO_Serial={0}", Serial_PO_NO.Text);
                 Classes.UpdateRow(FiledSelection, Values, where, "PO");
-                //string s = string.Format("update PO Set PO_No='{0}',Ship_To=(select Code from Store_Setup where Name = '{1}'),Vendor_ID=(select VendorID from Vendors where Name = '{2}'),Delivery_Date='{3}',Last_Modified_Date=GETDATE(),Comment='{4}',Total_Price='{5}',Status='{6}' Where PO_Serial={7}", PO_NO.Text, ShipTo.Text, Vendor.Text, Delivery_dt.Text+" "+Delivery_time.Text, commenttxt.Text, Total_Price_With_Tax.Text,Statustxt.Text ,Serial_PO_NO.Text);
+                //string s = string.Format("update PO Set PO_No='{0}',Ship_To=(select Code from Setup_Restaurant where Name = '{1}'),Vendor_ID=(select VendorID from Vendors where Name = '{2}'),Delivery_Date='{3}',Last_Modified_Date=GETDATE(),Comment='{4}',Total_Price='{5}',Status='{6}' Where PO_Serial={7}", PO_NO.Text, ShipTo.Text, Vendor.Text, Delivery_dt.Text+" "+Delivery_time.Text, commenttxt.Text, Total_Price_With_Tax.Text,Statustxt.Text ,Serial_PO_NO.Text);
                 //SqlCommand cmd = new SqlCommand(s, con);
                 //cmd.ExecuteNonQuery();
             }
@@ -284,7 +316,6 @@ namespace Food_Cost
             }
             finally { con.Close(); }
         }
-
         private void SaveBtn_Click(object sender, RoutedEventArgs e)        //nb2a n3dl el index kol mara nezawd column
         {
             if (Authenticated.IndexOf("OrderPO") == -1 && Authenticated.IndexOf("CheckAllPO") == -1)
@@ -337,7 +368,6 @@ namespace Food_Cost
                 MessageBox.Show("Saved Successfully");
             }
         }
-
         private void UndoBtn_Click(object sender, RoutedEventArgs e)
         {
             MainUiFormat();
@@ -366,7 +396,6 @@ namespace Food_Cost
             //}
             //MessageBox.Show("Deleted Successfully");
         }
-
         private void AddItemBtn_Click(object sender, RoutedEventArgs e)
         {
             if (Authenticated.IndexOf("AddItemPO") == -1 && Authenticated.IndexOf("CheckAllPO") == -1)
@@ -380,7 +409,6 @@ namespace Food_Cost
                 itemswindow.ShowDialog();
             }
         }
-
         private void CopyBtn_Click(object sender, RoutedEventArgs e)
         {
             if (Authenticated.IndexOf("CopyPO") == -1 && Authenticated.IndexOf("CheckAllPO") == -1)
@@ -405,7 +433,6 @@ namespace Food_Cost
                 }
             }
         }
-
         private void auto_tansfer_chbx(object sender, RoutedEventArgs e)
         {
             if ((sender as CheckBox).IsChecked == true)
@@ -414,7 +441,6 @@ namespace Food_Cost
                 ShipTo.IsEnabled = false;
 
         }
-
         private void RemoveItemBtn_Click(object sender, RoutedEventArgs e)
         {
             if (Authenticated.IndexOf("RemoveItemPO") == -1 && Authenticated.IndexOf("CheckAllPO") == -1)
@@ -431,7 +457,6 @@ namespace Food_Cost
             }
 
         }
-
         private void ItemsDGV_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender != null)
@@ -444,7 +469,6 @@ namespace Food_Cost
                 }
             }
         }
-
         private void SearchBtn_Click(object sender, RoutedEventArgs e)
         {
             if (Authenticated.IndexOf("SearchPO") == -1 && Authenticated.IndexOf("CheckAllPO") == -1)
@@ -463,7 +487,6 @@ namespace Food_Cost
                 all_Purchase_Orders.ShowDialog();
             }
         }
-
         private void ItemsDGV_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             DataGrid grid = sender as DataGrid;
@@ -472,7 +495,6 @@ namespace Food_Cost
                 IndexOfRecord = grid.SelectedIndex;
             }
         }
-
         private void ItemDgv_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             DataTable dt = ItemsDGV.DataContext as DataTable;
@@ -521,7 +543,7 @@ namespace Food_Cost
             for (int i = 0; i < dt.Columns.Count; i++)
             {
                 dt.Columns[i].ReadOnly = true;
-            }
+            }       
             dt.Columns["Price"].ReadOnly = false;
             dt.Columns["Qty"].ReadOnly = false;
             dt.Columns["Tax Included"].ReadOnly = false;

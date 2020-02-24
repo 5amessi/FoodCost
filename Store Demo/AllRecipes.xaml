@@ -5,36 +5,38 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Food_Cost"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        mc:Ignorable="d"
-        Title="AllRecipes" Height="450" Width="800">
+        mc:Ignorable="d" Title="AllRecipes" Height="450" Width="800">
+
+
     <Grid>
-        <StackPanel>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"></ColumnDefinition>
-                    <ColumnDefinition Width="5*"></ColumnDefinition>
-                    <ColumnDefinition Width="4*"></ColumnDefinition>
-                    <ColumnDefinition Width="6*"></ColumnDefinition>
-                    <ColumnDefinition Width="4*"></ColumnDefinition>
-                    <ColumnDefinition Width="4*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="9*"/>
+        </Grid.RowDefinitions>
 
-                <materialDesign:PackIcon Kind="BoxVariantClosed" Foreground="#566573" Height="35" Width="50"/>
-                <TextBlock Text="All Recipes" Margin="0 5"  Grid.Column="1" FontWeight="Bold" Foreground="#566573" FontSize="15"  />
-                <TextBlock Text="Search" Margin="0 5"  Grid.Column="2" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#566573" FontSize="15"  />
-                <TextBox Name="SearchTxt" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" FontSize="12" TextChanged="TextDataChange"  ></TextBox>
-                <RadioButton Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Name="RadioByCode">By Code</RadioButton>
-                <RadioButton Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Name="RadioByName">By Name</RadioButton>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="5*"></ColumnDefinition>
+                <ColumnDefinition Width="4*"></ColumnDefinition>
+                <ColumnDefinition Width="6*"></ColumnDefinition>
+                <ColumnDefinition Width="4*"></ColumnDefinition>
+                <ColumnDefinition Width="4*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
 
-            </Grid>
+            <materialDesign:PackIcon Kind="BoxVariantClosed" Foreground="#566573" Height="35" Width="50"/>
+            <TextBlock Text="All Recipes" Margin="0 5"  Grid.Column="1" FontWeight="Bold" Foreground="#566573" FontSize="15"  />
+            <TextBlock Text="Search" Margin="0 5"  Grid.Column="2" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#566573" FontSize="15"  />
+            <TextBox Name="SearchTxt" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" FontSize="12" TextChanged="TextDataChange"  ></TextBox>
+            <RadioButton Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Name="RadioByCode">By Code</RadioButton>
+            <RadioButton Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Name="RadioByName">By Name</RadioButton>
 
+        </Grid>
 
-            <DataGrid  Name="ReciveOrdersOrderDGV" ItemsSource="{Binding}" AutoGenerateColumns="True"  ColumnWidth="*" VerticalAlignment="Stretch"  ScrollViewer.CanContentScroll="True" MouseDoubleClick="AllRecipesDGV_MouseDoubleClick" 
-                          ScrollViewer.VerticalScrollBarVisibility="Auto"
-                          ScrollViewer.HorizontalScrollBarVisibility="Auto" 
-                          IsReadOnly="True"
+        <DataGrid  Name="ReciveOrdersOrderDGV" Grid.Row="1" ItemsSource="{Binding}" AutoGenerateColumns="True"  ColumnWidth="*" VerticalAlignment="Stretch"  ScrollViewer.CanContentScroll="True" MouseDoubleClick="AllRecipesDGV_MouseDoubleClick" 
+                          ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" IsReadOnly="True"
                           Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ActualHeight}" />
-        </StackPanel>
+
 
     </Grid>
 </Window>

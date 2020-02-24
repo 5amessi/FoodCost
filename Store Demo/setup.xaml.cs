@@ -24,8 +24,6 @@ namespace Food_Cost
         public setup()
         {
             InitializeComponent();
-
-
             //LoadOpenMonths();
         }
 
@@ -95,6 +93,13 @@ namespace Food_Cost
             ConnectionString connectionString = new ConnectionString();
             connectionString.Owner = this;
             connectionString.ShowDialog();
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            ItemsDefinitionSetup itemsDefinitionSetup = new ItemsDefinitionSetup();
+            itemsDefinitionSetup.Owner = this;
+            itemsDefinitionSetup.ShowDialog();
         }
     }
 }

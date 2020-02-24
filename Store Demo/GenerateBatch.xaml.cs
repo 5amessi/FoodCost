@@ -43,7 +43,7 @@ namespace Food_Cost
             try
             {
                 con.Open();
-                string s = "select Name from Store_Setup";
+                string s = "select Name from Setup_Restaurant";
                 SqlCommand cmd = new SqlCommand(s, con);
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -70,7 +70,7 @@ namespace Food_Cost
             try
             {
                 con.Open();
-                string s = "select Code from Store_Setup Where Name='" + StoreIDcbx.SelectedItem + "'";
+                string s = "select Code from Setup_Restaurant Where Name='" + StoreIDcbx.SelectedItem + "'";
                 SqlCommand cmd = new SqlCommand(s, con);
                 valofStore = cmd.ExecuteScalar().ToString();
             }
@@ -91,7 +91,7 @@ namespace Food_Cost
             try
             {
                 con.Open();
-                string s = "select Name from Kitchens_Setup Where RestaurantID=" + CodeOfResturant;
+                string s = "select Name from Setup_Kitchens Where RestaurantID=" + CodeOfResturant;
                 SqlCommand cmd = new SqlCommand(s, con);
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -118,7 +118,7 @@ namespace Food_Cost
             try
             {
                 con.Open();
-                string s = "select Code from Kitchens_Setup Where Name='" + Kitchencbx.SelectedItem.ToString() + "'";
+                string s = "select Code from Setup_Kitchens Where Name='" + Kitchencbx.SelectedItem.ToString() + "'";
                 SqlCommand cmd = new SqlCommand(s, con);
                 ValOfKitchen = cmd.ExecuteScalar().ToString();
             }

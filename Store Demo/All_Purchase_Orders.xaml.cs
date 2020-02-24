@@ -27,7 +27,7 @@ namespace Food_Cost
             try
             {
                 con.Open();
-                string s = string.Format("select PO_Serial AS Serial,PO_NO as Number,(Select Name From Store_Setup Where Code=Ship_To) AS Resturant,(Select Name From Vendors Where Code=Vendor_ID) as Vendor,Delivery_Date as Delivery_Date FROM PO");
+                string s = string.Format("select PO_Serial AS Serial,PO_NO as Number,(Select Name From Setup_Restaurant Where Code=Ship_To) AS Resturant,(Select Name From Vendors Where Code=Vendor_ID) as Vendor,Delivery_Date as Delivery_Date FROM PO where Status <> 'Post'");
                 SqlDataAdapter adapter = new SqlDataAdapter(s, con);
                 DataTable dt = new DataTable();
                 adapter.Fill(dt);
@@ -47,7 +47,7 @@ namespace Food_Cost
             try
             {
                 con.Open();
-                string s = string.Format("Select Transfer_Serial as Serial,Manual_Transfer_No as Number,Transfer_Date as Date,(SELECT Name FROM Store_Setup Where Code=From_Resturant_ID) as 'From Resturant',(SELECT Name FROM Kitchens_Setup Where Code=From_Kitchen_ID AND RestaurantID=From_Resturant_ID ) as 'From Kitchen',(SELECT Name FROM Store_Setup Where Code=To_Resturant_ID) as 'To Resturant',(SELECT Name FROM Kitchens_Setup Where Code=To_Kitchen_ID AND RestaurantID=To_Resturant_ID) as 'To Kitchen' FROM Transfer_Kitchens Where Type='Transfer_Resturant' and Status <> 'Post' order by Transfer_Serial DESC");
+                string s = string.Format("Select Transfer_Serial as Serial,Manual_Transfer_No as Number,Transfer_Date as Date,(SELECT Name FROM Setup_Restaurant Where Code=From_Resturant_ID) as 'From Resturant',(SELECT Name FROM Setup_Kitchens Where Code=From_Kitchen_ID AND RestaurantID=From_Resturant_ID ) as 'From Kitchen',(SELECT Name FROM Setup_Restaurant Where Code=To_Resturant_ID) as 'To Resturant',(SELECT Name FROM Setup_Kitchens Where Code=To_Kitchen_ID AND RestaurantID=To_Resturant_ID) as 'To Kitchen' FROM Transfer_Kitchens Where Type='Transfer_Resturant' and Status <> 'Post' order by Transfer_Serial DESC");
                 SqlDataAdapter adapter = new SqlDataAdapter(s, con);
                 DataTable dt = new DataTable();
                 adapter.Fill(dt);
@@ -67,7 +67,7 @@ namespace Food_Cost
             try
             {
                 con.Open();
-                string s = string.Format("Select Transfer_Serial as Serial,Manual_Transfer_No As Number,Transfer_Date As Date,(SELECT Name FROM Store_Setup Where Code=From_Resturant_ID) as 'From Resturant',(SELECT Name FROM Kitchens_Setup Where Code=From_Kitchen_ID AND RestaurantID=From_Resturant_ID ) as 'From Kitchen' ,(SELECT Name FROM Store_Setup Where Code=To_Resturant_ID) as 'To Resturant', (SELECT Name FROM Kitchens_Setup Where Code=To_Kitchen_ID AND RestaurantID=To_Resturant_ID) as 'To Kitchen' FROM Transfer_Kitchens Where Type='Transfer_Kitchen' and Status <> 'Post' Order by Transfer_Serial DESC");
+                string s = string.Format("Select Transfer_Serial as Serial,Manual_Transfer_No As Number,Transfer_Date As Date,(SELECT Name FROM Setup_Restaurant Where Code=From_Resturant_ID) as 'From Resturant',(SELECT Name FROM Setup_Kitchens Where Code=From_Kitchen_ID AND RestaurantID=From_Resturant_ID ) as 'From Kitchen' ,(SELECT Name FROM Setup_Restaurant Where Code=To_Resturant_ID) as 'To Resturant', (SELECT Name FROM Setup_Kitchens Where Code=To_Kitchen_ID AND RestaurantID=To_Resturant_ID) as 'To Kitchen' FROM Transfer_Kitchens Where Type='Transfer_Kitchen' and Status <> 'Post' Order by Transfer_Serial DESC");
                 SqlDataAdapter adapter = new SqlDataAdapter(s, con);
                 DataTable dt = new DataTable();
                 adapter.Fill(dt);
@@ -97,7 +97,7 @@ namespace Food_Cost
                     DataTable dt = PO_DGV.DataContext as DataTable;
 
                     con.Open();
-                    SqlCommand cmd = new SqlCommand(string.Format("select PO_Serial,PO_No,(select Name from Store_Setup where  Store_Setup.Code = Ship_To) as Restaurant_Trans_ID,(select Name from Vendors where Vendors.Code = Vendor_ID) as Vendor_ID,Delivery_Date,Comment,Status from PO where PO_Serial = '{0}'", dt.Rows[PO_DGV.SelectedIndex]["Serial"]), con);
+                    SqlCommand cmd = new SqlCommand(string.Format("select PO_Serial,PO_No,(select Name from Setup_Restaurant where  Setup_Restaurant.Code = Ship_To) as Restaurant_Trans_ID,(select Name from Vendors where Vendors.Code = Vendor_ID) as Vendor_ID,Delivery_Date,Comment,Status from PO where PO_Serial = '{0}'", dt.Rows[PO_DGV.SelectedIndex]["Serial"]), con);
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     reader.Read();
@@ -126,25 +126,20 @@ namespace Food_Cost
 
                     con.Close();
                     con.Open();
-                    SqlDataAdapter adapter = new SqlDataAdapter(string.Format("select Item_ID as Code,(select [Manual Code] from Setup_Items where Code= Item_ID) as Manual_Code,(select Name from Setup_Items where Code = Item_ID) as Name,(select Name2 from Setup_Items where Code = Item_ID) as Name2,(select Is_TaxableItem from Setup_Items where Code = Item_ID) as [Tax Included], Qty,Price_Without_Tax as Price,Tax,Price_With_Tax as [Unit Price With Tax],Price_Without_Tax as [Unit Price Without Tax],Price_With_Tax*Qty as [Total Price With Tax],Price_Without_Tax*Qty as [Total Price Without Tax] from PO_Items where PO_Serial = '{0}' order by Serial", PO_id), con);
+                    SqlDataAdapter adapter = new SqlDataAdapter(string.Format("select Item_ID as Code,(select [Manual Code] from Setup_Items where Code= Item_ID) as Manual_Code,(select Name from Setup_Items where Code = Item_ID) as Name,(select Name2 from Setup_Items where Code = Item_ID) as Name2,(select Tax_Included from PO_Items as PI where PI.Item_ID=PO_Items.Item_ID and PO_Serial='{0}') as [Tax Included], Qty,Price_Without_Tax as Price,Tax,Price_With_Tax as [Unit Price With Tax],Price_Without_Tax as [Unit Price Without Tax],Price_With_Tax*Qty as [Total Price With Tax],Price_Without_Tax*Qty as [Total Price Without Tax] from PO_Items where PO_Serial = '{0}' order by Serial", PO_id), con);
                     dt = new DataTable();
 
                     adapter.Fill(dt);
 
-                    for (int i = 0; i < dt.Columns.Count; i++)
-                    {
-                        if (dt.Columns[i] == dt.Columns["Qty"])
-                            break;
-                        else if (dt.Columns[i] == dt.Columns["Tax Included"])
-                            break;
-
-
-                        dt.Columns[i].ReadOnly = true;
-                    }
-
                     dt = LoadTaxValue(dt);
                     //dt = MultiTatackUnit_Update(dt);
-
+                    for (int i = 0; i < dt.Columns.Count; i++)
+                    {
+                        dt.Columns[i].ReadOnly = true;
+                    }
+                    dt.Columns["Price"].ReadOnly = false;
+                    dt.Columns["Qty"].ReadOnly = false;
+                    dt.Columns["Tax Included"].ReadOnly = false;
                     purchaseOrder.ItemsDGV.DataContext = dt;
 
                     float total = 0; float total_Without_Tax = 0;
@@ -215,7 +210,7 @@ namespace Food_Cost
                     try
                     {
                         con.Open();
-                        SqlDataAdapter adapter = new SqlDataAdapter(string.Format("select Request_Serial,Manual_Request_No,Request_Date,Comment,(select Name From Store_Setup where Code=From_Resturant_ID) as From_Resturat,(select Name From Store_Setup where Code = To_Resturant_ID) as To_Resturat, (select Name from Kitchens_Setup where Code = From_Kitchen_ID and RestaurantID = From_Resturant_ID) as From_Kitchen,(select Name from Kitchens_Setup where Code = To_Kitchen_ID  and RestaurantID = To_Resturant_ID) as To_Kitchen from Requests_tbl Where Type='Transfer_Resturant' and Request_Serial='{0}'", ((DataRowView)PO_DGV.SelectedItem).Row.ItemArray[0]), con);
+                        SqlDataAdapter adapter = new SqlDataAdapter(string.Format("select Request_Serial,Manual_Request_No,Request_Date,Comment,(select Name From Setup_Restaurant where Code=From_Resturant_ID) as From_Resturat,(select Name From Setup_Restaurant where Code = To_Resturant_ID) as To_Resturat, (select Name from Setup_Kitchens where Code = From_Kitchen_ID and RestaurantID = From_Resturant_ID) as From_Kitchen,(select Name from Setup_Kitchens where Code = To_Kitchen_ID  and RestaurantID = To_Resturant_ID) as To_Kitchen from Requests_tbl Where Type='Transfer_Resturant' and Request_Serial='{0}'", ((DataRowView)PO_DGV.SelectedItem).Row.ItemArray[0]), con);
                         dt = new DataTable();
                         adapter.Fill(dt);
 
@@ -223,7 +218,7 @@ namespace Food_Cost
                         CodeofRO = row["Request_Serial"].ToString();
                         RecieveOrder.TransferResturantID= row["Request_Serial"].ToString();
                         recieveOrder.TransferNumberKitchenTxt.Text = row["Manual_Request_No"].ToString();
-                        //recieveOrder.DeliveryROKitchen.Text = row["Request_Date"].ToString();
+                        recieveOrder.DeliveryROKitchen.Text =Convert.ToDateTime(row["Request_Date"]).ToString("dd-MM-yyyy");
                         //recieveOrder.CommentKitchen.Text = row["Comment"].ToString();
                         recieveOrder.FromResturanKitchenttxt.Text = row["From_Resturat"].ToString();
                         recieveOrder.ToResturantKitchentxt.Text = row["To_Resturat"].ToString();
@@ -276,7 +271,7 @@ namespace Food_Cost
                             try
                             {
                                 con2.Open();
-                                using (SqlCommand cmd2 = new SqlCommand(string.Format("select Qty,Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{1}') and KitchenID = (select Code from Kitchens_Setup where Name = '{2}') union all select Qty, Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{3}') and KitchenID = (select Code from Kitchens_Setup where Name = '{4}')", reader["Item_ID"], recieveOrder.FromResturanKitchenttxt.Text, recieveOrder.FromKitchenKitchentxt.Text, recieveOrder.ToResturantKitchentxt.Text, recieveOrder.ToKitchenKitchentxt.Text), con2))
+                                using (SqlCommand cmd2 = new SqlCommand(string.Format("select Qty,Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Setup_Restaurant where Name = '{1}') and KitchenID = (select Code from Setup_Kitchens where Name = '{2}') union all select Qty, Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Setup_Restaurant where Name = '{3}') and KitchenID = (select Code from Setup_Kitchens where Name = '{4}')", reader["Item_ID"], recieveOrder.FromResturanKitchenttxt.Text, recieveOrder.FromKitchenKitchentxt.Text, recieveOrder.ToResturantKitchentxt.Text, recieveOrder.ToKitchenKitchentxt.Text), con2))
                                 {                                    
                                     SqlDataReader reader2 = cmd2.ExecuteReader();
                                     reader2.Read();
@@ -360,7 +355,7 @@ namespace Food_Cost
                     try
                     {
                         con.Open();
-                        SqlDataAdapter adapter = new SqlDataAdapter(string.Format("select Request_Serial,Manual_Request_No,Request_Date,Comment,(select Name From Store_Setup where Code=From_Resturant_ID) as Resturat, (select Name from Kitchens_Setup where Code = From_Kitchen_ID and RestaurantID = From_Resturant_ID) as From_Kitchen, (select Name from Kitchens_Setup where Code = To_Kitchen_ID  and RestaurantID = From_Resturant_ID) as To_Kitchen from Requests_tbl Where Type='Transfer_Kitchen' and Request_Serial='{0}'", ((DataRowView)PO_DGV.SelectedItem).Row.ItemArray[0]), con);
+                        SqlDataAdapter adapter = new SqlDataAdapter(string.Format("select Request_Serial,Manual_Request_No,Request_Date,Comment,(select Name From Setup_Restaurant where Code=From_Resturant_ID) as Resturat, (select Name from Setup_Kitchens where Code = From_Kitchen_ID and RestaurantID = From_Resturant_ID) as From_Kitchen, (select Name from Setup_Kitchens where Code = To_Kitchen_ID  and RestaurantID = From_Resturant_ID) as To_Kitchen from Requests_tbl Where Type='Transfer_Kitchen' and Request_Serial='{0}'", ((DataRowView)PO_DGV.SelectedItem).Row.ItemArray[0]), con);
                         dt = new DataTable();
                         adapter.Fill(dt);
 
@@ -368,7 +363,7 @@ namespace Food_Cost
                         CodeofRO = row["Request_Serial"].ToString();
                         RecieveOrder.TransferKitchenID =row["Request_Serial"].ToString();
                         recieveOrder.TransferNumberInterTxt.Text = row["Manual_Request_No"].ToString();
-                        //recieveOrder.DeliveryROInter.Text = row["Request_Date"].ToString();
+                        recieveOrder.DeliveryROInter.Text =Convert.ToDateTime(row["Request_Date"]).ToString("dd-MM-yyyy");
                         //recieveOrder.CommentRoInter.Text = row["Comment"].ToString();
                         recieveOrder.FromResturantIntertxt.Text = row["Resturat"].ToString();
                         recieveOrder.FromKitchenIntertxt.Text = row["From_Kitchen"].ToString();
@@ -435,7 +430,7 @@ namespace Food_Cost
                             try
                             {
                                 con2.Open();
-                                using (SqlCommand cmd2 = new SqlCommand(string.Format("select Qty,Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{1}') and KitchenID = (select Code from Kitchens_Setup where Name = '{2}') union all select Qty, Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{1}') and KitchenID = (select Code from Kitchens_Setup where Name = '{3}')", reader["Item_ID"], recieveOrder.FromResturantIntertxt.Text, recieveOrder.FromKitchenIntertxt.Text, recieveOrder.ToKitchenIntertxt.Text), con2))
+                                using (SqlCommand cmd2 = new SqlCommand(string.Format("select Qty,Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Setup_Restaurant where Name = '{1}') and KitchenID = (select Code from Setup_Kitchens where Name = '{2}') union all select Qty, Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Setup_Restaurant where Name = '{1}') and KitchenID = (select Code from Setup_Kitchens where Name = '{3}')", reader["Item_ID"], recieveOrder.FromResturantIntertxt.Text, recieveOrder.FromKitchenIntertxt.Text, recieveOrder.ToKitchenIntertxt.Text), con2))
                                 {
                                     SqlDataReader reader2 = cmd2.ExecuteReader();
                                     reader2.Read();
@@ -515,7 +510,7 @@ namespace Food_Cost
                     try
                     {
                         con.Open();
-                        SqlDataAdapter adapter = new SqlDataAdapter(string.Format("select Request_Serial,Manual_Request_No,Request_Date,Comment,(select Name From Store_Setup where Code = To_Resturant_ID) as To_Resturat,(select Name from Kitchens_Setup where Code = To_Kitchen_ID  and RestaurantID = To_Resturant_ID) as To_Kitchen,Type from Requests_tbl Where Request_Serial='{0}'", ((DataRowView)PO_DGV.SelectedItem).Row.ItemArray[0]), con);
+                        SqlDataAdapter adapter = new SqlDataAdapter(string.Format("select Request_Serial,Manual_Request_No,Request_Date,Comment,(select Name From Setup_Restaurant where Code = To_Resturant_ID) as To_Resturat,(select Name from Setup_Kitchens where Code = To_Kitchen_ID  and RestaurantID = To_Resturant_ID) as To_Kitchen,Type from Requests_tbl Where Request_Serial='{0}'", ((DataRowView)PO_DGV.SelectedItem).Row.ItemArray[0]), con);
                         dt = new DataTable();
                         adapter.Fill(dt);
 
@@ -523,8 +518,8 @@ namespace Food_Cost
                         recieveOrder.Serial_Request_NO.Text = row["Request_Serial"].ToString();
                         recieveOrder.Request_NO.Text = row["Manual_Request_No"].ToString();
                         DateTime TheDateTime = Convert.ToDateTime(row["Request_Date"].ToString());
-                        recieveOrder.Request_Date.Text = TheDateTime.ToString("yyyy-MM-dd");
-                        recieveOrder.Request_Time.Text = TheDateTime.ToString("HH:mm:ss");
+                        recieveOrder.Request_Date.Text = TheDateTime.ToString("dd-MM-yyyy");
+                        //recieveOrder.Request_Time.Text = TheDateTime.ToString("HH:mm:ss");
                         recieveOrder.TypeCbx.Text = row["Type"].ToString();
                         recieveOrder.RequestCommenttxt.Text = row["Comment"].ToString();
                         recieveOrder.TOResturantReq.Text = row["To_Resturat"].ToString();
@@ -589,7 +584,7 @@ namespace Food_Cost
                             try
                             {
                                 con2.Open();
-                                using (SqlCommand cmd2 = new SqlCommand(string.Format("select Qty,Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{1}') and KitchenID = (select Code from Kitchens_Setup where Name = '{2}') union all select Qty, Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{3}') and KitchenID = (select Code from Kitchens_Setup where Name = '{4}')", reader["Item_ID"], recieveOrder.ResturantReqcbx.Text, recieveOrder.KitchenReqcbx.Text, recieveOrder.TOResturantReq.Text, recieveOrder.TOKitchenReq.Text), con2))
+                                using (SqlCommand cmd2 = new SqlCommand(string.Format("select Qty,Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Setup_Restaurant where Name = '{1}') and KitchenID = (select Code from Setup_Kitchens where Name = '{2}') union all select Qty, Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Setup_Restaurant where Name = '{3}') and KitchenID = (select Code from Setup_Kitchens where Name = '{4}')", reader["Item_ID"], recieveOrder.ResturantReqcbx.Text, recieveOrder.KitchenReqcbx.Text, recieveOrder.TOResturantReq.Text, recieveOrder.TOKitchenReq.Text), con2))
                                 {
                                     SqlDataReader reader2 = cmd2.ExecuteReader();
                                     reader2.Read();
@@ -708,7 +703,7 @@ namespace Food_Cost
                 try
                 {
                     con.Open();
-                    SqlCommand cmd = new SqlCommand(string.Format("select Transfer_Serial,Manual_Transfer_No,Transfer_Date,(SELECT Name FROM Store_Setup Where Code=From_Resturant_ID)AS Resturant,(SELECT Name FROM Kitchens_Setup Where Code=From_Kitchen_ID AND RestaurantID=From_Resturant_ID )AS FROM_KItchen, (SELECT Name FROM Kitchens_Setup Where Code=To_Kitchen_ID AND RestaurantID=To_Resturant_ID)AS TO_Kitchen,Comment,Status from Transfer_Kitchens where Transfer_Serial = '{0}'", dat.Rows[PO_DGV.SelectedIndex]["Serial"]), con);
+                    SqlCommand cmd = new SqlCommand(string.Format("select Transfer_Serial,Manual_Transfer_No,Transfer_Date,(SELECT Name FROM Setup_Restaurant Where Code=From_Resturant_ID)AS Resturant,(SELECT Name FROM Setup_Kitchens Where Code=From_Kitchen_ID AND RestaurantID=From_Resturant_ID )AS FROM_KItchen, (SELECT Name FROM Setup_Kitchens Where Code=To_Kitchen_ID AND RestaurantID=To_Resturant_ID)AS TO_Kitchen,Comment,Status from Transfer_Kitchens where Transfer_Serial = '{0}'", dat.Rows[PO_DGV.SelectedIndex]["Serial"]), con);
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     reader.Read();
@@ -745,7 +740,7 @@ namespace Food_Cost
                         try
                         {
 
-                            using (cmd2 = new SqlCommand(string.Format("select Qty,Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{1}') and KitchenID = (select Code from Kitchens_Setup where Name = '{2}') union all select Qty, Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{1}') and KitchenID = (select Code from Kitchens_Setup where Name = '{3}')", reader["Code"], transferKitchen.Resturant.Text, transferKitchen.From_Kitchen.Text, transferKitchen.To_Kitchen.Text), con2))
+                            using (cmd2 = new SqlCommand(string.Format("select Qty,Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Setup_Restaurant where Name = '{1}') and KitchenID = (select Code from Setup_Kitchens where Name = '{2}') union all select Qty, Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Setup_Restaurant where Name = '{1}') and KitchenID = (select Code from Setup_Kitchens where Name = '{3}')", reader["Code"], transferKitchen.Resturant.Text, transferKitchen.From_Kitchen.Text, transferKitchen.To_Kitchen.Text), con2))
                             {
                                 reader2 = cmd2.ExecuteReader();
                                 reader2.Read();
@@ -859,7 +854,7 @@ namespace Food_Cost
                 try
                 {
                     con.Open();
-                    SqlCommand cmd = new SqlCommand(string.Format("select Transfer_Serial,Manual_Transfer_No,Transfer_Date,(SELECT Name FROM Store_Setup Where Code=From_Resturant_ID)AS From_Resturant,(SELECT Name FROM Store_Setup Where Code=To_Resturant_ID)AS To_Resturant,(SELECT Name FROM Kitchens_Setup Where Code=From_Kitchen_ID AND RestaurantID=From_Resturant_ID )AS FROM_KItchen, (SELECT Name FROM Kitchens_Setup Where Code=To_Kitchen_ID AND RestaurantID=To_Resturant_ID)AS TO_Kitchen,Comment,Status from Transfer_Kitchens where Transfer_Serial = '{0}'", dat.Rows[PO_DGV.SelectedIndex]["Serial"]), con);
+                    SqlCommand cmd = new SqlCommand(string.Format("select Transfer_Serial,Manual_Transfer_No,Transfer_Date,(SELECT Name FROM Setup_Restaurant Where Code=From_Resturant_ID)AS From_Resturant,(SELECT Name FROM Setup_Restaurant Where Code=To_Resturant_ID)AS To_Resturant,(SELECT Name FROM Setup_Kitchens Where Code=From_Kitchen_ID AND RestaurantID=From_Resturant_ID )AS FROM_KItchen, (SELECT Name FROM Setup_Kitchens Where Code=To_Kitchen_ID AND RestaurantID=To_Resturant_ID)AS TO_Kitchen,Comment,Status from Transfer_Kitchens where Transfer_Serial = '{0}'", dat.Rows[PO_DGV.SelectedIndex]["Serial"]), con);
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     reader.Read();
@@ -898,7 +893,7 @@ namespace Food_Cost
                         try
                         {
 
-                            using (cmd2 = new SqlCommand(string.Format("select Qty,Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{1}') and KitchenID = (select Code from Kitchens_Setup where Name = '{2}') union all select Qty, Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{4}') and KitchenID = (select Code from Kitchens_Setup where Name = '{3}')", reader["Code"], transfer_Resturant.From_Resturant.Text, transfer_Resturant.From_Kitchen.Text, transfer_Resturant.To_Kitchen.Text, transfer_Resturant.ToResturant.Text), con2))
+                            using (cmd2 = new SqlCommand(string.Format("select Qty,Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Setup_Restaurant where Name = '{1}') and KitchenID = (select Code from Setup_Kitchens where Name = '{2}') union all select Qty, Current_Cost from Items where ItemID = '{0}' and RestaurantID = (select Code from Setup_Restaurant where Name = '{4}') and KitchenID = (select Code from Setup_Kitchens where Name = '{3}')", reader["Code"], transfer_Resturant.From_Resturant.Text, transfer_Resturant.From_Kitchen.Text, transfer_Resturant.To_Kitchen.Text, transfer_Resturant.ToResturant.Text), con2))
                             {
                                 reader2 = cmd2.ExecuteReader();
                                 reader2.Read();
@@ -1016,8 +1011,8 @@ namespace Food_Cost
                 try
                 {
                     con.Open();
-                    //SqlDataAdapter da = new SqlDataAdapter("select Request_Serial,Manual_Request_No,Request_Date, (select Name From Store_Setup where Code=From_Resturant_ID) as From_Resturat,(select Name From Store_Setup where Code = To_Resturant_ID) as To_Resturat, (select Name from Kitchens_Setup where Code = From_Kitchen_ID and RestaurantID = From_Resturant_ID) as From_Kitchen,(select Name from Kitchens_Setup where Code = To_Kitchen_ID  and RestaurantID = To_Resturant_ID) as To_Kitchen From Requests_tbl where type = 'Transfer_Resturant'", con);
-                    SqlDataAdapter da = new SqlDataAdapter("select Request_Serial,Manual_Request_No,Request_Date,(select Name From Store_Setup where Code=From_Resturant_ID) as From_Resturat,(select Name From Store_Setup where Code = To_Resturant_ID) as To_Resturat,(select Name from Kitchens_Setup where Code = From_Kitchen_ID and RestaurantID = From_Resturant_ID) as From_Kitchen,(select Name from Kitchens_Setup where Code = To_Kitchen_ID  and RestaurantID = To_Resturant_ID) as To_Kitchen From Requests_tbl where type = 'Transfer_Resturant' and Status='Post' and Request_Serial not in (select Transactions_No From RO where Transactions_No=Request_Serial and type = 'Transfer_Resturant')", con);
+                    //SqlDataAdapter da = new SqlDataAdapter("select Request_Serial,Manual_Request_No,Request_Date, (select Name From Setup_Restaurant where Code=From_Resturant_ID) as From_Resturat,(select Name From Setup_Restaurant where Code = To_Resturant_ID) as To_Resturat, (select Name from Setup_Kitchens where Code = From_Kitchen_ID and RestaurantID = From_Resturant_ID) as From_Kitchen,(select Name from Setup_Kitchens where Code = To_Kitchen_ID  and RestaurantID = To_Resturant_ID) as To_Kitchen From Requests_tbl where type = 'Transfer_Resturant'", con);
+                    SqlDataAdapter da = new SqlDataAdapter("select Request_Serial,Manual_Request_No,Request_Date,(select Name From Setup_Restaurant where Code=From_Resturant_ID) as From_Resturat,(select Name From Setup_Restaurant where Code = To_Resturant_ID) as To_Resturat,(select Name from Setup_Kitchens where Code = From_Kitchen_ID and RestaurantID = From_Resturant_ID) as From_Kitchen,(select Name from Setup_Kitchens where Code = To_Kitchen_ID  and RestaurantID = To_Resturant_ID) as To_Kitchen From Requests_tbl where type = 'Transfer_Resturant' and Status='Post' and Request_Serial not in (select Transactions_No From RO where Transactions_No=Request_Serial and type = 'Transfer_Resturant')", con);
                     da.Fill(dt);
                     PO_DGV.DataContext = dt;
                 }
@@ -1038,8 +1033,8 @@ namespace Food_Cost
                 try
                 {
                     con.Open();
-                    //SqlDataAdapter da = new SqlDataAdapter("select Request_Serial,Manual_Request_No,Request_Date, (select Name From Store_Setup where Code=From_Resturant_ID) as Resturat,(select Name from Kitchens_Setup where Code = From_Kitchen_ID and RestaurantID = From_Resturant_ID) as From_Kitchen,(select Name from Kitchens_Setup where Code = To_Kitchen_ID and RestaurantID = From_Resturant_ID) as To_Kitchen From Requests_tbl where type = 'Transfer_Kitchen'", con);
-                    SqlDataAdapter da = new SqlDataAdapter("select Request_Serial,Manual_Request_No,Request_Date,(select Name From Store_Setup where Code=From_Resturant_ID) as Resturat,(select Name from Kitchens_Setup where Code = From_Kitchen_ID and RestaurantID = From_Resturant_ID) as From_Kitchen,(select Name from Kitchens_Setup where Code = To_Kitchen_ID and RestaurantID = From_Resturant_ID) as To_Kitchen From Requests_tbl where type = 'Transfer_Kitchen' and Status='Post'and Request_Serial not in (Select Transactions_No from RO where Transactions_No=Request_Serial and type = 'Transfer_Kitchen')", con);
+                    //SqlDataAdapter da = new SqlDataAdapter("select Request_Serial,Manual_Request_No,Request_Date, (select Name From Setup_Restaurant where Code=From_Resturant_ID) as Resturat,(select Name from Setup_Kitchens where Code = From_Kitchen_ID and RestaurantID = From_Resturant_ID) as From_Kitchen,(select Name from Setup_Kitchens where Code = To_Kitchen_ID and RestaurantID = From_Resturant_ID) as To_Kitchen From Requests_tbl where type = 'Transfer_Kitchen'", con);
+                    SqlDataAdapter da = new SqlDataAdapter("select Request_Serial,Manual_Request_No,Request_Date,(select Name From Setup_Restaurant where Code=From_Resturant_ID) as Resturat,(select Name from Setup_Kitchens where Code = From_Kitchen_ID and RestaurantID = From_Resturant_ID) as From_Kitchen,(select Name from Setup_Kitchens where Code = To_Kitchen_ID and RestaurantID = From_Resturant_ID) as To_Kitchen From Requests_tbl where type = 'Transfer_Kitchen' and Status='Post'and Request_Serial not in (Select Transactions_No from RO where Transactions_No=Request_Serial and type = 'Transfer_Kitchen')", con);
                     da.Fill(dt);
                     PO_DGV.DataContext = dt;
                 }
@@ -1060,7 +1055,7 @@ namespace Food_Cost
                 try
                 {
                     con.Open();
-                    SqlDataAdapter da = new SqlDataAdapter("select Request_Serial,Manual_Request_No,Request_Date, (select Name From Store_Setup where Code=From_Resturant_ID) as Resturat,(select Name from Kitchens_Setup where Code = From_Kitchen_ID and RestaurantID = From_Resturant_ID) as From_Kitchen,(select Name from Kitchens_Setup where Code = To_Kitchen_ID and RestaurantID = From_Resturant_ID) as To_Kitchen,Type From Requests_tbl ORDER BY Request_Serial DESC", con);
+                    SqlDataAdapter da = new SqlDataAdapter("select Request_Serial,Manual_Request_No,Request_Date, (select Name From Setup_Restaurant where Code=From_Resturant_ID) as Resturat,(select Name from Setup_Kitchens where Code = From_Kitchen_ID and RestaurantID = From_Resturant_ID) as From_Kitchen,(select Name from Setup_Kitchens where Code = To_Kitchen_ID and RestaurantID = From_Resturant_ID) as To_Kitchen,Type From Requests_tbl ORDER BY Request_Serial DESC", con);
                     da.Fill(dt);
                     PO_DGV.DataContext = dt;
                 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -32,10 +33,13 @@ namespace Food_Cost
 
         private void FillDGV()
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            DataTable DT = new DataTable();
+            DT.Columns.Add("Code");
+            DT.Columns.Add("Name");
+            DT.Columns.Add("Name2");
+            DT.Columns.Add("Active",typeof(bool));
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlDataReader reader = null;
-
             try
             {
                 con.Open();
@@ -44,9 +48,14 @@ namespace Food_Cost
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    var data = new DgvData { Code = reader["Code"].ToString(), Name = reader["Name"].ToString(), Name2 = reader["Name2"].ToString(), Active = reader["Active"].ToString() };
-                    ReasonsDGV.Items.Add(data);
+                    DT.Rows.Add(reader["Code"].ToString(), reader["Name"].ToString(), reader["Name2"].ToString(), reader["Active"]);
                 }
+                for(int i=0;i<DT.Columns.Count;i++)
+                {
+                    DT.Columns[i].ReadOnly = true;
+                }
+                ReasonsDGV.DataContext = DT;
+
             }
             catch (Exception ex)
             {
@@ -57,7 +66,7 @@ namespace Food_Cost
                 reader.Close();
                 con.Close();
             }
-        }
+        }    //Done
 
         public void MainUiFormat()
         {
@@ -65,13 +74,14 @@ namespace Food_Cost
             Name_txt.IsEnabled = false;
             Name2_txt.IsEnabled = false;
             Active_chbx.IsEnabled = false;
+            Active_chbx.IsChecked = false;
             SaveBtn.IsEnabled = false;
             UpdateBtn.IsEnabled = false;
             UndoBtn.IsEnabled = false;
             DeleteBtn.IsEnabled = false;
             NewBtn.IsEnabled = true;
 
-        }
+        }   //Done
 
         public void EnableUI()
         {
@@ -84,7 +94,7 @@ namespace Food_Cost
             UndoBtn.IsEnabled = true;
             DeleteBtn.IsEnabled = true;
             NewBtn.IsEnabled = true;
-        }
+        }   //Done
 
         private void ClearUIFields()
         {
@@ -92,12 +102,13 @@ namespace Food_Cost
             Name_txt.Text = "";
             Name2_txt.Text = "";
             Active_chbx.IsChecked = false;
-        }
+        }   //Done
 
         private void NewButtonClicked(object sender, RoutedEventArgs e)
         {
             EnableUI();
             ClearUIFields();
+            Active_chbx.IsChecked = true;
             NewBtn.IsEnabled = false;
             UpdateBtn.IsEnabled = false;
             DeleteBtn.IsEnabled = false;
@@ -111,22 +122,20 @@ namespace Food_Cost
                 return;
             }
 
-            foreach (DgvData item in ReasonsDGV.Items)
+            for(int i=0;i< ReasonsDGV.Items.Count;i++)
             {
-                if (item.Code.Equals(Code_txt.Text))
+                if(Code_txt.Text == ((DataRowView)ReasonsDGV.Items[i]).Row.ItemArray[0].ToString())
                 {
                     MessageBox.Show("This Code Is Not Avaliable");
                     return;
                 }
             }
 
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
-
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             try
             {
                 con.Open();
-                string s = "insert into Setup_AdjacmentReasons_tbl(Code, Name, Name2, Active) values (" + Code_txt.Text + ",'" + Name_txt.Text + "','" + Name2_txt.Text + "','" + Active_chbx.IsChecked + "')";
+                string s = "insert into Setup_AdjacmentReasons_tbl(Code, Name, Name2, Active) values (" + Code_txt.Text + ",N'" + Name_txt.Text + "',N'" + Name2_txt.Text + "','" + Active_chbx.IsChecked + "')";
                 SqlCommand cmd = new SqlCommand(s, con);
                 cmd.ExecuteNonQuery();
             }
@@ -139,7 +148,7 @@ namespace Food_Cost
                 con.Close();
                 MainUiFormat();
 
-                ReasonsDGV.Items.Clear();
+                ReasonsDGV.DataContext = null;
                 FillDGV();
             }
             MessageBox.Show("Saved Successfully");
@@ -147,14 +156,13 @@ namespace Food_Cost
 
         private void UpdateBtn_Click(object sender, RoutedEventArgs e)
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
 
             try
             {
                 con.Open();
-                string s = "Update Setup_AdjacmentReasons_tbl SET Name='" + Name_txt.Text +
-                                               "',Name2='" + Name2_txt.Text +
+                string s = "Update Setup_AdjacmentReasons_tbl SET Name=N'" + Name_txt.Text +
+                                               "',Name2=N'" + Name2_txt.Text +
                                                "',Active='" + Active_chbx.IsChecked +
                                                "'Where Code =" + Code_txt.Text;
                 SqlCommand cmd = new SqlCommand(s, con);
@@ -169,7 +177,7 @@ namespace Food_Cost
                 con.Close();
                 MainUiFormat();
 
-                ReasonsDGV.Items.Clear();
+                ReasonsDGV.DataContext = null;
                 FillDGV();
             }
             MessageBox.Show("Updated Successfully");
@@ -182,8 +190,7 @@ namespace Food_Cost
 
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             try
             {
                 con.Open();
@@ -200,7 +207,7 @@ namespace Food_Cost
                 con.Close();
                 MainUiFormat();
 
-                ReasonsDGV.Items.Clear();
+                ReasonsDGV.DataContext = null;
                 FillDGV();
             }
             MessageBox.Show("Deleted Successfully");
@@ -214,12 +221,10 @@ namespace Food_Cost
 
                 if (data != null && data.SelectedItems != null && data.SelectedItems.Count == 1)
                 {
-                    DgvData dgvData = (DgvData)data.SelectedItem;
-
-                    Code_txt.Text = dgvData.Code;
-                    Name_txt.Text = dgvData.Name;
-                    Name2_txt.Text = dgvData.Name2;
-                    Active_chbx.IsChecked = dgvData.Active.ToLower().Equals("true");
+                    Code_txt.Text = ((DataRowView)ReasonsDGV.SelectedItem).Row.ItemArray[0].ToString();
+                    Name_txt.Text = ((DataRowView)ReasonsDGV.SelectedItem).Row.ItemArray[1].ToString();
+                    Name2_txt.Text = ((DataRowView)ReasonsDGV.SelectedItem).Row.ItemArray[2].ToString();
+                    Active_chbx.IsChecked = (bool)(((DataRowView)ReasonsDGV.SelectedItem).Row.ItemArray[3]);
 
                     EnableUI();
                     Code_txt.IsEnabled = false;

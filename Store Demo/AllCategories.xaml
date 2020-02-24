@@ -9,52 +9,35 @@
         Title="AllCategories" Height="450" Width="800">
 
     <Grid Name="parentdrid">
-        <Border Padding="10">
-            <StackPanel>
-                <Grid Margin="0 0 0 0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="0"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                        <ColumnDefinition Width="10"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="9*"/>
+        </Grid.RowDefinitions>
 
-                    <StackPanel  Grid.Column="1">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
 
-                                <ColumnDefinition Width="2*"></ColumnDefinition>
-                                <ColumnDefinition Width="5*"></ColumnDefinition>
-                                <ColumnDefinition Width="4*"></ColumnDefinition>
-                                <ColumnDefinition Width="6*"></ColumnDefinition>
-                                <ColumnDefinition Width="4*"></ColumnDefinition>
-                                <ColumnDefinition Width="4*"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="5*"></ColumnDefinition>
+                <ColumnDefinition Width="4*"></ColumnDefinition>
+                <ColumnDefinition Width="6*"></ColumnDefinition>
+                <ColumnDefinition Width="4*"></ColumnDefinition>
+                <ColumnDefinition Width="4*"></ColumnDefinition>
 
-                            </Grid.ColumnDefinitions>
+            </Grid.ColumnDefinitions>
 
-                            <materialDesign:PackIcon Grid.Column="0" Kind="Category" Foreground="#566573" Height="28" Width="30" Margin="3"/>
-                            <TextBlock Text="Categories" Margin="0 5"  Grid.Column="1" FontWeight="Bold" Foreground="#566573" FontSize="15"  />
-                            <TextBlock Text="Search" Margin="0 5"  Grid.Column="2" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#566573" FontSize="15"  />
-                            <TextBox Name="SearchTxt" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" FontSize="12" TextChanged="TextDataChange"  ></TextBox>
-                            <RadioButton Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Name="RadioByCode">By Code</RadioButton>
-                            <RadioButton Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Name="RadioByName">By Name</RadioButton>
-                        </Grid>
+            <materialDesign:PackIcon Grid.Column="0" Kind="Category" Foreground="#566573" Height="28" Width="30" Margin="3"/>
+            <TextBlock Text="Categories" Margin="0 5"  Grid.Column="1" FontWeight="Bold" Foreground="#566573" FontSize="15"  />
+            <TextBlock Text="Search" Margin="0 5"  Grid.Column="2" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#566573" FontSize="15"  />
+            <TextBox Name="SearchTxt" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" FontSize="12" TextChanged="TextDataChange"  ></TextBox>
+            <RadioButton Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Name="RadioByCode">By Code</RadioButton>
+            <RadioButton Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Name="RadioByName">By Name</RadioButton>
+        </Grid>
 
-
-
-                        <DataGrid  Name="CategoryDGV" ItemsSource="{Binding}" AutoGenerateColumns="True" VerticalAlignment="Stretch" ScrollViewer.CanContentScroll="True"
-                          ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Padding="0 0 0 160" MouseDoubleClick="MouseDoubleClick_click"
+        <DataGrid  Name="CategoryDGV" Grid.Row="1" ItemsSource="{Binding}" AutoGenerateColumns="True" VerticalAlignment="Stretch" ScrollViewer.CanContentScroll="True"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" MouseDoubleClick="MouseDoubleClick_click"
                           Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ActualHeight}" CanUserAddRows="False">
+        </DataGrid>
 
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Code" IsReadOnly="True" Binding="{Binding Code}" Width="120"></DataGridTextColumn>
-                                <DataGridTextColumn Header="Name" IsReadOnly="True"  Binding="{Binding Name}" Width="120"></DataGridTextColumn>
-                                <DataGridTextColumn Header="Name2" IsReadOnly="True"  Binding="{Binding Name2}" Width="120"></DataGridTextColumn>
-                                <DataGridTextColumn Header="IsActive" IsReadOnly="True"  Binding="{Binding IsActive}" Width="120"></DataGridTextColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </StackPanel>
-                </Grid>
-            </StackPanel>
-        </Border>
     </Grid>
 </Window>

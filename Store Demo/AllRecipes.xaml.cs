@@ -36,14 +36,13 @@ namespace Food_Cost
 
         public void LoadToGrid()
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             try
             {
                 con.Open();
                 DataTable dt = new DataTable();
 
-                using (SqlDataAdapter da = new SqlDataAdapter("SELECT * FROM Setup_Recipes", con))
+                using (SqlDataAdapter da = new SqlDataAdapter("SELECT * FROM Setup_Recipes where IsActive='True'", con))
                     da.Fill(dt);
 
                 ReciveOrdersOrderDGV.DataContext = dt;
@@ -159,8 +158,7 @@ namespace Food_Cost
 
         private void TextDataChange(object sender, TextChangedEventArgs e)
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             if ((RadioByCode.IsChecked == true || RadioByName.IsChecked == true) && SearchTxt.Text != "")
             {
                 ReciveOrdersOrderDGV.DataContext = null;
@@ -170,7 +168,7 @@ namespace Food_Cost
                     {
                         con.Open();
                         //lsa 7etet el weight fe el select
-                        string Q = "SELECT * FROM Setup_Recipes Where Code Like '%" + SearchTxt.Text + "%'";
+                        string Q = "SELECT * FROM Setup_Recipes where IsActive='True' and Code Like '%" + SearchTxt.Text + "%'";
                         DataTable dt = new DataTable();
 
                         using (SqlDataAdapter da = new SqlDataAdapter(Q, con))
@@ -195,7 +193,7 @@ namespace Food_Cost
                     {
                         con.Open();
                         //lsa 7etet el weight fe el select
-                        string Q = "SELECT * FROM Setup_Recipes Where Name Like '%" + SearchTxt.Text + "%'";
+                        string Q = "SELECT * FROM Setup_Recipes where IsActive='True' and Name Like '%" + SearchTxt.Text + "%'";
                         DataTable dt = new DataTable();
 
                         using (SqlDataAdapter da = new SqlDataAdapter(Q, con))
@@ -220,7 +218,7 @@ namespace Food_Cost
                     con.Open();
                     DataTable dt = new DataTable();
 
-                    using (SqlDataAdapter da = new SqlDataAdapter("SELECT * FROM Setup_Recipes", con))
+                    using (SqlDataAdapter da = new SqlDataAdapter("SELECT * FROM Setup_Recipes where IsActive='True'", con))
                         da.Fill(dt);
 
                     ReciveOrdersOrderDGV.DataContext = dt;

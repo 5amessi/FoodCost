@@ -7,34 +7,35 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Title="All_Kitchens" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Width="1000" Height="600">
+
     <Grid>
-        <StackPanel>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1.4*"></ColumnDefinition>
-                    <ColumnDefinition Width="5*"></ColumnDefinition>
-                    <ColumnDefinition Width="4*"></ColumnDefinition>
-                    <ColumnDefinition Width="6*"></ColumnDefinition>
-                    <ColumnDefinition Width="4*"></ColumnDefinition>
-                    <ColumnDefinition Width="4*"></ColumnDefinition>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="9*"/>
+        </Grid.RowDefinitions>
 
-                </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.4*"></ColumnDefinition>
+                <ColumnDefinition Width="5*"></ColumnDefinition>
+                <ColumnDefinition Width="4*"></ColumnDefinition>
+                <ColumnDefinition Width="6*"></ColumnDefinition>
+                <ColumnDefinition Width="4*"></ColumnDefinition>
+                <ColumnDefinition Width="4*"></ColumnDefinition>
 
-                <materialDesign:PackIcon Kind="Store" Foreground="#566573" Height="35" Width="50"/>
-                <TextBlock Text="Kitchens" Margin="0 5"  Grid.Column="1" FontWeight="Bold" Foreground="#566573" FontSize="15"  />
-                <TextBlock Text="Search" Margin="0 5"  Grid.Column="2" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#566573" FontSize="15"  />
-                <TextBox Name="SearchTxt" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" FontSize="12" TextChanged="TextDataChange"  ></TextBox>
-                <RadioButton Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Name="RadioByCode">By Code</RadioButton>
-                <RadioButton Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Name="RadioByName">By Name</RadioButton>
-            </Grid>
+            </Grid.ColumnDefinitions>
 
+            <materialDesign:PackIcon Kind="Store" Foreground="#566573" Height="35" Width="50"/>
+            <TextBlock Text="Kitchens" Margin="0 5"  Grid.Column="1" FontWeight="Bold" Foreground="#566573" FontSize="15"  />
+            <TextBlock Text="Search" Margin="0 5"  Grid.Column="2" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#566573" FontSize="15"  />
+            <TextBox Name="SearchTxt" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" FontSize="12" TextChanged="TextDataChange"  ></TextBox>
+            <RadioButton Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Name="RadioByCode">By Code</RadioButton>
+            <RadioButton Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center" Name="RadioByName">By Name</RadioButton>
+        </Grid>
 
-            <DataGrid  Name="KitchensDGV" ItemsSource="{Binding}" AutoGenerateColumns="True"  ColumnWidth="*" VerticalAlignment="Stretch"  ScrollViewer.CanContentScroll="True" MouseDoubleClick="KitchenDGV_MouseDoubleClick" 
-                          ScrollViewer.VerticalScrollBarVisibility="Auto"
-                          ScrollViewer.HorizontalScrollBarVisibility="Auto" 
-                          IsReadOnly="True"
-                          Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ActualHeight}" HorizontalContentAlignment="Center"/>
-        </StackPanel>
+        <DataGrid Name="KitchensDGV" Grid.Row="1" ItemsSource="{Binding}" AutoGenerateColumns="True"  ColumnWidth="*" VerticalAlignment="Stretch"  ScrollViewer.CanContentScroll="True"
+                  MouseDoubleClick="KitchenDGV_MouseDoubleClick" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Auto" IsReadOnly="True"
+                  Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ActualHeight}" HorizontalContentAlignment="Center"/>
 
     </Grid>
 </Window>

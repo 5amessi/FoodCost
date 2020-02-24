@@ -22,7 +22,6 @@ namespace Food_Cost
     /// </summary>
     public partial class ExpireDate : Window
     {
-        DateTime TheDate = new DateTime();
         string ExpireForm = "";
         string sysFormat = "";
         public static Dictionary<string, List<Tuple<string, string>>> ItemExpireDate = new Dictionary<string, List<Tuple<string, string>>>();
@@ -33,7 +32,6 @@ namespace Food_Cost
         public ExpireDate(string TheCode, string TheQty)
         {
             InitializeComponent();
-            sysFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
             RoExpire.Visibility = Visibility.Visible;
             TransferExpire.Visibility = Visibility.Hidden;
             ExpireForm = "RO";
@@ -84,8 +82,7 @@ namespace Food_Cost
 
             foreach (Tuple<string, string> tuple in ItemExpireDate[Code])
             {
-                DT.Rows.Add(Code, ManualCode, Name, Name2, tuple.Item1, tuple.Item2);
-
+                DT.Rows.Add(Code, ManualCode, Name, Name2, tuple.Item1, Convert.ToDateTime(tuple.Item2).ToString("dd-MM-yyyy"));
             }
             for (int i = 0; i < DT.Columns.Count; i++)
             {
@@ -146,7 +143,7 @@ namespace Food_Cost
                 DT.Columns["Expire Date"].ReadOnly = false;
                 if ((e.OriginalSource as Button).Name.ToString() == "ExpireDone")
                 {
-                    DT.Rows[ItemsExpireDGV.SelectedIndex]["Expire Date"] =Convert.ToDateTime(ExpireDatePkr.Text).ToString("MM-dd-yyyy");
+                    DT.Rows[ItemsExpireDGV.SelectedIndex]["Expire Date"] =Convert.ToDateTime(ExpireDatePkr.Text).ToString("dd-MM-yyyy");
                 }
                 else if ((e.OriginalSource as Button).Name.ToString() == "ProductionDone")
                 {
@@ -192,7 +189,7 @@ namespace Food_Cost
                         TheDate[2] = TheValue.ToString();
                     }
 
-                    DT.Rows[ItemsExpireDGV.SelectedIndex]["Expire Date"] =Convert.ToDateTime(TheDate[2] + "/" + TheDate[0] + "/" + TheDate[1]).ToString("MM-dd-yyyy");
+                    DT.Rows[ItemsExpireDGV.SelectedIndex]["Expire Date"] =Convert.ToDateTime(TheDate[2] + "/" + TheDate[0] + "/" + TheDate[1]).ToString("dd-MM-yyyy");
 
                 }
                 DT.Columns["Expire Date"].ReadOnly = true;
@@ -283,7 +280,6 @@ namespace Food_Cost
             ItemsExpireDGV.DataContext = DT;
         }
 
-
         /// Requests
         public ExpireDate(string TheCode,string TheQty,string ResturantCode,string FromKitchenCode)
         {
@@ -340,7 +336,7 @@ namespace Food_Cost
                     //SqlDataReader reader2 = null;
                     SqlDataReader reader2 = cmd2.ExecuteReader();
                     reader2.Read();
-                    DT.Rows.Add(false, TheCode, reader2["Manual Code"], reader2["Name"], reader2["Name2"], reader["Qty"],Convert.ToDateTime(reader["ExpireDate"]).ToString("MM-dd-yyyy"), " ");
+                    DT.Rows.Add(false, TheCode, reader2["Manual Code"], reader2["Name"], reader2["Name2"], reader["Qty"],Convert.ToDateTime(reader["ExpireDate"]).ToString("dd-MM-yyyy"), " ");
                     reader2.Close();
                 }               
             }
@@ -400,7 +396,7 @@ namespace Food_Cost
                     //SqlDataReader reader2 = null;
                     SqlDataReader reader2 = cmd2.ExecuteReader();
                     reader2.Read();
-                    DT.Rows.Add(false, TheCode, reader2["Manual Code"], reader2["Name"], reader2["Name2"],reader["Qty"],Convert.ToDateTime(reader["ExpireDate"]).ToString("MM-dd-yyyy"), " ");
+                    DT.Rows.Add(false, TheCode, reader2["Manual Code"], reader2["Name"], reader2["Name2"],reader["Qty"],Convert.ToDateTime(reader["ExpireDate"]).ToString("dd-MM-yyyy"), " ");
                     reader2.Close();
                 }
                 for(int i=0;i<DT.Columns.Count;i++)
@@ -469,7 +465,7 @@ namespace Food_Cost
                     SqlCommand cmd2 = new SqlCommand(q, con2);
                     SqlDataReader reader2 = cmd2.ExecuteReader();
                     reader2.Read();
-                    dt.Rows.Add(TheCode, reader2["Manual code"], reader2["Name"], reader2["Name2"], reader["Qty"], Convert.ToDateTime(reader["Expiredate"]).ToString("MM-dd-yyyy"));
+                    dt.Rows.Add(TheCode, reader2["Manual code"], reader2["Name"], reader2["Name2"], reader["Qty"], Convert.ToDateTime(reader["Expiredate"]).ToString("dd-MM-yyyy"));
                     reader2.Close();
                 }
                 for (int i = 0; i < dt.Columns.Count; i++)

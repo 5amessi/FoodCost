@@ -36,13 +36,14 @@ namespace Food_Cost
             LoadAllOutlet();
             SaveBtn.IsEnabled = false;
             dt.Columns.Add("Code");
+            dt.Columns.Add("Manual Code");
             dt.Columns.Add("Name");
             dt.Columns.Add("Name2");
-            dt.Columns.Add("ShufledID");
-            dt.Columns.Add("MinQty");
-            dt.Columns.Add("MaxQty");
+            dt.Columns.Add("Shelf");
+            dt.Columns.Add("Min Qty");
+            dt.Columns.Add("Max Qty");
+            dt.Columns.Add("Unit");
         }
-
         private void LoadAllOutlet()
         {
             SqlConnection con = new SqlConnection(Classes.DataConnString);
@@ -50,7 +51,7 @@ namespace Food_Cost
             try
             {
                 con.Open();
-                string s = "select Name from Store_Setup";
+                string s = "select Name from Setup_Restaurant";
                 SqlCommand cmd = new SqlCommand(s, con);
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -69,37 +70,74 @@ namespace Food_Cost
                 con.Close();
             }
         }
+        private void OutletComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Kitchencbx.Items.Clear();
+            ValOfResturant = "";
+            string v = Outletcbx.SelectedItem.ToString();
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            try
+            {
+                con.Open();
+                string s = "select Code from Setup_Restaurant WHERE Name='" + v + "'";
+                SqlCommand cmd = new SqlCommand(s, con);
+                ValOfResturant = cmd.ExecuteScalar().ToString();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            finally
+            {
+                con.Close();
+            }
 
+
+            SqlDataReader reader = null;
+            try
+            {
+                con.Open();
+                string s = "select Name from Setup_Kitchens WHERE RestaurantID=" + ValOfResturant;
+                SqlCommand cmd = new SqlCommand(s, con);
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    var data = reader["Name"].ToString();
+                    Kitchencbx.Items.Add(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            finally
+            {
+                reader.Close();
+                con.Close();
+            }
+        }
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string b = "";
-            if(Kitchencbx.SelectedItem !=null)
+            if (Kitchencbx.SelectedItem != null)
             {
                 string v = Kitchencbx.SelectedItem.ToString();
                 if (Outletcbx.SelectedItem != null)
                 {
                     LoadDatatoGrid();
                     SaveBtn.IsEnabled = true;
+                    ButtonGrid.Visibility = Visibility.Visible;
                 }
             }
-           
         }
-
-        public void LoadDatatoGrid()
+        private void GetKitchenID()
         {
-            dt.Rows.Clear();
-            ItemsDGV.DataContext = null;
-            Count = 0;
-            SqlCommand cmd = new SqlCommand();
-            SqlDataReader reader = null;
-            SqlDataReader reader2 = null;
-            string valuoOfKitchen = Kitchencbx.SelectedItem.ToString();
             SqlConnection con = new SqlConnection(Classes.DataConnString);
-            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
+            SqlCommand cmd = new SqlCommand();
             try
             {
                 con.Open();
-                string s = "select Code from Kitchens_Setup WHERE Name='" + Kitchencbx.SelectedItem.ToString() + "'";
+                string s = "select Code from Setup_Kitchens WHERE Name='" + Kitchencbx.SelectedItem.ToString() + "'";
                 cmd = new SqlCommand(s, con);
                 ValOfKitchen = cmd.ExecuteScalar().ToString();
             }
@@ -111,6 +149,20 @@ namespace Food_Cost
             {
                 con.Close();
             }
+        }
+        public void LoadDatatoGrid()
+        {
+            GetKitchenID();
+            dt.Rows.Clear();
+            ItemsDGV.DataContext = null;
+            Count = 0;
+            SqlCommand cmd = new SqlCommand();
+            SqlDataReader reader = null;
+            SqlDataReader reader2 = null;
+            string valuoOfKitchen = Kitchencbx.SelectedItem.ToString();
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
+           
             try
             {
                 con.Open();
@@ -120,17 +172,23 @@ namespace Food_Cost
                 while(reader.Read())
                 {
                     con2.Open();
-                    string W = "select Name,Name2 from Setup_Items Where Code=" + reader["ItemID"].ToString();
+                    string W = "select Name,Name2,[Manual Code],Unit from Setup_Items Where Code=" + reader["ItemID"].ToString();
                     SqlCommand _cmd = new SqlCommand(W, con2);
                     reader2 = _cmd.ExecuteReader();
                     while(reader2.Read())
                     {
-                        dt.Rows.Add(reader["ItemID"], reader2["Name"], reader2["Name2"], reader["ShulfID"], reader["MinQty"], reader["MaxQty"]);
+                        dt.Rows.Add(reader["ItemID"], reader2["Manual Code"], reader2["Name"], reader2["Name2"], reader["ShulfID"], reader["MinQty"], reader["MaxQty"], reader2["Unit"]);
                         Count++;
                     }
                     con2.Close();
                 }
-                                
+                for(int i =0;i<dt.Columns.Count;i++)
+                {
+                    dt.Columns[i].ReadOnly = true;
+                }
+                dt.Columns["Shelf"].ReadOnly = false;
+                dt.Columns["Min Qty"].ReadOnly = false;
+                dt.Columns["Max Qty"].ReadOnly = false;
                 ItemsDGV.DataContext = dt;
 
             }
@@ -144,66 +202,60 @@ namespace Food_Cost
             }
 
         }
-
         private void AddBtn_Click(object sender, RoutedEventArgs e)
         {
             Items items = new Items(this);
             items.ShowDialog();
+            SaveBtn.IsEnabled = true;
             //SaveBtn.IsEnabled = true;
         }
-
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-
-            if (Outletcbx.Text == "" || Kitchencbx.Text == "")
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            DataTable DT = new DataTable();
+            DT = ItemsDGV.DataContext as DataTable;
+            for(int i=0;i<DT.Rows.Count;i++)
             {
-                MessageBox.Show("Choose Restaurant and Kitchen");
-                return;
-            }
-            DataTable table = ItemsDGV.DataContext as DataTable;
-            for (int i = 0; i < table.Rows.Count; i++)
-                if(table.Rows[i].ItemArray.Contains(""))
+                if(DT.Rows[i].ItemArray.Contains(""))
                 {
-                    ItemsDGV.Focus();
-                    ItemsDGV.SelectedIndex = i;
-                    MessageBox.Show(string.Format("item no {0} has empty fields",i + 1));
+                    MessageBox.Show(string.Format("item {0} has empty fields", DT.Rows[i].ItemArray[2]));
                     return;
                 }
-
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-            for (int i = 0; i < ItemsDGV.Items.Count; i++)
+            }
+            con.Open();
+            for (int i = 0; i < DT.Rows.Count; i++)
             {
-                try
+                string s = string.Format("update Setup_KitchenItems set shulfID='{0}',MinQty='{1}',MaxQty='{2}',Last_Modified_Date=GETDATE() where ItemID='{3}' and RestaurantID={4} and KitchenID={5}", DT.Rows[i]["Shelf"], DT.Rows[i]["Min Qty"], DT.Rows[i]["Max Qty"], DT.Rows[i]["Code"], ValOfResturant, ValOfKitchen);
+                SqlCommand cmd = new SqlCommand(s, con);
+                int n = cmd.ExecuteNonQuery();
+
+                if(n==0)
                 {
-                    con.Open();
-                    string H = string.Format("update Setup_KitchenItems set ShulfID = '{0}',MinQty = '{1}',MaxQty = '{2}' where ItemID = '{3}' and RestaurantID = '{4}' and KitchenID = '{5}'",((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3].ToString(), ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4].ToString(), ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[5].ToString(),((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0].ToString(), ValOfResturant, ValOfKitchen);
-                    SqlCommand cmd = new SqlCommand(H, con);
-                    int UpdatedRowsNo = cmd.ExecuteNonQuery();
-
-                    if (UpdatedRowsNo == 0)
+                    string WhereFiltering = string.Format("RestaurantID='{0}' and KitchenID='{1}' and ItemID='{2}'", ValOfResturant, ValOfKitchen, DT.Rows[i]["Code"]);
+                    DataTable Table = Classes.RetrieveData("ItemID", WhereFiltering, "Setup_KitchenItems");
+                    if (Table.Rows.Count == 0)
                     {
-                        H = "Insert into Setup_KitchenItems (RestaurantID,KitchenID,ItemID,ShulfID,MinQty,MaxQty) Values('" + ValOfResturant + "','" + ValOfKitchen + "','" + ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0].ToString() + "','" + ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3].ToString() + "','" + ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4].ToString() + "','" + ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[5].ToString() + "')";
-                        cmd = new SqlCommand(H, con);
-                        cmd.ExecuteNonQuery();
+                        string FiledSelection = "RestaurantID,KitchenID,ItemID,ShulfID,MinQty,MaxQty,Create_Date,WS,UserID";
+                        string Values = string.Format("'{0}','{1}','{2}','{3}','{4}','{5}',GETDATE(),'{6}','{7}'", ValOfResturant, ValOfKitchen, DT.Rows[i]["Code"], DT.Rows[i]["Shelf"], DT.Rows[i]["Min Qty"], DT.Rows[i]["Max Qty"],Classes.WS,MainWindow.UserID);
+                        Classes.InsertRow("Setup_KitchenItems", FiledSelection, Values);
+                    }
 
-                        H = string.Format("insert into Items(ItemID,RestaurantID,KitchenID,Qty,Units,Last_Cost,Current_Cost,ShufledID,MinNumber,MaxNumber,Net_Cost) values('{0}','{4}','{5}','0',(select Unit from Setup_Items where Code = '{0}'),'0','0','{1}','{2}','{3}','0')", ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0].ToString(), ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3].ToString(), ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4].ToString(), ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[5].ToString(),ValOfResturant,ValOfKitchen);
-                        cmd = new SqlCommand(H, con);
-                        cmd.ExecuteNonQuery();
+                    WhereFiltering = string.Format("RestaurantID='{0}' and KitchenID='{1}' and ItemID='{2}'", ValOfResturant, ValOfKitchen, DT.Rows[i]["Code"]);
+                    Table = Classes.RetrieveData("ItemID", WhereFiltering, "Items");
+                    if (Table.Rows.Count == 0)
+                    {
+                        string FiledSelection = "KitchenID,ItemID,RestaurantID,Qty,Units,Last_Cost,Current_Cost,Net_Cost";
+                        string Values = string.Format("'{0}','{1}','{2}','0','','','0',''", ValOfKitchen, DT.Rows[i]["Code"], ValOfResturant);
+                        Classes.InsertRow("Items", FiledSelection, Values);
                     }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                    return;
-                }
-                finally { con.Close(); }
             }
                
             con.Close();
-            MessageBox.Show("Items Are saved ");    
+            MessageBox.Show("Items saved successfuly");
+            SaveBtn.IsEnabled = false;
             LoadDatatoGrid();
         }
-
         private void RowClicked(object sender, MouseButtonEventArgs e)
         {
             if (sender != null)
@@ -216,7 +268,6 @@ namespace Food_Cost
                 }
             }
         }
-
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
             SqlConnection con = new SqlConnection(Classes.DataConnString);
@@ -233,9 +284,9 @@ namespace Food_Cost
                         cmd = new SqlCommand(H, con);
                         cmd.ExecuteNonQuery();
 
-                        H = "Delete Items Where ItemID=" + ValtoDelete + " And RestaurantID=" + ValOfResturant + " AND KitchenID=" + ValOfKitchen;
-                        cmd = new SqlCommand(H, con);
-                        cmd.ExecuteNonQuery();
+                        //H = "Delete Items Where ItemID=" + ValtoDelete + " And RestaurantID=" + ValOfResturant + " AND KitchenID=" + ValOfKitchen;
+                        //cmd = new SqlCommand(H, con);
+                        //cmd.ExecuteNonQuery();
 
                     }
                     catch (Exception ex)
@@ -262,53 +313,6 @@ namespace Food_Cost
                 con.Close();
                
             }
-        } //el mafrood ntcheck lw el item da m4 equal 0 yb2a can not delete
-
-        private void OutletComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            Kitchencbx.Items.Clear();
-            ValOfResturant = "";
-            string v = Outletcbx.SelectedItem.ToString();
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-            try
-            {
-                con.Open();
-                string s = "select Code from Store_Setup WHERE Name='" + v + "'";
-                SqlCommand cmd = new SqlCommand(s, con);
-                ValOfResturant = cmd.ExecuteScalar().ToString();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-            }
-
-
-            SqlDataReader reader = null;
-            try
-            {
-                con.Open();
-                string s = "select Name from Kitchens_Setup WHERE RestaurantID=" + ValOfResturant ;
-                SqlCommand cmd = new SqlCommand(s, con);
-                reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    var data = reader["Name"].ToString();
-                    Kitchencbx.Items.Add(data);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                reader.Close();
-                con.Close();
-            }
-        }
+        } //el mafrood ntcheck lw el item da m4 equal 0 yb2a can not delete        
     }
 }

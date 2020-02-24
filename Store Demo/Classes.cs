@@ -10,6 +10,8 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.IO;
 using System.Configuration;
+using System.Globalization;
+using System.Threading;
 
 namespace Food_Cost
 {
@@ -42,6 +44,13 @@ namespace Food_Cost
             {
                 MessageBox.Show(exception.ToString());
             }
+        }
+
+        public static void UpdateDateFormat()
+        {
+            CultureInfo ci = CultureInfo.CreateSpecificCulture(CultureInfo.CurrentCulture.Name);
+            ci.DateTimeFormat.ShortDatePattern = "dd-MM-yyyy";
+            Thread.CurrentThread.CurrentCulture = ci;
         }
 
         public static void GetWS()
@@ -122,6 +131,15 @@ namespace Food_Cost
             MyComm.ExecuteNonQuery();
         }
 
+        public static void InsertRows(string TableName, string FieldSelected, string values)
+        {
+            MyConnection = new SqlConnection(DataConnString);
+            MyConnection.Open();
+            MyComm = new SqlCommand("insert " + TableName + "(" + FieldSelected + ")" + " values " + values + "", MyConnection);
+            MyComm.ExecuteNonQuery();
+        }
+
+
         public static void InsertRow(string TableName, string values)
         {
             MyConnection = new SqlConnection(DataConnString);
@@ -197,13 +215,13 @@ namespace Food_Cost
 
         public static TreeView LoadStores(TreeView TVKitchens)
         {
-            DataTable DT = Classes.RetrieveData("Code,Name", "Store_Setup");
+            DataTable DT = Classes.RetrieveData("Code,Name", "Setup_Restaurant");
             foreach (DataRow DR in DT.Rows)
             {
                 TVKitchens.Nodes.Add(DR["Code"].ToString(), DR["Name"].ToString());
             }
 
-            DT = Classes.RetrieveData("Code,Name,RestaurantID", "Kitchens_Setup order by RestaurantID,Code");
+            DT = Classes.RetrieveData("Code,Name,RestaurantID", "Setup_Kitchens order by RestaurantID,Code");
             foreach (DataRow DR in DT.Rows)
             {
                 TVKitchens.Nodes[DR["RestaurantID"].ToString()].Nodes.Add(DR["Code"].ToString(), DR["Name"].ToString());

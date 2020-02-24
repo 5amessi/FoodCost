@@ -10,13 +10,12 @@
     <Grid Background="White" Margin="80 65 0 0">
         <Grid.RowDefinitions>
             <RowDefinition Height="3*"/>
-            <RowDefinition Height="8*"/>
+            <RowDefinition Height="6*"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         
-        <GroupBox Name="adjacChose" Visibility="Visible" Header="Kitchens" Margin="10 10 0 10" FontSize="20" TextBlock.FontWeight="Bold" ToolTip="You should Chose Ressturant and kitchen Here!">
-            <Grid TextBlock.FontSize="13" TextBlock.FontWeight="Normal" >
-
+        <GroupBox Name="adjacChose" Visibility="Visible" Header="Kitchens" Margin="0 0 10 0" ToolTip="You should Chose Ressturant and kitchen Here!">
+            <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="3*"/>
                     <ColumnDefinition Width="3*"/>
@@ -27,18 +26,16 @@
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <TextBlock  Text="Resturant" Foreground="Red" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0"/>
-                <ComboBox Grid.Column="1" VerticalAlignment="Center" Margin="0 0 5 0" Foreground="Black" Name="Outletcbx" TextBlock.TextAlignment="Center" HorizontalContentAlignment="Center" SelectionChanged="ResturantComboBox_SelectionChanged"/>
+                <TextBlock  Text="Resturant" Foreground="Red" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <ComboBox Grid.Column="1" VerticalAlignment="Center" Foreground="Black" Name="Outletcbx" TextBlock.TextAlignment="Center" HorizontalContentAlignment="Center" SelectionChanged="ResturantComboBox_SelectionChanged"/>
 
                 <TextBlock Text="Kitchen" Grid.Row="1" Foreground="Red" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                <ComboBox Grid.Column="1" Grid.Row="1" Margin="0 0 5 0" VerticalAlignment="Center"  Foreground="Black" Name="Kitchencbx" TextBlock.TextAlignment="Center" HorizontalContentAlignment="Center" SelectionChanged="ComboBox_SelectionChanged"/>
+                <ComboBox Grid.Column="1" Grid.Row="1" VerticalAlignment="Center"  Foreground="Black" Name="Kitchencbx" TextBlock.TextAlignment="Center" HorizontalContentAlignment="Center" SelectionChanged="ComboBox_SelectionChanged"/>
             </Grid>
         </GroupBox>
 
-        <GroupBox Name="AdjacInfo" Visibility="Hidden" Header="Adjacment Info" Margin="10 10 0 10" FontSize="20" TextBlock.FontWeight="Bold" >
-
-            <Grid TextBlock.FontSize="13" TextBlock.FontWeight="Normal">
-
+        <GroupBox Name="AdjacInfo" Visibility="Hidden" Header="Adjacment Info" Margin="0 0 10 0">
+            <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="3*"/>
@@ -67,15 +64,15 @@
                 <TextBlock Text="Adjacment Date" Foreground="Red" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" />
                 <DatePicker Name="Adjacment_Date" Grid.Row="1" Grid.Column="1" Foreground="Black" HorizontalAlignment="Stretch" VerticalAlignment="Center"></DatePicker>
 
-                <TextBlock Text="Adjacment Time" Foreground="Red" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                <materialDesign:TimePicker Name="Adjacment_Time" Grid.Row="1" HorizontalContentAlignment="Center" Grid.Column="3" Foreground="Black" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                <TextBlock Text="Adjacment Time" Foreground="Red" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Hidden"/>
+                <materialDesign:TimePicker Name="Adjacment_Time" Grid.Row="1" HorizontalContentAlignment="Center" Grid.Column="3" Foreground="Black" HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Hidden"/>
 
-                <TextBlock Text="Comments" Foreground="Black" Grid.Column="4" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 10 0 0"/>
-                <TextBox Grid.Row="1" Grid.Column="5" VerticalAlignment="Center"  Foreground="Black"  Name="commenttxt" />
+                <TextBlock Text="Comments" Foreground="Black" Grid.Column="2" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 10 0 0"/>
+                <TextBox Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3" VerticalAlignment="Center"  Foreground="Black"  Name="commenttxt" />
             </Grid>
         </GroupBox>
 
-        <GroupBox Header="Items" Grid.Row="1" Margin="10 0 10 10" FontSize="20" TextBlock.FontWeight="Bold" VerticalAlignment="Stretch">
+        <GroupBox Header="Items" Grid.Row="1" Margin="10 0 10 10" VerticalAlignment="Stretch">
 
             <Grid>
                 <Grid.RowDefinitions>
@@ -83,11 +80,11 @@
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
 
-                <DataGrid Name="ItemsDGV" ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding}" BorderBrush="Black" BorderThickness="1"
+                <DataGrid Name="ItemsDGV" ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding}" BorderBrush="Black" BorderThickness="1" 
                                         ScrollViewer.HorizontalScrollBarVisibility="Auto" AutoGenerateColumns="True" ScrollViewer.CanContentScroll="True" CanUserAddRows="False" CellEditEnding="ItemsDGV_CellEditEnding">
                 </DataGrid>
 
-                <Grid Grid.Row="1" TextBlock.FontSize="13" TextBlock.FontWeight="Normal">
+                <Grid Grid.Row="1">
                     <StackPanel HorizontalAlignment="Left" Margin="10 5 0 0" Orientation="Horizontal">
                         <Label Content="Number Of Items" FontSize="15" VerticalAlignment="Center" Name="NumberOfItemText" Visibility="Hidden"/>
                         <TextBox BorderThickness="2" Width="100" Text="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Visibility="Hidden" FontSize="20" Foreground="Black" Name="NUmberOfItems" IsReadOnly="True"/>
@@ -113,56 +110,56 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Button Foreground="Blue" Name="searchBtn" Background="White"  FontSize="12" Padding="2" Margin="10,10,9.8,10" Height="Auto" Visibility="Hidden">
+            <Button Foreground="Blue" Name="searchBtn" Background="White" Visibility="Hidden">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Search" Width="20"/>
                     <TextBlock HorizontalAlignment="Right"> Search</TextBlock>
                 </StackPanel>
             </Button>
 
-            <Button Grid.Column="1" Grid.ColumnSpan="2" Foreground="Black" Name="Adjact" Visibility="Hidden" Background="#cacfd2"  FontSize="12" Click="Adjact_Click" IsEnabled="False">
+            <Button Grid.Column="1" Grid.ColumnSpan="2" Foreground="Black" Name="Adjact" Visibility="Hidden" Background="#cacfd2" Click="Adjact_Click" IsEnabled="False">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="ContentCopy" Width="20"/>
                     <TextBlock HorizontalAlignment="Right"> Adjacment</TextBlock>
                 </StackPanel>
             </Button>
 
-            <Button Grid.Column="2" Name="NewBtn" Foreground="Black" Background="#cacfd2"  FontSize="12" Padding="2" Margin="10,10,9.8,10" Height="Auto" Visibility="Hidden" IsEnabled="False">
+            <Button Grid.Column="2" Name="NewBtn" Foreground="Black" Background="#cacfd2" Visibility="Hidden" IsEnabled="False">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Plus" Width="20"/>
                     <TextBlock HorizontalAlignment="Right"> New</TextBlock>
                 </StackPanel>
             </Button>
 
-            <Button Grid.Column="3" Name="SaveBtn" Background="Green"  FontSize="12" Padding="2" Margin="10"  IsEnabled="False" Visibility="Hidden">
+            <Button Grid.Column="3" Name="SaveBtn" Background="Green" IsEnabled="False" Visibility="Hidden">
                 <StackPanel Orientation="Horizontal"  >
                     <materialDesign:PackIcon Kind="CheckboxMarkedCircle" Width="20" Height="20"/>
                     <TextBlock HorizontalAlignment="Right"> Order</TextBlock>
                 </StackPanel>
             </Button>
 
-            <Button Grid.Column="3" Name="postBtn" Background="Green"  FontSize="12" Padding="2" Margin="10"  IsEnabled="False" Visibility="Hidden">
+            <Button Grid.Column="3" Name="postBtn" Background="Green" IsEnabled="False" Visibility="Hidden">
                 <StackPanel Orientation="Horizontal"  >
                     <materialDesign:PackIcon Kind="CheckboxMarkedCircle" Width="20" Height="20"/>
                     <TextBlock HorizontalAlignment="Right"> Save</TextBlock>
                 </StackPanel>
             </Button>
 
-            <Button Grid.Column="4" Name="UpdateBtn"  Background="Green" FontSize="12" Padding="2" Margin="10" IsEnabled="False" Visibility="Hidden">
+            <Button Grid.Column="4" Name="UpdateBtn"  Background="Green" IsEnabled="False" Visibility="Hidden">
                 <StackPanel Orientation="Horizontal" >
                     <materialDesign:PackIcon Kind="Edit" />
                     <TextBlock  HorizontalAlignment="Right"> Edit</TextBlock>
                 </StackPanel>
             </Button>
 
-            <Button Grid.Column="3" FontSize="12" Padding="2" Margin="10" Visibility="Hidden" Name="UndoBtn">
+            <Button Grid.Column="3" Visibility="Hidden" Name="UndoBtn">
                 <StackPanel Orientation="Horizontal" >
                     <materialDesign:PackIcon Kind="Undo"/>
                     <TextBlock HorizontalAlignment="Right"> Undo</TextBlock>
                 </StackPanel>
             </Button>
 
-            <Button Grid.Column="6" Name="DeleteBtn" Foreground="White" Background="#cb4335" Padding="2" FontSize="12" Margin="10"  IsEnabled="False" Visibility="Hidden">
+            <Button Grid.Column="6" Name="DeleteBtn" Foreground="White" Background="#cb4335" IsEnabled="False" Visibility="Hidden">
                 <StackPanel Orientation="Horizontal" >
                     <materialDesign:PackIcon Kind="Delete"  />
                     <TextBlock  HorizontalAlignment="Right"> Remove</TextBlock>

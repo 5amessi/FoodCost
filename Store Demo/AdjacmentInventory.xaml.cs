@@ -221,7 +221,7 @@ namespace Food_Cost
             con.Open();
             try
             {
-                string s = "select Name from Store_Setup";
+                string s = "select Name from Setup_Restaurant";
                 SqlCommand cmd = new SqlCommand(s, con);
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -248,7 +248,7 @@ namespace Food_Cost
             con.Open();
             try
             {
-                string s = "select Name from Kitchens_Setup Where RestaurantID=(select Code From Store_Setup Where Name='" + Outletcbx.SelectedItem.ToString() + "')";
+                string s = "select Name from Setup_Kitchens Where RestaurantID=(select Code From Setup_Restaurant Where Name='" + Outletcbx.SelectedItem.ToString() + "')";
                 SqlCommand cmd = new SqlCommand(s, con);
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -291,7 +291,7 @@ namespace Food_Cost
             try
             {
                 con.Open();
-                string s = "select Name from Setup_AdjacmentReasons_tbl";
+                string s = "select Name from Setup_AdjacmentReasons_tbl where Active='True'";
                 SqlCommand cmd = new SqlCommand(s, con);
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -337,7 +337,7 @@ namespace Food_Cost
             try
             {
                con.Open();
-                string s = "SELECT Code FROM Store_Setup Where Name='" + Outletcbx.SelectedItem.ToString() + "'";
+                string s = "SELECT Code FROM Setup_Restaurant Where Name='" + Outletcbx.SelectedItem.ToString() + "'";
                 cmd = new SqlCommand(s, con);
                 ValOfResturant = cmd.ExecuteScalar().ToString();
             }
@@ -354,7 +354,7 @@ namespace Food_Cost
             try
             {
                 con.Open();
-                string s = "SELECT Code FROM Kitchens_Setup Where Name='" + Kitchencbx.SelectedItem.ToString() +"'";
+                string s = "SELECT Code FROM Setup_Kitchens Where Name='" + Kitchencbx.SelectedItem.ToString() +"'";
                 cmd = new SqlCommand(s, con);
                 ValOfKitchen = cmd.ExecuteScalar().ToString();
             }
@@ -469,17 +469,17 @@ namespace Food_Cost
                 MessageBox.Show("First You should Enter The Date !");
                 return;
             }
-            if (Adjacment_Time.Text.Equals(""))
-            {
-                MessageBox.Show("First You should Enter The Time !");
-                return;
-            }
+            //if (Adjacment_Time.Text.Equals(""))
+            //{
+            //    MessageBox.Show("First You should Enter The Time !");
+            //    return;
+            //}
 
             SqlConnection con = new SqlConnection(Classes.DataConnString);
             con.Open();
             try
             {
-                string s = string.Format("insert into Adjacment_tbl(Adjacment_ID,Adjacment_Num,Adjacment_Reason,Adjacment_Date,Comment,Resturant_ID,KitchenID,Create_Date,User_ID,WS) values('{0}',{1},(select Code From Setup_AdjacmentReasons_tbl where Name='{2}'),'{3}','{4}',{5},{6},GETDATE(),'{7}','{8}')", Serial_Adjacment_NO.Text, Adjacment_NO.Text, Reasoncbx.Text, Adjacment_Date.Text+" "+ Adjacment_Time.Text, commenttxt.Text, ValOfResturant, ValOfKitchen,MainWindow.UserID,Classes.WS);
+                string s = string.Format("insert into Adjacment_tbl(Adjacment_ID,Adjacment_Num,Adjacment_Reason,Adjacment_Date,Comment,Resturant_ID,KitchenID,Create_Date,User_ID,WS) values('{0}',{1},(select Code From Setup_AdjacmentReasons_tbl where Name='{2}'),'{3}','{4}',{5},{6},GETDATE(),'{7}','{8}')", Serial_Adjacment_NO.Text, Adjacment_NO.Text, Reasoncbx.Text, Adjacment_Date.Text, commenttxt.Text, ValOfResturant, ValOfKitchen,MainWindow.UserID,Classes.WS);
                 SqlCommand cmd = new SqlCommand(s, con);
                 cmd.ExecuteNonQuery();
             }

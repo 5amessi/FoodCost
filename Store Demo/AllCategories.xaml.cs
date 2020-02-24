@@ -22,6 +22,7 @@ namespace Food_Cost
     /// </summary>
     public partial class AllCategories : Window
     {
+        DataTable DT = new DataTable();
         Recipes recipe;
         CategoriesAndSub _categoriesAndSub;
         bool val = true;
@@ -32,6 +33,7 @@ namespace Food_Cost
             _categoriesAndSub = categoriesAndSub;
             val = false;
         }
+
         public AllCategories(Recipes _Recipes)
         {
             InitializeComponent();
@@ -41,23 +43,28 @@ namespace Food_Cost
 
         public void LoadAllCategories()
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            DT.Columns.Add("Code");
+            DT.Columns.Add("Name");
+            DT.Columns.Add("Name2");
+            DT.Columns.Add("Active",typeof(bool));
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlDataReader reader = null;
 
             try
             {
                 con.Open();
-                string q = "select Code, Name, Name2, IsActive from Setup_RecipeCategory";
+                string q = "select Code, Name, Name2, IsActive from Setup_RecipeCategory where IsActive='True'";
                 SqlCommand cmd = new SqlCommand(q, con);
-                //SqlCommand cmd = new SqlCommand("GetCategory", con);
-                //cmd.CommandType = CommandType.StoredProcedure;
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    var data = new DgvData { Code = reader["Code"].ToString(), Name = reader["Name"].ToString(), Name2 = reader["Name2"].ToString(), IsActive = reader["IsActive"].ToString() };
-                    CategoryDGV.Items.Add(data);
+                    DT.Rows.Add(reader["Code"], reader["Name"], reader["Name2"], reader["IsActive"]);
                 }
+                for(int i=0;i<DT.Columns.Count;i++)
+                {
+                    DT.Columns[i].ReadOnly = true;
+                }
+                CategoryDGV.DataContext = DT;
             }
             catch (Exception ex)
             {
@@ -69,15 +76,6 @@ namespace Food_Cost
                 con.Close();
             }
         }
-
-        private void Newbtn_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-            UserControl UC = new CategoriesAndSub();
-            parentdrid.Children.Clear();
-            parentdrid.Children.Add(UC);
-        }
-
         private void MouseDoubleClick_click(object sender, MouseButtonEventArgs e)
         {
             if (sender != null)
@@ -87,11 +85,11 @@ namespace Food_Cost
                 {
                     this.Close();
                     if (val == false)
-                        _categoriesAndSub.Categorycbx.Text = ((DgvData)grid.SelectedItem).Name;
+                        _categoriesAndSub.Categorycbx.Text = ((DataRowView)CategoryDGV.SelectedItems[0]).Row.ItemArray[1].ToString();
                     else
                     {
-                        recipe.Categorytxt.Text = ((DgvData)grid.SelectedItem).Name;
-                        recipe.Categtxt.Text = ((DgvData)grid.SelectedItem).Code;
+                        recipe.Categorytxt.Text = ((DataRowView)CategoryDGV.SelectedItems[0]).Row.ItemArray[1].ToString();
+                        recipe.Categtxt.Text = ((DataRowView)CategoryDGV.SelectedItems[0]).Row.ItemArray[0].ToString();
                     }
                     val = true;
                     return;
@@ -104,30 +102,24 @@ namespace Food_Cost
 
         private void TextDataChange(object sender, TextChangedEventArgs e)
         {
+            CategoryDGV.DataContext = null;
+            DT.Rows.Clear();
             SqlDataReader reader = null;
-            //CategoryDGV.DataContext = null;
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
 
             if ((RadioByCode.IsChecked == true || RadioByName.IsChecked == true) && SearchTxt.Text != "")
             {
-                
-                //CategoryDGV.ItemsSource = null;
                 if (RadioByCode.IsChecked == true && RadioByName.IsChecked == false)
                 {
-                    CategoryDGV.Items.Clear();
                     try
                     {
                         con.Open();
-                        string q = "select Code, Name, Name2, IsActive from Setup_RecipeCategory Where Code Like '%" + SearchTxt.Text + "%'";
+                        string q = "select Code, Name, Name2, IsActive from Setup_RecipeCategory where IsActive='True' and Code Like '%" + SearchTxt.Text + "%'";
                         SqlCommand cmd = new SqlCommand(q, con);
-                        //SqlCommand cmd = new SqlCommand("GetCategory", con);
-                        //cmd.CommandType = CommandType.StoredProcedure;
                         reader = cmd.ExecuteReader();
                         while (reader.Read())
                         {
-                            var data = new DgvData { Code = reader["Code"].ToString(), Name = reader["Name"].ToString(), Name2 = reader["Name2"].ToString(), IsActive = reader["IsActive"].ToString() };
-                            CategoryDGV.Items.Add(data);
+                            DT.Rows.Add(reader["Code"], reader["Name"], reader["Name2"], reader["IsActive"]);
                         }
                     }
                     catch (Exception ex)
@@ -141,19 +133,15 @@ namespace Food_Cost
                 }
                 else if (RadioByName.IsChecked == true && RadioByCode.IsChecked == false)
                 {
-                    CategoryDGV.Items.Clear();
                     try
                     {
                         con.Open();
-                        string q = "select Code, Name, Name2, IsActive from Setup_RecipeCategory Where Name Like '%" + SearchTxt.Text + "%'";
+                        string q = "select Code, Name, Name2, IsActive from Setup_RecipeCategory where IsActive='True' and Name Like '%" + SearchTxt.Text + "%'";
                         SqlCommand cmd = new SqlCommand(q, con);
-                        //SqlCommand cmd = new SqlCommand("GetCategory", con);
-                        //cmd.CommandType = CommandType.StoredProcedure;
                         reader = cmd.ExecuteReader();
                         while (reader.Read())
                         {
-                            var data = new DgvData { Code = reader["Code"].ToString(), Name = reader["Name"].ToString(), Name2 = reader["Name2"].ToString(), IsActive = reader["IsActive"].ToString() };
-                            CategoryDGV.Items.Add(data);
+                            DT.Rows.Add(reader["Code"], reader["Name"], reader["Name2"], reader["IsActive"]);
                         }
                     }
                     catch (Exception ex)
@@ -168,19 +156,15 @@ namespace Food_Cost
             }
             else
             {
-                CategoryDGV.Items.Clear();
                 try
                 {
                     con.Open();
-                    string q = "select Code, Name, Name2, IsActive from Setup_RecipeCategory";
+                    string q = "select Code, Name, Name2, IsActive from Setup_RecipeCategory where IsActive='True'";
                     SqlCommand cmd = new SqlCommand(q, con);
-                    //SqlCommand cmd = new SqlCommand("GetCategory", con);
-                    //cmd.CommandType = CommandType.StoredProcedure;
                     reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
-                        var data = new DgvData { Code = reader["Code"].ToString(), Name = reader["Name"].ToString(), Name2 = reader["Name2"].ToString(), IsActive = reader["IsActive"].ToString() };
-                        CategoryDGV.Items.Add(data);
+                        DT.Rows.Add(reader["Code"], reader["Name"], reader["Name2"], reader["IsActive"]);
                     }
                 }
                 catch (Exception ex)
@@ -192,6 +176,7 @@ namespace Food_Cost
                     con.Close();
                 }
             }
+            CategoryDGV.DataContext = DT;
         }
     }
 }

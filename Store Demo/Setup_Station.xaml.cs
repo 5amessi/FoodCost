@@ -36,7 +36,7 @@ namespace Food_Cost
             try
             {
                 con.Open();
-                string s = "select Name from Store_Setup";
+                string s = "select Name from Setup_Restaurant";
                 DataTable Resturant = Classes.RetrieveData(s);
                 for(int i=0;i<Resturant.Rows.Count;i++)
                 {
@@ -65,7 +65,7 @@ namespace Food_Cost
             {
                 con.Open();
 
-                string s = string.Format("select Name From Kitchens_Setup where RestaurantID=(select Code From Store_Setup where Name='{0}')", ResturantName);
+                string s = string.Format("select Name From Setup_Kitchens where RestaurantID=(select Code From Setup_Restaurant where Name='{0}')", ResturantName);
                 SqlCommand cmd = new SqlCommand(s, con);
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -96,14 +96,14 @@ namespace Food_Cost
             SqlConnection con = new SqlConnection(Classes.DataConnString);
 
             con.Open();
-            SqlCommand cmd = new SqlCommand(string.Format("select Code from Store_Setup where Name = '{0}'", Restaurant_cbx.Text), con);
+            SqlCommand cmd = new SqlCommand(string.Format("select Code from Setup_Restaurant where Name = '{0}'", Restaurant_cbx.Text), con);
             SqlDataReader reader = cmd.ExecuteReader();
             reader.Read();
             string RestaurantID = reader[0].ToString();
             con.Close();
 
             con.Open();
-            cmd = new SqlCommand(string.Format("select Code from Kitchens_Setup where Name = '{0}' and RestaurantID = (select Code from Store_Setup where Name = '{1}')", Kitchen_cbx.Text, Restaurant_cbx.Text), con);
+            cmd = new SqlCommand(string.Format("select Code from Setup_Kitchens where Name = '{0}' and RestaurantID = (select Code from Setup_Restaurant where Name = '{1}')", Kitchen_cbx.Text, Restaurant_cbx.Text), con);
             reader = cmd.ExecuteReader();
             reader.Read();
             string kitchenID = reader[0].ToString();
