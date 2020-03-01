@@ -118,6 +118,7 @@
             this.UC_TVKitchens2.Name = "UC_TVKitchens2";
             this.UC_TVKitchens2.Size = new System.Drawing.Size(344, 345);
             this.UC_TVKitchens2.TabIndex = 617;
+            this.UC_TVKitchens2.Load += new System.EventHandler(this.UC_TVKitchens2_Load);
             // 
             // CBMyKitchen
             // 

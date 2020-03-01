@@ -16,14 +16,14 @@ namespace Food_Cost.Report {
     using CrystalDecisions.CrystalReports.Engine;
     
     
-    public class CR_ReceiveItemes : ReportClass {
+    public class CR_ReceiveTransferItemes : ReportClass {
         
-        public CR_ReceiveItemes() {
+        public CR_ReceiveTransferItemes() {
         }
         
         public override string ResourceName {
             get {
-                return "CR_ReceiveItemes.rpt";
+                return "CR_ReceiveTransferItemes.rpt";
             }
             set {
                 // Do nothing
@@ -41,7 +41,7 @@ namespace Food_Cost.Report {
         
         public override string FullResourceName {
             get {
-                return "Food_Cost.Report.CR_ReceiveItemes.rpt";
+                return "Food_Cost.Report.CR_ReceiveTransferItemes.rpt";
             }
             set {
                 // Do nothing
@@ -202,9 +202,9 @@ namespace Food_Cost.Report {
     }
     
     [System.Drawing.ToolboxBitmapAttribute(typeof(CrystalDecisions.Shared.ExportOptions), "report.bmp")]
-    public class CachedCR_ReceiveItemes : Component, ICachedReport {
+    public class CachedCR_ReceiveTransferItemes : Component, ICachedReport {
         
-        public CachedCR_ReceiveItemes() {
+        public CachedCR_ReceiveTransferItemes() {
         }
         
         [Browsable(false)]
@@ -241,7 +241,7 @@ namespace Food_Cost.Report {
         }
         
         public virtual CrystalDecisions.CrystalReports.Engine.ReportDocument CreateReport() {
-            CR_ReceiveItemes rpt = new CR_ReceiveItemes();
+            CR_ReceiveTransferItemes rpt = new CR_ReceiveTransferItemes();
             rpt.Site = this.Site;
             return rpt;
         }

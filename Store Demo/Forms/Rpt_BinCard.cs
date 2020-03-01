@@ -39,6 +39,11 @@ namespace Food_Cost.Forms
             }
         }
 
+        private void uC_TVKitchens1_Load(object sender, EventArgs e)
+        {
+            uC_TVKitchens1.UC_TVKitchens_Load();
+        }
+
         Dictionary<string, Tuple<string, string>> BBalance = new Dictionary<string, Tuple<string, string>>();
         Dictionary<string, Tuple<string, string>> EBalance = new Dictionary<string, Tuple<string, string>>();
 
@@ -58,7 +63,7 @@ namespace Food_Cost.Forms
         {
             foreach (string KitName in uC_TVKitchens1.KitchensList)
             {
-                string where = " _Date < '" + dtp_from.Value.Date + "' AND Item_ID = '" + TxtItemCode.Text + "' AND KitchenName = '" + KitName + "' order by  _DATE DESC";
+                string where = " _Date < '" + Classes.ADjDate(dtp_from.Value) + "' AND Item_ID = '" + TxtItemCode.Text + "' AND KitchenName = '" + KitName + "' order by  _DATE DESC";
                 DataTable DTTop = Classes.RetrieveData("top 1 * ", where, "TransActions");
                 if (DTTop.Rows.Count != 0)
                 {
@@ -70,7 +75,7 @@ namespace Food_Cost.Forms
                 {
                     BBalance[KitName] = new Tuple<string, string>("0", "0");
                 }
-                where = " _Date <= '" + dtp_to.Value.Date + "' AND Item_ID = '" + TxtItemCode.Text + "' AND KitchenName = '" + KitName + "' order by  _DATE DESC";
+                where = " _Date <= '" + Classes.ADjDate(dtp_to.Value) + "' AND Item_ID = '" + TxtItemCode.Text + "' AND KitchenName = '" + KitName + "' order by  _DATE DESC";
                 DTTop = Classes.RetrieveData("top 1 * ", where, "TransActions");
                 if (DTTop.Rows.Count != 0)
                 {
@@ -109,7 +114,7 @@ namespace Food_Cost.Forms
             }
 
             string Select = "*";
-            string WhereTA = Where + " And _Date between '" + dtp_from.Value.Date + "' AND '" + dtp_to.Value.Date.AddHours(23.999) + "'";
+            string WhereTA = Where + " And _Date between '" + Classes.ADjDate(dtp_from.Value) + "' AND '" + Classes.ADjDateto(dtp_to.Value) + "'";
             string order = "Order by _Date";
             dt = Classes.RetrieveData(Select, WhereTA+ order, "TransActionsView");
             foreach (DataRow DR in dt.Rows)
@@ -140,7 +145,7 @@ namespace Food_Cost.Forms
             #region test
             /*
             //Receive
-            string WhereRO = Where + " And Receiving_Date between '" + dtp_from.Value.Date + "' AND '" + dtp_to.Value.Date + "'";
+            string WhereRO = Where + " And Receiving_Date between '" + Classes.ADjDate(dtp_from.Value) + "' AND '" + dtp_to.Value.Date + "'";
             dt = Classes.RetrieveData(Select, WhereRO, "ReceiveItemsView");
             foreach (DataRow DR in dt.Rows)
             {

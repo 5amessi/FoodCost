@@ -19,16 +19,9 @@ namespace Food_Cost.Forms
             InitializeComponent();
         }
 
-        private void show_btn_Click(object sender, EventArgs e)
-        {
-            Rpt_PurchaseOrder Frm = new Rpt_PurchaseOrder();
-            Frm.Show();
-           
-        }
-
         private void PItemsBtn_Click(object sender, EventArgs e)
         {
-            Rpt_PurchaseItems Frm = new Rpt_PurchaseItems();
+            Rpt_Request Frm = new Rpt_Request();
             Frm.Show();
         }
 
@@ -43,7 +36,6 @@ namespace Food_Cost.Forms
             Rpt_StoresItems Frm = new Rpt_StoresItems();
             Frm.Show();
         }
-
        
         private void BtnBincard_Click(object sender, EventArgs e)
         {
@@ -101,6 +93,11 @@ namespace Food_Cost.Forms
         }
 
         private void ReportsForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void BtnReceiveRequests_Click(object sender, EventArgs e)
         {
 
         }

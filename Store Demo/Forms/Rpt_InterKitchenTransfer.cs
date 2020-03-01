@@ -30,7 +30,7 @@ namespace Food_Cost.Forms
 
         private void ShowBtn_Click(object sender, EventArgs e)
         {
-            if (CBMyKitchen.Checked)
+            if (!CBMyKitchen.Checked)
             {
                 FilterDic = new Dictionary<string, List<string>>();
                 Where = "";
@@ -52,7 +52,7 @@ namespace Food_Cost.Forms
             KTdt.Rows.Clear();
 
             //Transfer from
-            string WhereTransfer = Where + " And Transfer_Date between '" + dtp_from.Value + "' AND '" + dtp_to.Value + "'";
+            string WhereTransfer = Where + " And Transfer_Date between '" + Classes.ADjDate(dtp_from.Value) + "' AND '" + Classes.ADjDateto(dtp_to.Value) + "'";
             Dt = Classes.RetrieveData("*", WhereTransfer, "InterKitchenTransferFrom");
             foreach (DataRow DR in Dt.Rows)
             {

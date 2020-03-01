@@ -22,10 +22,6 @@ namespace Food_Cost.Forms
         string Where = "", Filter = "", s = "", s1 = "", s2 = "", f = "", Date = "",CurrMDate = "",PrevDate = "";
         DataTable DtItem_BinCard, dt, Dt, Dt2, DTDate;
     
-        //Dictionary<string, string> dic = new Dictionary<string, string>();
-        //Dictionary<string, string> Stores = new Dictionary<string, string>();
-        //Dictionary<string, string> changed_trasfers = new Dictionary<string, string>();
-        //Dictionary<string, List<string>> FilterDic = new Dictionary<string, List<string>>();
         Dictionary<string, Tuple<string, string>> BBalance = new Dictionary<string, Tuple<string, string>>();
         Dictionary<string, Tuple<string, string>> EBalance = new Dictionary<string, Tuple<string, string>>();
 
@@ -129,12 +125,43 @@ namespace Food_Cost.Forms
             }
             LoadBEBalance();
 
-            //Receive
+            //purchase
             string Select = "RestaurantName,KitchenName,Category,SUM(Qty) as Qty ,sum(Net_Price) as Cost";
             string order = " group by RestaurantName,KitchenName,Category";
             string WhereDate = " And Receiving_Date " + Date;
 
-            string WhereRO = Where+ WhereDate + order;
+            string WhereRO = Where + WhereDate + order;
+
+            dt = Classes.RetrieveData(Select, WhereRO, "POView");
+
+            foreach (DataRow DR in dt.Rows)
+            {
+                DataRow Ndr = DtItem_BinCard.NewRow();
+
+                Ndr["BQty"] = BBalance[DR["KitchenName"].ToString()].Item1;
+                Ndr["BCost"] = BBalance[DR["KitchenName"].ToString()].Item2;
+
+                Ndr["EQty"] = EBalance[DR["KitchenName"].ToString()].Item1;
+                Ndr["ECost"] = EBalance[DR["KitchenName"].ToString()].Item2;
+
+                Ndr["Qty"] = DR["Qty"].ToString();
+                Ndr["Cost"] = DR["Cost"].ToString();
+
+                Ndr["RestaurantName"] = DR["RestaurantName"].ToString();
+                Ndr["KitchenName"] = DR["KitchenName"].ToString();
+
+                Ndr["TransDetails"] = "Total Receive";
+
+                Ndr["Type"] = DR["Category"].ToString();
+                DtItem_BinCard.Rows.Add(Ndr);
+            }
+
+            //Receive
+            //string Select = "RestaurantName,KitchenName,Category,SUM(Qty) as Qty ,sum(Net_Price) as Cost";
+            //string order = " group by RestaurantName,KitchenName,Category";
+            //string WhereDate = " And Receiving_Date " + Date;
+
+            //string WhereRO = Where+ WhereDate + order;
 
             dt = Classes.RetrieveData(Select, WhereRO, "ReceiveItemsView");
 
@@ -150,9 +177,12 @@ namespace Food_Cost.Forms
 
                 Ndr["Qty"] = DR["Qty"].ToString();
                 Ndr["Cost"] = DR["Cost"].ToString();
+
                 Ndr["RestaurantName"] = DR["RestaurantName"].ToString();
                 Ndr["KitchenName"] = DR["KitchenName"].ToString();
+
                 Ndr["TransDetails"] = "Total Receive";
+
                 Ndr["Type"] = DR["Category"].ToString();
                 DtItem_BinCard.Rows.Add(Ndr);
             }
@@ -226,30 +256,6 @@ namespace Food_Cost.Forms
                 Ndr["KitchenName"] = DR["KitchenName"].ToString();
                 Ndr["RestaurantName"] = DR["RestaurantName"].ToString();
                 Ndr["TransDetails"] = "Total Transfer Out";
-                Ndr["Type"] = DR["Category"].ToString();
-                DtItem_BinCard.Rows.Add(Ndr);
-            }
-
-            //Generate Recipes
-            Select = "RestaurantName,KitchenName,Category,-SUM(ItemQty) as Qty,-sum(Net_Cost) as Cost";
-            WhereDate = " And Generate_Date " + Date;
-            WhereRO = Where + WhereDate + order;
-            dt = Classes.RetrieveData(Select, WhereRO, "GeneratedRecipesView");
-
-            foreach (DataRow DR in dt.Rows)
-            {
-                DataRow Ndr = DtItem_BinCard.NewRow();
-                Ndr["BQty"] = BBalance[DR["KitchenName"].ToString()].Item1;
-                Ndr["BCost"] = BBalance[DR["KitchenName"].ToString()].Item2;
-
-                Ndr["EQty"] = EBalance[DR["KitchenName"].ToString()].Item1;
-                Ndr["ECost"] = EBalance[DR["KitchenName"].ToString()].Item2;
-
-                Ndr["Qty"] = DR["Qty"].ToString();
-                Ndr["Cost"] = DR["Cost"].ToString();
-                Ndr["KitchenName"] = DR["KitchenName"].ToString();
-                Ndr["RestaurantName"] = DR["RestaurantName"].ToString();
-                Ndr["TransDetails"] = "Generated";
                 Ndr["Type"] = DR["Category"].ToString();
                 DtItem_BinCard.Rows.Add(Ndr);
             }

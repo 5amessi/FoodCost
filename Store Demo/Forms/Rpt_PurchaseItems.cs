@@ -10,9 +10,9 @@ using System.Windows.Forms;
 using Food_Cost.Report;
 namespace Food_Cost.Forms
 {
-    public partial class Rpt_PurchaseItems : Form
+    public partial class Rpt_Request : Form
     {
-        public Rpt_PurchaseItems()
+        public Rpt_Request()
         {
             InitializeComponent();
         }
@@ -22,35 +22,10 @@ namespace Food_Cost.Forms
         string f = "";
         string s2 = "";
         DataTable Dt;
-        DataTable Dt2;
-        Dictionary<string, string> dic = new Dictionary<string, string>();
-        Dictionary<string, string> Stores = new Dictionary<string, string>();
-        Dictionary<string, List<string>> FilterDic = new Dictionary<string, List<string>>();
-
-
-        private void BtnCreateDate_CheckedChanged(object sender, EventArgs e)
-        {
-            if (BtnCreateDate.Checked == true)
-            {
-                BtnDeliveryDate.Checked = false;
-            }
-            else
-                BtnDeliveryDate.Checked = true;
-        }
-
-        private void BtnDeliveryDate_CheckedChanged(object sender, EventArgs e)
-        {
-            if (BtnDeliveryDate.Checked == true)
-            {
-                BtnCreateDate.Checked = false;
-            }
-            else
-                BtnCreateDate.Checked = true;
-        }
 
         private void ShowBtn_Click(object sender, EventArgs e)
         {
-            if (CBMyKitchen.Checked)
+            if (!CBMyKitchen.Checked)
             {
                 Where = "";
                 Filter = "";
@@ -61,25 +36,29 @@ namespace Food_Cost.Forms
                 Where = " (Restaurant_ID = 1 AND Kitchen_ID = 1)";
                 Filter = "Kitchen: My kitchen";
             }
-            
+            if (CbToday.Checked == true)
+            {
+                dtp_from.Value = DateTime.Today;
+                dtp_to.Value = DateTime.Today;
+            }
             if (BtnCreateDate.Checked == true)
             {
-                Where += " And Create_Date between '" + dtp_from.Value + "' AND '" + dtp_to.Value + "'";
+                Where += " And Create_Date between '" + Classes.ADjDate(dtp_from.Value) + "' AND '" + Classes.ADjDateto(dtp_to.Value) + "'";
                 Filter += " \n" + "Date: Create_Date";
             }
             else if (BtnDeliveryDate.Checked == true)
             {
-                Where += " And Delivery_Date between '" + dtp_from.Value + "' AND '" + dtp_to.Value + "'";
+                Where += " And Delivery_Date between '" + Classes.ADjDate(dtp_from.Value) + "' AND '" + Classes.ADjDateto(dtp_to.Value) + "'";
                 Filter += " \n" + "Date: Delivery_Date";
             }
 
             ReportView Rec = new ReportView();
-            if (RbOrders.Checked == true)
+            if (RbOrders.Checked == true && RbPurchase.Checked == true)
             {
                 Dt = Classes.RetrieveData("*", Where, "POView");
                 Rec.Rpt = new CR_PO();
             }
-            else
+            else if(RbItems.Checked == true && RbPurchase.Checked == true)
             {
                 if (TxtItemCode.Text.ToString() != "")
                 {
@@ -88,8 +67,24 @@ namespace Food_Cost.Forms
                 Dt = Classes.RetrieveData("*", Where, "POItems");
                 Rec.Rpt = new CR_POitems();
             }
+            else if (RbOrders.Checked == true && RbTransfer.Checked == true)
+            {
+                Where = Where.Replace("Delivery_Date", "Transfer_Date");
+                Dt = Classes.RetrieveData("*", Where, "RequestTransferView");
+                Rec.Rpt = new CR_RequestTransferOrder();
+            }
+            else if (RbItems.Checked == true && RbTransfer.Checked == true)
+            {
+                Where = Where.Replace("Delivery_Date", "Transfer_Date");
+                if (TxtItemCode.Text.ToString() != "")
+                {
+                    Where += " AND Item_ID = '" + TxtItemCode.Text.ToString() + "'";
+                }
+                Dt = Classes.RetrieveData("*", Where, "RequestTransferItemsView");
+                Rec.Rpt = new CR_RequestTransferItems();
+            }
             Rec.Rpt.SetDataSource(Dt);
-            Rec.Rpt.SetParameterValue("Rpt_Fdate", dtp_from.Value);
+            Rec.Rpt.SetParameterValue("Rpt_Fdate", Classes.ADjDate(dtp_from.Value));
             Rec.Rpt.SetParameterValue("Rpt_Tdate", dtp_to.Value);
             Rec.Rpt.SetParameterValue("Filter", Filter);
             Rec.Show();
@@ -121,6 +116,19 @@ namespace Food_Cost.Forms
             {
                 GbItem.Visible = false;
             }
+        }
+        private void UC_TVKitchens2_Load(object sender, EventArgs e)
+        {
+            UC_TVKitchens2.UC_TVKitchens_Load();
+
+        }
+
+        private void CbToday_CheckedChanged(object sender, EventArgs e)
+        {
+            if (CbToday.Checked == true) 
+                GbDate.Enabled = false;
+            else
+                GbDate.Enabled = true;
         }
 
         private void Rpt_PurchaseItems_Load(object sender, EventArgs e)

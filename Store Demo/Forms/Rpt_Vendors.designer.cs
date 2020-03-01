@@ -38,8 +38,10 @@
             this.ShowBtn = new System.Windows.Forms.Button();
             this.TxtItemCode = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.UC_TVKitchens2 = new Food_Cost.Forms.UC_TVKitchens();
             this.CBMyKitchen = new System.Windows.Forms.CheckBox();
+            this.RBSummary = new System.Windows.Forms.RadioButton();
+            this.RBDetails = new System.Windows.Forms.RadioButton();
+            this.UC_TVKitchens2 = new Food_Cost.Forms.UC_TVKitchens();
             this.GrpDateTimeRange.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -118,7 +120,7 @@
             // 
             // ShowBtn
             // 
-            this.ShowBtn.Location = new System.Drawing.Point(88, 223);
+            this.ShowBtn.Location = new System.Drawing.Point(78, 245);
             this.ShowBtn.Name = "ShowBtn";
             this.ShowBtn.Size = new System.Drawing.Size(107, 54);
             this.ShowBtn.TabIndex = 616;
@@ -144,29 +146,56 @@
             this.label1.TabIndex = 622;
             this.label1.Text = "Vendor";
             // 
-            // UC_TVKitchens2
-            // 
-            this.UC_TVKitchens2.Location = new System.Drawing.Point(282, 12);
-            this.UC_TVKitchens2.Name = "UC_TVKitchens2";
-            this.UC_TVKitchens2.Size = new System.Drawing.Size(306, 345);
-            this.UC_TVKitchens2.TabIndex = 625;
-            // 
             // CBMyKitchen
             // 
             this.CBMyKitchen.AutoSize = true;
             this.CBMyKitchen.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
-            this.CBMyKitchen.Location = new System.Drawing.Point(73, 188);
+            this.CBMyKitchen.Location = new System.Drawing.Point(69, 219);
             this.CBMyKitchen.Name = "CBMyKitchen";
             this.CBMyKitchen.Size = new System.Drawing.Size(122, 20);
             this.CBMyKitchen.TabIndex = 624;
             this.CBMyKitchen.Text = "For My Kitchen";
             this.CBMyKitchen.UseVisualStyleBackColor = true;
             // 
+            // RBSummary
+            // 
+            this.RBSummary.AutoSize = true;
+            this.RBSummary.Checked = true;
+            this.RBSummary.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
+            this.RBSummary.Location = new System.Drawing.Point(39, 175);
+            this.RBSummary.Name = "RBSummary";
+            this.RBSummary.Size = new System.Drawing.Size(87, 20);
+            this.RBSummary.TabIndex = 626;
+            this.RBSummary.TabStop = true;
+            this.RBSummary.Text = "Summary";
+            this.RBSummary.UseVisualStyleBackColor = true;
+            // 
+            // RBDetails
+            // 
+            this.RBDetails.AutoSize = true;
+            this.RBDetails.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
+            this.RBDetails.Location = new System.Drawing.Point(151, 175);
+            this.RBDetails.Name = "RBDetails";
+            this.RBDetails.Size = new System.Drawing.Size(69, 20);
+            this.RBDetails.TabIndex = 627;
+            this.RBDetails.Text = "Details";
+            this.RBDetails.UseVisualStyleBackColor = true;
+            // 
+            // UC_TVKitchens2
+            // 
+            this.UC_TVKitchens2.Location = new System.Drawing.Point(282, 12);
+            this.UC_TVKitchens2.Name = "UC_TVKitchens2";
+            this.UC_TVKitchens2.Size = new System.Drawing.Size(306, 345);
+            this.UC_TVKitchens2.TabIndex = 625;
+            this.UC_TVKitchens2.Load += new System.EventHandler(this.UC_TVKitchens2_Load);
+            // 
             // Rpt_Vendors
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(600, 364);
+            this.Controls.Add(this.RBDetails);
+            this.Controls.Add(this.RBSummary);
             this.Controls.Add(this.UC_TVKitchens2);
             this.Controls.Add(this.CBMyKitchen);
             this.Controls.Add(this.TxtItemCode);
@@ -197,5 +226,7 @@
         private System.Windows.Forms.Label label1;
         private UC_TVKitchens UC_TVKitchens2;
         private System.Windows.Forms.CheckBox CBMyKitchen;
+        private System.Windows.Forms.RadioButton RBSummary;
+        private System.Windows.Forms.RadioButton RBDetails;
     }
 }

@@ -139,7 +139,6 @@ namespace Food_Cost
             MyComm.ExecuteNonQuery();
         }
 
-
         public static void InsertRow(string TableName, string values)
         {
             MyConnection = new SqlConnection(DataConnString);

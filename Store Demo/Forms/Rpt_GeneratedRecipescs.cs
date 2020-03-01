@@ -38,7 +38,7 @@ namespace Food_Cost.Forms
             {
                 Where += " AND Recipe_ID = '" + TxtItemCode.Text.ToString() + "'";
             }
-            Where += " And Generate_Date between '" + dtp_from.Value + "' AND '" + dtp_to.Value + "'";
+            Where += " And Generate_Date between '" + Classes.ADjDate(dtp_from.Value) + "' AND '" + Classes.ADjDateto(dtp_to.Value) + "'";
 
             DataTable dt = Classes.RetrieveData("*", Where, "GeneratedRecipesView");
             for (int i=0; i< dt.Rows.Count; i++)
@@ -80,6 +80,12 @@ namespace Food_Cost.Forms
 
         private void CBMyKitchen_CheckedChanged(object sender, EventArgs e)
         {
+
+        }
+
+        private void uC_TVKitchens1_Load(object sender, EventArgs e)
+        {
+            uC_TVKitchens1.UC_TVKitchens_Load();
 
         }
     }

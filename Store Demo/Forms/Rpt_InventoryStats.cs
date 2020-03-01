@@ -67,5 +67,11 @@ namespace Food_Cost.Forms
                 TxtItemName.Text = frm.selrow.Cells[1].Value.ToString();
             }
         }
+
+        private void uC_TVKitchens1_Load(object sender, EventArgs e)
+        {
+            uC_TVKitchens1.UC_TVKitchens_Load();
+
+        }
     }
 }

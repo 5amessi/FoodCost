@@ -40,7 +40,7 @@ namespace Food_Cost.Forms
                 Filter = "Kitchen: My kitchen";
             }
 
-            Where += " And Transfer_Date between '" + dtp_from.Value + "' AND '" + dtp_to.Value + "'";
+            Where += " And Transfer_Date between '" + Classes.ADjDate(dtp_from.Value) + "' AND '" + Classes.ADjDateto(dtp_to.Value) + "'";
         
             ReportView Rec = new ReportView();
 
@@ -94,6 +94,12 @@ namespace Food_Cost.Forms
             {
                 GbItem.Visible = false;
             }
+        }
+
+        private void UC_TVKitchens2_Load(object sender, EventArgs e)
+        {
+            UC_TVKitchens2.UC_TVKitchens_Load();
+
         }
     }
 }

@@ -80,6 +80,7 @@
             this.uC_TVKitchens1.Name = "uC_TVKitchens1";
             this.uC_TVKitchens1.Size = new System.Drawing.Size(416, 371);
             this.uC_TVKitchens1.TabIndex = 601;
+            this.uC_TVKitchens1.Load += new System.EventHandler(this.uC_TVKitchens1_Load);
             // 
             // BtnItem
             // 

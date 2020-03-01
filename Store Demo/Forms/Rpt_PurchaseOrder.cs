@@ -50,7 +50,7 @@ namespace Food_Cost.Forms
 
         private void show_btn_Click(object sender, EventArgs e)
         {
-            if (CBMyKitchen.Checked)
+            if (!CBMyKitchen.Checked)
             {
                 Where = "";
                 Filter = "";
@@ -64,12 +64,12 @@ namespace Food_Cost.Forms
 
             if (BtnCreateDate.Checked == true)
             {
-                Where += "And Create_Date between '" + dtp_from.Value + "' AND '" + dtp_to.Value + "'";
+                Where += "And Create_Date between '" + Classes.ADjDate(dtp_from.Value) + "' AND '" + Classes.ADjDateto(dtp_to.Value) + "'";
                 Filter += " \n" + "Date : Create_Date";
             }
             else if (BtnDeliveryDate.Checked == true)
             {
-                Where += "And Delivery_Date between '" + dtp_from.Value + "' AND '" + dtp_to.Value + "'";
+                Where += "And Delivery_Date between '" + Classes.ADjDate(dtp_from.Value) + "' AND '" + Classes.ADjDateto(dtp_to.Value) + "'";
                 Filter += " \n" + "Date : Delivery_Date";
             }
             DataTable dt = Classes.RetrieveData("*", Where, "POView");
@@ -80,6 +80,12 @@ namespace Food_Cost.Forms
             Rec.Rpt.SetParameterValue("Rpt_Tdate", dtp_to.Value);
             Rec.Rpt.SetParameterValue("Filter", Filter);
             Rec.Show();
+        }
+
+        private void UC_TVKitchens2_Load(object sender, EventArgs e)
+        {
+            UC_TVKitchens2.UC_TVKitchens_Load();
+
         }
     }
 }

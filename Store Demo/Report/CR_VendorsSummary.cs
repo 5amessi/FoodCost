@@ -16,14 +16,14 @@ namespace Food_Cost.Report {
     using CrystalDecisions.CrystalReports.Engine;
     
     
-    public class CR_ReceiveItemes : ReportClass {
+    public class CR_VendorsSummary : ReportClass {
         
-        public CR_ReceiveItemes() {
+        public CR_VendorsSummary() {
         }
         
         public override string ResourceName {
             get {
-                return "CR_ReceiveItemes.rpt";
+                return "CR_VendorsSummary.rpt";
             }
             set {
                 // Do nothing
@@ -41,7 +41,7 @@ namespace Food_Cost.Report {
         
         public override string FullResourceName {
             get {
-                return "Food_Cost.Report.CR_ReceiveItemes.rpt";
+                return "Food_Cost.Report.CR_VendorsSummary.rpt";
             }
             set {
                 // Do nothing
@@ -90,7 +90,7 @@ namespace Food_Cost.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section GroupHeaderSection4 {
+        public CrystalDecisions.CrystalReports.Engine.Section GroupHeaderSection3 {
             get {
                 return this.ReportDefinition.Sections[5];
             }
@@ -98,7 +98,7 @@ namespace Food_Cost.Report {
         
         [Browsable(false)]
         [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.CrystalReports.Engine.Section GroupHeaderSection5 {
+        public CrystalDecisions.CrystalReports.Engine.Section GroupHeaderSection4 {
             get {
                 return this.ReportDefinition.Sections[6];
             }
@@ -175,36 +175,12 @@ namespace Food_Cost.Report {
                 return this.DataDefinition.ParameterFields[2];
             }
         }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_Food {
-            get {
-                return this.DataDefinition.ParameterFields[3];
-            }
-        }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_Beverage {
-            get {
-                return this.DataDefinition.ParameterFields[4];
-            }
-        }
-        
-        [Browsable(false)]
-        [DesignerSerializationVisibilityAttribute(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
-        public CrystalDecisions.Shared.IParameterField Parameter_General {
-            get {
-                return this.DataDefinition.ParameterFields[5];
-            }
-        }
     }
     
     [System.Drawing.ToolboxBitmapAttribute(typeof(CrystalDecisions.Shared.ExportOptions), "report.bmp")]
-    public class CachedCR_ReceiveItemes : Component, ICachedReport {
+    public class CachedCR_VendorsSummary : Component, ICachedReport {
         
-        public CachedCR_ReceiveItemes() {
+        public CachedCR_VendorsSummary() {
         }
         
         [Browsable(false)]
@@ -241,7 +217,7 @@ namespace Food_Cost.Report {
         }
         
         public virtual CrystalDecisions.CrystalReports.Engine.ReportDocument CreateReport() {
-            CR_ReceiveItemes rpt = new CR_ReceiveItemes();
+            CR_VendorsSummary rpt = new CR_VendorsSummary();
             rpt.Site = this.Site;
             return rpt;
         }

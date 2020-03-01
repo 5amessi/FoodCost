@@ -31,7 +31,7 @@ namespace Food_Cost.Forms
 
         private void show_btn_Click(object sender, EventArgs e)
         {
-            if (CBMyKitchen.Checked)
+            if (!CBMyKitchen.Checked)
             {
                 Where = "";
                 Filter = "";
@@ -46,11 +46,16 @@ namespace Food_Cost.Forms
             ReportView Rec = new ReportView();
             Rec.Rpt = new CR_Stores();
 
-            DataTable dt = Classes.RetrieveData("*", Where, "View_Stores");
+            DataTable dt = Classes.RetrieveData("*", Where, "InventoryStats");
             Rec.Rpt.SetDataSource(dt);
             Rec.Rpt.SetParameterValue("Filter", Filter);
             Rec.Show();
         }
 
+        private void UC_TVKitchens2_Load(object sender, EventArgs e)
+        {
+            UC_TVKitchens2.UC_TVKitchens_Load();
+
+        }
     }
 }
