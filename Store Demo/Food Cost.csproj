@@ -169,6 +169,12 @@
     <Compile Include="AllSubCategories.xaml.cs">
       <DependentUpon>AllSubCategories.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AllUnits.xaml.cs">
+      <DependentUpon>AllUnits.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AllVendor.xaml.cs">
+      <DependentUpon>AllVendor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="All_Kitchens.xaml.cs">
       <DependentUpon>All_Kitchens.xaml</DependentUpon>
     </Compile>
@@ -526,6 +532,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="AllSubCategories.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="AllUnits.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="AllVendor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

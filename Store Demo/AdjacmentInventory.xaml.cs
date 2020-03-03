@@ -27,6 +27,8 @@ namespace Food_Cost
         public string ValOfResturant = "";
         public string ValOfKitchen = "";
         string physicalinventoryID = "";
+        bool Blind = false;
+
         //Adjacment Coming from Physcial Inventory
         public AdjacmentInventory(string ValofRest,string valofKit,string valofOPhiID)
         {
@@ -49,7 +51,6 @@ namespace Food_Cost
         {
             physicalinventoryID = PhiID;
             int NumOfItems = 0; double totalCost = 0;
-            bool Blind = false;
             DataTable dt = new DataTable();
             DataTable Dat = new DataTable();
             string FirstName = ""; string SeconName = "";
@@ -87,7 +88,64 @@ namespace Food_Cost
             }
             if (Blind == false)
             {
-                dt.Columns.Add("ItemsID");
+                dt.Columns.Add("Code");
+                dt.Columns.Add("Name");
+                dt.Columns.Add("Name2");
+                dt.Columns.Add("Qty");
+                dt.Columns.Add("Cost");
+                try
+                {
+                    con.Open();
+                    string s = "select Item_ID,Qty,Cost from PhysicalInventory_Items Where  Inventory_ID=" + PhiID;
+                    cmd = new SqlCommand(s, con);
+                    reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        try
+                        {
+                            con2.Open();
+                            string q = "SELECT Name,Name2 From Setup_Items Where Code='" + reader["Item_ID"].ToString() + "'";
+                            cmd2 = new SqlCommand(q, con2);
+                            reader2 = cmd2.ExecuteReader();
+                            while (reader2.Read())
+                            {
+                                FirstName = reader2["Name"].ToString();
+                                SeconName = reader2["Name2"].ToString();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.ToString());
+                        }
+                        finally
+                        {
+                            con2.Close();
+                        }
+                        NumOfItems++;
+                        totalCost += Convert.ToDouble(reader["Cost"].ToString());
+                        dt.Rows.Add(reader["Item_ID"].ToString(), FirstName, SeconName, reader["Qty"].ToString(), reader["Cost"]);
+                    }
+                    for (int i = 0; i < dt.Columns.Count; i++)
+                    {
+                        dt.Columns[i].ReadOnly = true;
+                    }
+
+                    ItemsDGV.DataContext = dt;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                }
+                NUmberOfItems.Text = NumOfItems.ToString();
+                Total_Price.Text = totalCost.ToString();
+            }
+            else
+            {
+                dt.Columns.Add("Code");
                 dt.Columns.Add("Name");
                 dt.Columns.Add("Name2");
                 dt.Columns.Add("Qty");
@@ -124,66 +182,7 @@ namespace Food_Cost
                         }
                         NumOfItems++;
                         totalCost += Convert.ToDouble(reader["Cost"].ToString());
-                        dt.Rows.Add(reader["Item_ID"].ToString(), FirstName, SeconName, reader["Qty"].ToString(), reader["InventoryQty"], reader["Variance"], reader["Cost"]);
-                    }
-                    for (int i = 0; i < dt.Columns.Count; i++)
-                    {
-                        dt.Columns[i].ReadOnly = true;
-                    }
-
-                    ItemsDGV.DataContext = dt;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-                finally
-                {
-                    con.Close();
-                }
-                NUmberOfItems.Text = NumOfItems.ToString();
-                Total_Price.Text = totalCost.ToString();
-            }
-            else
-            {
-                dt.Columns.Add("ItemsID");
-                dt.Columns.Add("Name");
-                dt.Columns.Add("Name2");
-                dt.Columns.Add("Qty");
-                dt.Columns.Add("Phsycal Qty");
-                dt.Columns.Add("Variance");
-                dt.Columns.Add("Cost");
-                try
-                {
-                    con.Open();
-                    string s = "select Item_ID,Qty,Cost from PhysicalInventory_Items Where  Inventory_ID=" + PhiID;
-                    cmd = new SqlCommand(s, con);
-                    reader = cmd.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        try
-                        {
-                            con2.Open();
-                            string q = "SELECT Name,Name2 From Setup_Items Where Code='" + reader["Item_ID"].ToString() + "'";
-                            cmd2 = new SqlCommand(q, con2);
-                            reader2 = cmd2.ExecuteReader();
-                            while (reader2.Read())
-                            {
-                                FirstName = reader2["Name"].ToString();
-                                SeconName = reader2["Name2"].ToString();
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.ToString());
-                        }
-                        finally
-                        {
-                            con2.Close();
-                        }
-                        NumOfItems++;
-                        totalCost += Convert.ToDouble(reader["Cost"].ToString());
-                        dt.Rows.Add(reader["Item_ID"].ToString(), FirstName, SeconName, reader["Qty"].ToString(), reader["Qty"].ToString(), "0", reader["Cost"]);
+                        dt.Rows.Add(reader["Item_ID"].ToString(), FirstName, SeconName, reader["Qty"].ToString(), reader["InventoryQty"].ToString(), reader["Variance"].ToString(), reader["Cost"]);
                     }
                     for (int i = 0; i < dt.Columns.Count; i++)
                     {
@@ -221,7 +220,7 @@ namespace Food_Cost
             con.Open();
             try
             {
-                string s = "select Name from Setup_Restaurant";
+                string s = "select Name from Setup_Restaurant where IsActive='True'";
                 SqlCommand cmd = new SqlCommand(s, con);
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -248,7 +247,7 @@ namespace Food_Cost
             con.Open();
             try
             {
-                string s = "select Name from Setup_Kitchens Where RestaurantID=(select Code From Setup_Restaurant Where Name='" + Outletcbx.SelectedItem.ToString() + "')";
+                string s = "select Name from Setup_Kitchens Where RestaurantID=(select Code From Setup_Restaurant Where Name='" + Outletcbx.SelectedItem.ToString() + "') and IsActive='True'";
                 SqlCommand cmd = new SqlCommand(s, con);
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -267,7 +266,6 @@ namespace Food_Cost
                 con.Close();
             }
         }
-
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             GetCodeofResturantAndKitchen();
@@ -366,8 +364,7 @@ namespace Food_Cost
             {
                 con.Close();
             }
-        }
-       
+        }       
         private void ItemsDGV_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             dt = ItemsDGV.DataContext as DataTable;
@@ -408,13 +405,11 @@ namespace Food_Cost
             }
             catch { }
         }
-
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9.]+");
             e.Handled = regex.IsMatch(e.Text);
         }
-
         private void NeglectWhiteSpace(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Space)
@@ -444,7 +439,89 @@ namespace Food_Cost
 
         private void Adjact_Click(object sender, RoutedEventArgs e)
         {
-            if(ItemsDGV.Items.Count == 0 )
+            if (Reasoncbx.Text != "Physical Inventory")
+            {
+                if (ItemsDGV.Items.Count == 0)
+                {
+                    MessageBox.Show("First You should Select Items !");
+                    return;
+                }
+                if (Serial_Adjacment_NO.Text.Equals(""))
+                {
+                    MessageBox.Show("First You should Enter The Serial !");
+                    return;
+                }
+                if (Adjacment_NO.Text.Equals(""))
+                {
+                    MessageBox.Show("First You should Enter The Manual Number !");
+                    return;
+                }
+                if (Reasoncbx.Text.Equals(""))
+                {
+                    MessageBox.Show("First You should Choose The Reason !");
+                    return;
+                }
+                if (Adjacment_Date.Text.Equals(""))
+                {
+                    MessageBox.Show("First You should Enter The Date !");
+                    return;
+                }
+
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                con.Open();
+                try
+                {
+                    string FiledSelection = "Adjacment_ID,Adjacment_Num,Adjacment_Reason,Adjacment_Date,Comment,Resturant_ID,KitchenID,Create_Date,Post_Date,User_ID,WS,Total_Cost";
+                    string Values = string.Format("'{0}',{1},(select Code From Setup_AdjacmentReasons_tbl where Name='{2}'),'{3}','{4}',{5},{6},GETDATE(),GETDATE(),'{7}','{8}','{9}'", Serial_Adjacment_NO.Text, Adjacment_NO.Text, Reasoncbx.Text, Convert.ToDateTime(Adjacment_Date.Text).ToString("MM-dd-yyyy"), commenttxt.Text, ValOfResturant, ValOfKitchen, MainWindow.UserID, Classes.WS, Total_Price.Text);
+                    Classes.InsertRow("Adjacment_tbl", FiledSelection, Values);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+
+                try
+                {
+                    for (int i = 0; i < ItemsDGV.Items.Count; i++)
+                    {
+                        string FiledSelection = "Adjacment_ID,Item_ID,Qty,AdjacmentableQty,Variance,Cost";
+                        string Values = string.Format("'{0}','{1}','{2}','{3}','{4}','{5}'", Serial_Adjacment_NO.Text, (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]), Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]), Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]), Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[5]), Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6]));
+                        Classes.InsertRow("Adjacment_Items", FiledSelection, Values);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+
+                try
+                {
+                    for (int i = 0; i < ItemsDGV.Items.Count; i++)
+                    {
+                        string H = string.Format("Update Items set Qty={0}, Current_Cost={4}, Net_Cost=({4} * {0}) where ItemID = '{1}' and RestaurantID ={2} and KitchenID={3}", Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]), (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]), ValOfResturant, ValOfKitchen, Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6]));
+                        SqlCommand cmd = new SqlCommand(H, con);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    MessageBox.Show("Edited Successfully");
+                }
+            }
+            else
+            {
+                SaveThePhyscialAdjacment();
+            }
+            Adjact.IsEnabled = false;
+        }
+
+        private void SaveThePhyscialAdjacment()
+        {
+            if (ItemsDGV.Items.Count == 0)
             {
                 MessageBox.Show("First You should Select Items !");
                 return;
@@ -469,80 +546,108 @@ namespace Food_Cost
                 MessageBox.Show("First You should Enter The Date !");
                 return;
             }
-            //if (Adjacment_Time.Text.Equals(""))
-            //{
-            //    MessageBox.Show("First You should Enter The Time !");
-            //    return;
-            //}
 
             SqlConnection con = new SqlConnection(Classes.DataConnString);
             con.Open();
-            try
-            {
-                string s = string.Format("insert into Adjacment_tbl(Adjacment_ID,Adjacment_Num,Adjacment_Reason,Adjacment_Date,Comment,Resturant_ID,KitchenID,Create_Date,User_ID,WS) values('{0}',{1},(select Code From Setup_AdjacmentReasons_tbl where Name='{2}'),'{3}','{4}',{5},{6},GETDATE(),'{7}','{8}')", Serial_Adjacment_NO.Text, Adjacment_NO.Text, Reasoncbx.Text, Adjacment_Date.Text, commenttxt.Text, ValOfResturant, ValOfKitchen,MainWindow.UserID,Classes.WS);
-                SqlCommand cmd = new SqlCommand(s, con);
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            //finally
-            //{
-            //    con.Close();
-            //}
-
-            try
-            {
-                //con.Open();
-                for (int i = 0; i < ItemsDGV.Items.Count; i++)
-                {
-                    string s = "Insert into Adjacment_Items(Adjacment_ID,Item_ID,Qty,AdjacmentableQty,Variance,Cost) Values ( '" + Serial_Adjacment_NO.Text + "','" + (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]) + "'," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[5]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6]) + ")";
-                    SqlCommand cmd = new SqlCommand(s, con);
-                    cmd.ExecuteNonQuery();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            //finally
-            //{
-            //    con.Close();
-            //}
-
-            try
-            {
-                //con.Open();
-                for (int i = 0; i < ItemsDGV.Items.Count; i++)
-                {
-                    string H = string.Format("Update Items set Qty={0}, Current_Cost={4}, Net_Cost=({4} * {0}) where ItemID = '{1}' and RestaurantID ={2} and KitchenID={3}", Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]), (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]), ValOfResturant, ValOfKitchen, Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6]));
-                    SqlCommand cmd = new SqlCommand(H, con);
-                    cmd.ExecuteNonQuery();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                MessageBox.Show("Edited Successfully");
-            }
-
-            if(Reasoncbx.Text== "Physical Inventory")
+            if (Blind == false)
             {
                 try
                 {
-                    string s = string.Format("update PhysicalInventory_tbl set Inventory_Type='Closed' where Inventory_ID={0}", physicalinventoryID);
-                    SqlCommand cmd = new SqlCommand(s, con);
-                    cmd.ExecuteNonQuery();
+                    string FiledSelection = "Adjacment_ID,Adjacment_Num,Adjacment_Reason,Adjacment_Date,Comment,Resturant_ID,KitchenID,Create_Date,Post_Date,User_ID,WS,Total_Cost";
+                    string Values = string.Format("'{0}',{1},(select Code From Setup_AdjacmentReasons_tbl where Name='{2}'),'{3}','{4}',{5},{6},GETDATE(),GETDATE(),'{7}','{8}','{9}'", Serial_Adjacment_NO.Text, Adjacment_NO.Text, Reasoncbx.Text, Convert.ToDateTime(Adjacment_Date.Text).ToString("MM-dd-yyyy"), commenttxt.Text, ValOfResturant, ValOfKitchen, MainWindow.UserID, Classes.WS,Total_Price.Text);
+                    Classes.InsertRow("Adjacment_tbl", FiledSelection, Values);
                 }
-                catch(Exception ex) { MessageBox.Show(ex.ToString()); }
-                con.Close();
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+
+                try
+                {
+                    for (int i = 0; i < ItemsDGV.Items.Count; i++)
+                    {
+                        string FiledSelection = "Adjacment_ID,Item_ID,Qty,Cost";
+                        string Values = string.Format("'{0}','{1}','{2}','{3}'", Serial_Adjacment_NO.Text, (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]), Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]), Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]));
+                        Classes.InsertRow("Adjacment_Items", FiledSelection, Values);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+
+                try
+                {
+                    for (int i = 0; i < ItemsDGV.Items.Count; i++)
+                    {
+                        string H = string.Format("Update Items set Qty={0}, Current_Cost={4}, Net_Cost=({4} * {0}) where ItemID = '{1}' and RestaurantID ={2} and KitchenID={3}", Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]), (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]), ValOfResturant, ValOfKitchen, Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]));
+                        SqlCommand cmd = new SqlCommand(H, con);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    MessageBox.Show("Edited Successfully");
+                }
+            }
+            else
+            {
+                try
+                {
+                    string FiledSelection = "Adjacment_ID,Adjacment_Num,Adjacment_Reason,Adjacment_Date,Comment,Resturant_ID,KitchenID,Create_Date,Post_Date,User_ID,WS,Total_Cost";
+                    string Values = string.Format("'{0}',{1},(select Code From Setup_AdjacmentReasons_tbl where Name='{2}'),'{3}','{4}',{5},{6},GETDATE(),GETDATE(),'{7}','{8}','{9}'", Serial_Adjacment_NO.Text, Adjacment_NO.Text, Reasoncbx.Text, Convert.ToDateTime(Adjacment_Date.Text).ToString("MM-dd-yyyy"), commenttxt.Text, ValOfResturant, ValOfKitchen, MainWindow.UserID, Classes.WS,Total_Price.Text);
+                    Classes.InsertRow("Adjacment_tbl", FiledSelection, Values);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+
+                try
+                {
+                    for (int i = 0; i < ItemsDGV.Items.Count; i++)
+                    {
+                        string FiledSelection = "Adjacment_ID,Item_ID,Qty,AdjacmentableQty,Variance,Cost";
+                        string Values = string.Format("'{0}','{1}','{2}','{3}','{4}','{5}'", Serial_Adjacment_NO.Text, (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]), Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]), ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4], ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[5], Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6]));
+                        Classes.InsertRow("Adjacment_Items", FiledSelection, Values);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+
+                try
+                {
+                    for (int i = 0; i < ItemsDGV.Items.Count; i++)
+                    {
+                        string H = string.Format("Update Items set Qty={0}, Current_Cost={4}, Net_Cost=({4} * {0}) where ItemID = '{1}' and RestaurantID ={2} and KitchenID={3}", Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]), (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]), ValOfResturant, ValOfKitchen, Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6]));
+                        SqlCommand cmd = new SqlCommand(H, con);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    MessageBox.Show("Edited Successfully");
+                }
             }
 
-            Adjact.IsEnabled = false;
+
+            try
+            {
+                string s = string.Format("update PhysicalInventory_tbl set Inventory_Type='Closed' where Inventory_ID={0}", physicalinventoryID);
+                SqlCommand cmd = new SqlCommand(s, con);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex) { MessageBox.Show(ex.ToString()); }
         }
 
     }

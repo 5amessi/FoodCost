@@ -24,14 +24,28 @@ namespace Food_Cost
     /// </summary>
     public partial class CategoriesAndSub : UserControl
     {
+        List<string> Authenticated = new List<string>();
         public CategoriesAndSub()
         {
-            InitializeComponent();
-            FillDGV();
-            //LoadAllCategories();
-            MainUiFormat();
-            FillSubDGV();
-            MainUiSubFormat();
+            if (MainWindow.AuthenticationData.ContainsKey("RecipeCategoryAndSub"))
+            {
+                Authenticated = MainWindow.AuthenticationData["RecipeCategoryAndSub"];
+                if (Authenticated.Count == 0)
+                {
+                    MessageBox.Show("You Havent a Privilage to Open this Page");
+                    LogIn logIn = new LogIn();
+                    logIn.ShowDialog();
+                }
+                else
+                {
+                    InitializeComponent();
+                    FillDGV();
+                    //LoadAllCategories();
+                    MainUiFormat();
+                    FillSubDGV();
+                    MainUiSubFormat();
+                }
+            }
         }
 
         public CategoriesAndSub(string Name)
@@ -125,43 +139,51 @@ namespace Food_Cost
 
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (Code_txt.Text == "")
+            if (Authenticated.IndexOf("SaveRecipeCategory") == -1 && Authenticated.IndexOf("CheckAllRecipeCategory") == -1)
             {
-                MessageBox.Show("Code Field Can't Be Empty");
-                return;
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
-
-            for(int i=0;i<CategoryDGV.Items.Count;i++)
+            else
             {
-                if(Code_txt.Text == ((DataRowView)CategoryDGV.Items[i]).Row.ItemArray[0].ToString())
+                if (Code_txt.Text == "")
                 {
-                    MessageBox.Show("This Code Is Not Avaliable");
+                    MessageBox.Show("Code Field Can't Be Empty");
                     return;
                 }
-            }
-         
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
 
-            try
-            {
-                con.Open();
-                string s = "insert into Setup_RecipeCategory(Code, Name, Name2, IsActive) values (" + Code_txt.Text + ",N'" + Name_txt.Text +"',N'" + Name2_txt.Text + "','" + Active_chbx.IsChecked +"')";
-                SqlCommand cmd = new SqlCommand(s, con);
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-                MainUiFormat();
+                for (int i = 0; i < CategoryDGV.Items.Count; i++)
+                {
+                    if (Code_txt.Text == ((DataRowView)CategoryDGV.Items[i]).Row.ItemArray[0].ToString())
+                    {
+                        MessageBox.Show("This Code Is Not Avaliable");
+                        return;
+                    }
+                }
 
-                CategoryDGV.DataContext=null;
-                FillDGV();
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+
+                try
+                {
+                    con.Open();
+                    string s = "insert into Setup_RecipeCategory(Code, Name, Name2, IsActive) values (" + Code_txt.Text + ",N'" + Name_txt.Text + "',N'" + Name2_txt.Text + "','" + Active_chbx.IsChecked + "')";
+                    SqlCommand cmd = new SqlCommand(s, con);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                    MainUiFormat();
+
+                    CategoryDGV.DataContext = null;
+                    FillDGV();
+                }
+                MessageBox.Show("Saved Successfully");
             }
-            MessageBox.Show("Saved Successfully");
         }
 
         private void UpdateBtn_Click(object sender, RoutedEventArgs e)

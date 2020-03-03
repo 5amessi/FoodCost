@@ -7,8 +7,8 @@
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Title="User Authentication" Height="700" Width="700"  WindowStartupLocation="CenterScreen">
-
-    <Grid Background="#FFEEEEEE">
+    <ScrollViewer>
+        <Grid Background="#FFEEEEEE">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="15"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
@@ -148,12 +148,17 @@
                                 <CheckBox Name="CancelROWithout" Content="Cancel" Tag="1"/>
                             </TreeViewItem>
 
-                        </ListView>
+                                <TreeViewItem Header="Requests" HorizontalAlignment="Left" IsSelected="False" Name="Request">
+                                    <CheckBox Name="CheckAllRequests" Tag="1">Check All</CheckBox>
+                                    <CheckBox Name="Requests" Content="Recieve" Tag="1"/>
+                                </TreeViewItem>
+
+                            </ListView>
                     </TreeViewItem>
 
                     <TreeViewItem Header="Transfer Resturant" HorizontalAlignment="Left" IsSelected="False" Name="TransferResturant">
                         <CheckBox Name="CheckAllTransferResturant" Tag="1">Check All</CheckBox>
-                        <CheckBox Name="NewTransferResturant" Content="New" Tag="1"/>
+                        <CheckBox Name="SearchTransferResturant" Content="Search" Tag="1"/>
                         <CheckBox Name="TransferTrnsferResturant" Content="Transfer" Tag="1"/>
                         <CheckBox Name="unodTransferResturant" Content="Undo" Tag="1"/>
                         <CheckBox Name="AddItemTransferReasturant" Content="Add Item" Tag="1"/>
@@ -162,7 +167,7 @@
 
                     <TreeViewItem Header="Transfer Kitchen" HorizontalAlignment="Left" IsSelected="False" Name="TransferKitchen">
                         <CheckBox Name="CheckAllTransferKitchen" Tag="1">Check All</CheckBox>
-                        <CheckBox Name="NewTransferKitchen" Content="New" Tag="1"/>
+                        <CheckBox Name="SearchTransferKitchen" Content="Search" Tag="1"/>
                         <CheckBox Name="TransferTrnsferKitchen" Content="Transfer" Tag="1"/>
                         <CheckBox Name="unodTransferKitchen" Content="Undo" Tag="1"/>
                         <CheckBox Name="AddItemTransferKitchen" Content="Add Item" Tag="1"/>
@@ -252,12 +257,12 @@
                         <CheckBox Name="DeleteAddjacmentReasons" Content="Delete Category" Tag="1"/>
                     </TreeViewItem>
 
-                    <TreeViewItem Header="Stock Inventory" HorizontalAlignment="Left"  IsSelected="False" Name="StockInventory">
+                    <!--<TreeViewItem Header="Stock Inventory" HorizontalAlignment="Left"  IsSelected="False" Name="StockInventory">
                         <CheckBox Name="CheckAllStockInventory" Tag="1">Check All</CheckBox>
                         <CheckBox Name="AddItemStockInventory" Content="Add Items" Tag="1"/>
                         <CheckBox Name="DeleteStockInventory" Content="Delete Items" Tag="1"/>
                         <CheckBox Name="AdjacmentStockInventory" Content="Make Inventory" Tag="1"/>
-                    </TreeViewItem>
+                    </TreeViewItem>-->
 
                     <TreeViewItem Header="Physical Inventory" HorizontalAlignment="Left"  IsSelected="False" Name="PhysicalInventory">
                         <CheckBox Name="CheckAllPhysicalInventory" Tag="1">Check All</CheckBox>
@@ -267,10 +272,10 @@
                         <CheckBox Name="PrintPhysicalInventory" Content="Print Inventory sheet" Tag="1"/>
                     </TreeViewItem>
 
-                    <TreeViewItem Header="Outlet Subtraction" HorizontalAlignment="Left"  IsSelected="False" Name="OutletSubtraction">
+                    <!--<TreeViewItem Header="Outlet Subtraction" HorizontalAlignment="Left"  IsSelected="False" Name="OutletSubtraction">
                         <CheckBox Name="CheckAllOutletSubtraction" Tag="1">Check All</CheckBox>
                         <CheckBox Name="SubtractionOutletSubtraction" Content="Make Subtraction" Tag="1"/>
-                    </TreeViewItem>
+                    </TreeViewItem>-->
 
                     <TreeViewItem Header="Vendors" HorizontalAlignment="Left" IsSelected="False" Name="Vendors">
                         <CheckBox Name="CheckAllVendors" Tag="1">Check All</CheckBox>
@@ -314,4 +319,6 @@
         </StackPanel>
 
     </Grid>
+    </ScrollViewer>
+
 </Window>

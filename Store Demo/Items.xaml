@@ -37,7 +37,7 @@
 
         <DataGrid  Name="ReciveOrdersOrderDGV"  Grid.Row="1" ItemsSource="{Binding}" AutoGenerateColumns="True"  ColumnWidth="*" VerticalAlignment="Stretch"  ScrollViewer.CanContentScroll="True" MouseDoubleClick="ReciveOrderDGV_MouseDoubleClick" 
                           ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Auto" IsReadOnly="True" 
-                          Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ActualHeight}" />
+                          />
 
         <!--<Button Name="UpdateBtn" Grid.Row="2" Background="Green" Click="UpdateBtn_Click">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" >

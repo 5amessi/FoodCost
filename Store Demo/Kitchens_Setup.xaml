@@ -17,7 +17,7 @@
             <RowDefinition Height="4*"/>
         </Grid.RowDefinitions>
         
-        <GroupBox Foreground="Black"  Name="KitchesGBX" Margin="10" BorderBrush="#D0D3D4" BorderThickness="2" Header="Kitchens">
+        <GroupBox Foreground="Black"  Name="KitchesGBX" Margin="5" BorderBrush="#D0D3D4" BorderThickness="2" Header="Kitchens">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="4*"/>
@@ -68,33 +68,33 @@
 
 
                     <Button Grid.Column="0" Name="NewBtn" Foreground="Black" Background="#cacfd2"  Click="NewButtonClicked" Margin="3">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0">
-                            <materialDesign:PackIcon Kind="Plus" HorizontalAlignment="Left" Width="20"/>
-                            <TextBlock Padding="0" Margin="0" HorizontalAlignment="Right"> New </TextBlock>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <materialDesign:PackIcon Kind="Plus" HorizontalAlignment="Left"/>
+                            <TextBlock HorizontalAlignment="Right"> New </TextBlock>
                         </StackPanel>
                     </Button>
-                    <Button Name="SaveBtn" Grid.Column="1"   Background="Green" FontSize="12" Padding="2" Margin="3" Click="SaveBtn_Click">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"   Margin="0">
-                            <materialDesign:PackIcon Kind="CheckboxMarkedCircle" HorizontalAlignment="Left" Width="20" Height="20"/>
-                            <TextBlock Padding="0" Margin="0" HorizontalAlignment="Right"> Save</TextBlock>
+                    <Button Name="SaveBtn" Grid.Column="1"   Background="Green" Margin="3" Click="SaveBtn_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <materialDesign:PackIcon Kind="CheckboxMarkedCircle" HorizontalAlignment="Left"/>
+                            <TextBlock  HorizontalAlignment="Right"> Save</TextBlock>
                         </StackPanel>
                     </Button>
                     <Button Name="UpdateBtn" Grid.Column="2"   Background="Green" Margin="3" VerticalAlignment="Center" Click="UpdateBtn_Click">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"   Margin="0">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <materialDesign:PackIcon Kind="ArrowDown" HorizontalAlignment="Left"  />
-                            <TextBlock Padding="0" Margin="0" HorizontalAlignment="Right"> Update</TextBlock>
+                            <TextBlock HorizontalAlignment="Right"> Update</TextBlock>
                         </StackPanel>
                     </Button>
                     <Button Grid.Column="3" Name="UndoBtn" Margin="3" Click="UndoBtn_Click">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"   Margin="0">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <materialDesign:PackIcon Kind="Undo" HorizontalAlignment="Left" />
-                            <TextBlock Padding="0" Margin="0" HorizontalAlignment="Right"> Undo</TextBlock>
+                            <TextBlock HorizontalAlignment="Right"> Undo</TextBlock>
                         </StackPanel>
                     </Button>
                     <Button Name="DeleteBtn" Grid.Column="4"  Foreground="White" Background="#cb4335" Margin="3" Click="DeleteBtn_Click">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"   Margin="0">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <materialDesign:PackIcon Kind="Delete" HorizontalAlignment="Left" />
-                            <TextBlock Padding="0" Margin="0" HorizontalAlignment="Right"> Delete</TextBlock>
+                            <TextBlock HorizontalAlignment="Right"> Delete</TextBlock>
                         </StackPanel>
                     </Button>
                 </Grid>

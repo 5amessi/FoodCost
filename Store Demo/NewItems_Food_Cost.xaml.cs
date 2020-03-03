@@ -33,29 +33,44 @@ namespace Food_Cost
         List<TreeViewItem> classNodes = new List<TreeViewItem>();
         List<TreeViewItem> subclassNodes = new List<TreeViewItem>();
         List<TreeViewItem> ItemsNodes = new List<TreeViewItem>();
+        List<string> Authenticated = new List<string>();
+
         public NewItems_Food_Cost()
         {
-            InitializeComponent();
+            if (MainWindow.AuthenticationData.ContainsKey("Items"))
+            {
+                Authenticated = MainWindow.AuthenticationData["Items"];
+                if (Authenticated.Count == 0)
+                {
+                    MessageBox.Show("You Havent a Privilage to Open this Page");
+                    LogIn logIn = new LogIn();
+                    logIn.ShowDialog();
+                }
+                else
+                {
+                    InitializeComponent();
 
-            NumberofTreeItems = LoadNUmberofDefinition();
-            LoadCategoryinTreeView();
-            if (NumberofTreeItems == "1")
-            {
-                classNodes = LoadDepartmentinTreeView();
-                LoadItemsinTreeView(classNodes);
-            }
-            if (NumberofTreeItems == "2")
-            {
-                classNodes = LoadDepartmentinTreeView();
-                subclassNodes = LoadClassesinTreeView(classNodes);
-                LoadItemsinTreeView(subclassNodes);
-            }
-            if (NumberofTreeItems == "3")
-            {
-                classNodes = LoadDepartmentinTreeView();
-                subclassNodes = LoadClassesinTreeView(classNodes);
-                ItemsNodes = LoadSubClassesinTreeView(subclassNodes);
-                LoadItemsinTreeView(ItemsNodes);
+                    NumberofTreeItems = LoadNUmberofDefinition();
+                    LoadCategoryinTreeView();
+                    if (NumberofTreeItems == "1")
+                    {
+                        classNodes = LoadDepartmentinTreeView();
+                        LoadItemsinTreeView(classNodes);
+                    }
+                    if (NumberofTreeItems == "2")
+                    {
+                        classNodes = LoadDepartmentinTreeView();
+                        subclassNodes = LoadClassesinTreeView(classNodes);
+                        LoadItemsinTreeView(subclassNodes);
+                    }
+                    if (NumberofTreeItems == "3")
+                    {
+                        classNodes = LoadDepartmentinTreeView();
+                        subclassNodes = LoadClassesinTreeView(classNodes);
+                        ItemsNodes = LoadSubClassesinTreeView(subclassNodes);
+                        LoadItemsinTreeView(ItemsNodes);
+                    }
+                }
             }
         }
 
@@ -91,28 +106,28 @@ namespace Food_Cost
                     reader.Close();
                 }
 
-                s = "select Name from Units";
-                DataTable dt = new DataTable();
-                using (SqlDataAdapter da = new SqlDataAdapter(s, con))
-                    da.Fill(dt);
+                //s = "select Name from Units";
+                //DataTable dt = new DataTable();
+                //using (SqlDataAdapter da = new SqlDataAdapter(s, con))
+                //    da.Fill(dt);
 
-                unit.Items.Clear();
-                unit2.Items.Clear();
-                unit_txt1.Items.Clear();
-                for (int i = 0; i < dt.Rows.Count; i++)
-                {
-                    unit.Items.Add(dt.Rows[i]["Name"]);
-                    unit2.Items.Add(dt.Rows[i]["Name"]);
-                    unit_txt1.Items.Add(dt.Rows[i]["Name"]);
-                }
+                //unit.Items.Clear();
+                //unit2.Items.Clear();
+                //unit_txt1.Items.Clear();
+                //for (int i = 0; i < dt.Rows.Count; i++)
+                //{
+                //    unit.Items.Add(dt.Rows[i]["Name"]);
+                //    unit2.Items.Add(dt.Rows[i]["Name"]);
+                //    unit_txt1.Items.Add(dt.Rows[i]["Name"]);
+                //}
                 //if (dt.Rows.Count > 0)
                 //    unit.Text = unit_txt1.Text = dt.Rows[0]["Name"].ToString();
 
-                PrefVendortxt.Items.Clear();
-                SqlCommand _cmd = new SqlCommand("select Name from Vendors", con);
-                SqlDataReader _reader = _cmd.ExecuteReader();
-                while (_reader.Read())
-                    PrefVendortxt.Items.Add(_reader[0]);
+                //PrefVendortxt.Items.Clear();
+                //SqlCommand _cmd = new SqlCommand("select Name from Vendors", con);
+                //SqlDataReader _reader = _cmd.ExecuteReader();
+                //while (_reader.Read())
+                //    PrefVendortxt.Items.Add(_reader[0]);
 
 
             }
@@ -508,7 +523,7 @@ namespace Food_Cost
                 MessageBox.Show("Yield is Empty!!!");
                 return false;
             }
-            else if(Convert.ToInt32(TI_Value.Text)<0)
+            else if (TI_Value.Text != "" && Convert.ToInt32(TI_Value.Text) < 0)
             {
                 MessageBox.Show("Tax can't Be zero");
                 return false;
@@ -540,12 +555,20 @@ namespace Food_Cost
             try
             {
                 con.Open();
-                string s = string.Format("update Setup_Items set Department='{0}' where Department=(select Name from Setup_Department where Code='{1}')", depNametxt.Text, depCodetxt.Text);
+                string s = string.Format("update Setup_Items set Department='{0}' where Class=(select Name from Setup_Department where Code='{1}')", depNametxt.Text, depCodetxt.Text);
                 SqlCommand cmd = new SqlCommand(s, con);
                 cmd.ExecuteNonQuery();
             }
             catch {}
-            
+
+            try
+            {
+                string s = string.Format("update Setup_Class set Level1_Name='{0}' where Level1_ID='{1}'", depNametxt.Text, depCodetxt.Text);
+                SqlCommand cmd = new SqlCommand(s, con);
+                cmd.ExecuteNonQuery();
+            }
+            catch { }
+
             try
             {
                 string s = string.Format("select Code from Setup_Category where Name = '{0}'", parentItem.Header);
@@ -588,11 +611,20 @@ namespace Food_Cost
             try
             {
                 con.Open();
-                string s = string.Format("update Setup_Items set Class='{0}' where Class=(select Name from Setup_Class where Code='{1}')", depNametxt.Text, classCodetxt.Text);
+                string s = string.Format("update Setup_Items set Class='{0}' where Class=(select Name from Setup_Class where Code='{1}')", classNametxt.Text, classCodetxt.Text);
                 SqlCommand cmd = new SqlCommand(s, con);
                 cmd.ExecuteNonQuery();
             }
             catch { }
+
+            try
+            {
+                string s = string.Format("update Setup_SubClass set Level2_Name='{0}' where Level2_ID='{1}'", classNametxt.Text, classCodetxt.Text);
+                SqlCommand cmd = new SqlCommand(s, con);
+                cmd.ExecuteNonQuery();
+            }
+            catch { }
+
 
             try
             {
@@ -605,11 +637,11 @@ namespace Food_Cost
                 if (item.Header.Equals("Undefined"))
                     s = "insert into Setup_Class(Code,Name,Name2,Description,CreateDate,Level1_ID,Level1_Name) values ('" + classCodetxt.Text + "',N'" + classNametxt.Text + "','N" + className2txt.Text + "','" + classDesctxt.Text + "',GETDATE(),'" + departmentID + "','" + parentItem.Header + "')";
                 else
-                    s = "Update Setup_Department SET Name = N'" + classNametxt.Text +
+                    s = "Update Setup_Class SET Name = N'" + classNametxt.Text +
                                                 "',Name2=N'" + className2txt.Text +
                                                 "',Description='" + classDesctxt.Text +
                                                 "',ModifiedDate=GETDATE()"+
-                                                ",CategoryID='" + departmentID +
+                                                ",Level1_ID='" + departmentID +
                                                 "' Where Code =" + classCodetxt.Text;
 
                 cmd = new SqlCommand(s, con);
@@ -651,7 +683,7 @@ namespace Food_Cost
 
 
                 if (item.Header.Equals("Undefined"))
-                    s = "insert into Setup_SubClass(Code,Name,Name2,Description,CreateDate,ModifiedDate,Level2_ID,Level2_Name) values ('" + subclassCodetxt.Text + "',N'" + subclassNametxt.Text + "',N'" + subclassName2txt.Text + "','" + subclassDesctxt.Text + "',GETDATE(),'"  + classID + "','" + parentItem.Header + "')";
+                    s = "insert into Setup_SubClass(Code,Name,Name2,Description,CreateDate,Level2_ID,Level2_Name) values ('" + subclassCodetxt.Text + "',N'" + subclassNametxt.Text + "',N'" + subclassName2txt.Text + "','" + subclassDesctxt.Text + "',GETDATE(),'"  + classID + "','" + parentItem.Header + "')";
                 else
                     s = "Update Setup_SubClass SET Name = N'" + subclassNametxt.Text +
                                                 "',Name2=N'" + subclassName2txt.Text +
@@ -1020,100 +1052,147 @@ namespace Food_Cost
         //events
         private void AddClicked(object sender, RoutedEventArgs e)
         {
-            try
+            if (Authenticated.IndexOf("AddItems") == -1 && Authenticated.IndexOf("CheckAllItems") == -1)
             {
-                Manual_Code_txt.Text = "";
-
-                if (TreeView_SelectedItem_Checks())
-                    return;
-                
-                TreeViewItem treeViewItem = new TreeViewItem();
-                treeViewItem.Header = "Undefined";
-                ((TreeViewItem)treeViewItems.SelectedItem).Items.Add(treeViewItem);
-
-                MessageBox.Show("Item Added in " + ((TreeViewItem)treeViewItems.SelectedItem).Header);
-
-                //generating code of added node 
-                TreeViewItem parentItem = treeViewItems.SelectedItem as TreeViewItem;
-                int itemPositon = parentItem.Items.Count;
-
-                List<string> CodeSetup = CodeSetupReturn();
-
-                ClearGroupBox();
-
-                if (CategoryGroupBox.IsVisible)
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                try
                 {
-                    string categoryCode = CategoryCodetxt.Text;
+                    Manual_Code_txt.Text = "";
 
-                    //select added node
-                    ((TreeViewItem)treeViewItems.SelectedItem).IsExpanded = true;
-                    treeViewItem.IsSelected = true;
+                    if (TreeView_SelectedItem_Checks())
+                        return;
 
-                    string CodeDigits = "";
-                    for (int i = 0; i < int.Parse(CodeSetup[0]) - itemPositon.ToString().Count(); i++)
-                        CodeDigits += "0";
-                    CodeDigits += itemPositon.ToString();
+                    TreeViewItem treeViewItem = new TreeViewItem();
+                    treeViewItem.Header = "Undefined";
+                    ((TreeViewItem)treeViewItems.SelectedItem).Items.Add(treeViewItem);
 
-                    depCodetxt.Text = categoryCode + CodeDigits;
-                }
-                else if (DepartmentGroupBox.IsVisible)
-                {
-                    if (NumberofTreeItems == "1")
+                    MessageBox.Show("Item Added in " + ((TreeViewItem)treeViewItems.SelectedItem).Header);
+
+                    //generating code of added node 
+                    TreeViewItem parentItem = treeViewItems.SelectedItem as TreeViewItem;
+                    int itemPositon = parentItem.Items.Count;
+
+                    List<string> CodeSetup = CodeSetupReturn();
+
+                    ClearGroupBox();
+
+                    if (CategoryGroupBox.IsVisible)
                     {
-                        string ItemCode = depCodetxt.Text;
-                        for (int i = 0; i < Convert.ToInt32(CodeSetup[2]) + Convert.ToInt32(CodeSetup[3]); i++)
-                            ItemCode += "0";
+                        string categoryCode = CategoryCodetxt.Text;
+
+                        //select added node
+                        ((TreeViewItem)treeViewItems.SelectedItem).IsExpanded = true;
+                        treeViewItem.IsSelected = true;
+
+                        string CodeDigits = "";
+                        for (int i = 0; i < int.Parse(CodeSetup[0]) - itemPositon.ToString().Count(); i++)
+                            CodeDigits += "0";
+                        CodeDigits += itemPositon.ToString();
+
+                        depCodetxt.Text = categoryCode + CodeDigits;
+                    }
+                    else if (DepartmentGroupBox.IsVisible)
+                    {
+                        if (NumberofTreeItems == "1")
+                        {
+                            string ItemCode = depCodetxt.Text;
+                            for (int i = 0; i < Convert.ToInt32(CodeSetup[2]) + Convert.ToInt32(CodeSetup[3]); i++)
+                                ItemCode += "0";
+                            //select added node
+                            Activecbx.IsChecked = true;
+                            ((TreeViewItem)treeViewItems.SelectedItem).IsExpanded = true;
+                            treeViewItem.IsSelected = true;
+
+                            string CodeDigits = "";
+                            for (int i = 0; i < int.Parse(CodeSetup[1]) - itemPositon.ToString().Count(); i++)
+                                CodeDigits += "0";
+                            CodeDigits += itemPositon.ToString();
+
+                            Codetxt.Text = ItemCode + CodeDigits;
+
+                            List<TreeViewItem> ParentsNode = FindTreeNodes();
+                            Categorytxt.Text = ParentsNode[0].Header.ToString();
+                            Departmenttxt.Text = ParentsNode[1].Header.ToString();
+                            Classtxt.Visibility = Visibility.Hidden;
+                            SubClasstxt.Visibility = Visibility.Hidden;
+                            //Classtxt.Text = ParentsNode[2].Header.ToString();
+                            //SubClasstxt.Text = ParentsNode[3].Header.ToString();
+                        }
+                        else
+                        {
+                            string depCode = depCodetxt.Text;
+
+                            //select added node
+                            ((TreeViewItem)treeViewItems.SelectedItem).IsExpanded = true;
+                            treeViewItem.IsSelected = true;
+
+                            string CodeDigits = "";
+                            for (int i = 0; i < int.Parse(CodeSetup[1]) - itemPositon.ToString().Count(); i++)
+                                CodeDigits += "0";
+                            CodeDigits += itemPositon.ToString();
+
+                            classCodetxt.Text = depCode + CodeDigits;
+                        }
+
+                    }
+                    else if (ClassGroupBox.IsVisible)
+                    {
+                        if (NumberofTreeItems == "2")
+                        {
+                            string ItemCode = classCodetxt.Text;
+                            for (int i = 0; i < Convert.ToInt32(CodeSetup[2]) + Convert.ToInt32(CodeSetup[3]); i++)
+                                ItemCode += "0";
+                            //select added node
+                            Activecbx.IsChecked = true;
+                            ((TreeViewItem)treeViewItems.SelectedItem).IsExpanded = true;
+                            treeViewItem.IsSelected = true;
+
+                            string CodeDigits = "";
+                            for (int i = 0; i < int.Parse(CodeSetup[2]) - itemPositon.ToString().Count(); i++)
+                                CodeDigits += "0";
+                            CodeDigits += itemPositon.ToString();
+
+                            Codetxt.Text = ItemCode + CodeDigits;
+
+                            List<TreeViewItem> ParentsNode = FindTreeNodes();
+                            Categorytxt.Text = ParentsNode[0].Header.ToString();
+                            Departmenttxt.Text = ParentsNode[1].Header.ToString();
+                            Classtxt.Text = ParentsNode[2].Header.ToString();
+                            SubClasstxt.Visibility = Visibility.Hidden;
+                            // SubClasstxt.Text = ParentsNode[3].Header.ToString();
+                        }
+                        else
+                        {
+                            string ClassCode = classCodetxt.Text;
+
+                            //select added node
+                            ((TreeViewItem)treeViewItems.SelectedItem).IsExpanded = true;
+                            treeViewItem.IsSelected = true;
+
+                            string CodeDigits = "";
+                            for (int i = 0; i < int.Parse(CodeSetup[2]) - itemPositon.ToString().Count(); i++)
+                                CodeDigits += "0";
+                            CodeDigits += itemPositon.ToString();
+
+                            subclassCodetxt.Text = ClassCode + CodeDigits;
+                        }
+
+                    }
+                    else if (SubClassGroupBox.IsVisible)
+                    {
+                        string ItemCode = subclassCodetxt.Text;
+
                         //select added node
                         Activecbx.IsChecked = true;
                         ((TreeViewItem)treeViewItems.SelectedItem).IsExpanded = true;
                         treeViewItem.IsSelected = true;
 
                         string CodeDigits = "";
-                        for (int i = 0; i < int.Parse(CodeSetup[1]) - itemPositon.ToString().Count(); i++)
-                            CodeDigits += "0";
-                        CodeDigits += itemPositon.ToString();
-
-                        Codetxt.Text = ItemCode + CodeDigits;
-
-                        List<TreeViewItem> ParentsNode = FindTreeNodes();
-                        Categorytxt.Text = ParentsNode[0].Header.ToString();
-                        Departmenttxt.Text = ParentsNode[1].Header.ToString();
-                        Classtxt.Visibility = Visibility.Hidden;
-                        SubClasstxt.Visibility = Visibility.Hidden;
-                        //Classtxt.Text = ParentsNode[2].Header.ToString();
-                        //SubClasstxt.Text = ParentsNode[3].Header.ToString();
-                    }
-                    else
-                    {
-                        string depCode = depCodetxt.Text;
-
-                        //select added node
-                        ((TreeViewItem)treeViewItems.SelectedItem).IsExpanded = true;
-                        treeViewItem.IsSelected = true;
-
-                        string CodeDigits = "";
-                        for (int i = 0; i < int.Parse(CodeSetup[1]) - itemPositon.ToString().Count(); i++)
-                            CodeDigits += "0";
-                        CodeDigits += itemPositon.ToString();
-
-                        classCodetxt.Text = depCode + CodeDigits;
-                    }
-
-                }
-                else if (ClassGroupBox.IsVisible)
-                {
-                    if(NumberofTreeItems=="2")
-                    {
-                        string ItemCode = classCodetxt.Text;
-                        for (int i = 0; i < Convert.ToInt32(CodeSetup[3]) + Convert.ToInt32(CodeSetup[4]); i++)
-                            ItemCode += "0";
-                        //select added node
-                        Activecbx.IsChecked = true;
-                        ((TreeViewItem)treeViewItems.SelectedItem).IsExpanded = true;
-                        treeViewItem.IsSelected = true;
-
-                        string CodeDigits = "";
-                        for (int i = 0; i < int.Parse(CodeSetup[2]) - itemPositon.ToString().Count(); i++)
+                        for (int i = 0; i < int.Parse(CodeSetup[3]) - itemPositon.ToString().Count(); i++)
                             CodeDigits += "0";
                         CodeDigits += itemPositon.ToString();
 
@@ -1123,60 +1202,21 @@ namespace Food_Cost
                         Categorytxt.Text = ParentsNode[0].Header.ToString();
                         Departmenttxt.Text = ParentsNode[1].Header.ToString();
                         Classtxt.Text = ParentsNode[2].Header.ToString();
-                        SubClasstxt.Visibility = Visibility.Hidden;
-                       // SubClasstxt.Text = ParentsNode[3].Header.ToString();
+                        SubClasstxt.Text = ParentsNode[3].Header.ToString();
                     }
-                    else
+                    else if (ItemsGroupBox.IsVisible)
                     {
-                        string ClassCode = classCodetxt.Text;
-
-                        //select added node
-                        ((TreeViewItem)treeViewItems.SelectedItem).IsExpanded = true;
-                        treeViewItem.IsSelected = true;
-
-                        string CodeDigits = "";
-                        for (int i = 0; i < int.Parse(CodeSetup[2]) - itemPositon.ToString().Count(); i++)
-                            CodeDigits += "0";
-                        CodeDigits += itemPositon.ToString();
-
-                        subclassCodetxt.Text = ClassCode + CodeDigits;
+                        return;
                     }
 
+                    UndifinedExists = treeViewItem;
+                    CodeLabel.Visibility = Visibility.Hidden;
+                    Codetxt.Visibility = Visibility.Hidden;
                 }
-                else if (SubClassGroupBox.IsVisible)
+                catch (Exception error)
                 {
-                    string ItemCode = subclassCodetxt.Text;
-
-                    //select added node
-                    Activecbx.IsChecked = true;
-                    ((TreeViewItem)treeViewItems.SelectedItem).IsExpanded = true;
-                    treeViewItem.IsSelected = true;
-
-                    string CodeDigits = "";
-                    for (int i = 0; i < int.Parse(CodeSetup[3]) - itemPositon.ToString().Count(); i++)
-                        CodeDigits += "0";
-                    CodeDigits += itemPositon.ToString();
-
-                    Codetxt.Text = ItemCode + CodeDigits;
-
-                    List<TreeViewItem> ParentsNode = FindTreeNodes();
-                    Categorytxt.Text = ParentsNode[0].Header.ToString();
-                    Departmenttxt.Text = ParentsNode[1].Header.ToString();
-                    Classtxt.Text = ParentsNode[2].Header.ToString();
-                    SubClasstxt.Text = ParentsNode[3].Header.ToString();
+                    MessageBox.Show(error.ToString());
                 }
-                else if (ItemsGroupBox.IsVisible)
-                {
-                    return;
-                }
-
-                UndifinedExists = treeViewItem;
-                CodeLabel.Visibility = Visibility.Hidden;
-                Codetxt.Visibility = Visibility.Hidden;
-            }
-            catch(Exception error)
-            {
-                MessageBox.Show(error.ToString());
             }
 
         }   //Done
@@ -1214,82 +1254,101 @@ namespace Food_Cost
         }    //Done
         private void DeleteClicked(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-
-            if((treeViewItems.SelectedItem as TreeViewItem).HasItems)
+            if (Authenticated.IndexOf("DeleteItems") == -1 && Authenticated.IndexOf("CheckAllItems") == -1)
             {
-                MessageBox.Show("Can not delete,because it has children !!!");
-                return;
-            }
-
-            try
-            {
-                con.Open();
-                string W = "SELECT Item_Code From Setup_RecipeItems Where Item_Code='" + Codetxt.Text+"'";
-                SqlCommand cmd = new SqlCommand(W, con);
-                if (cmd.ExecuteScalar() != null)
-                {
-                    MessageBox.Show("Can Not Delete Item Because useing it in Recipes");
-                    return;
-                }
-                con.Close();
-            }
-            catch { }
-            
-
-            string TableName = TableToDeleteFrom();
-            string code = TableCode(TableName); 
-            try
-            {
-                con.Open();
-                string s = "delete from " + TableName +" where Code = " + code;
-                SqlCommand cmd = new SqlCommand(s, con);
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-            }
-            MessageBox.Show("Deleted Successfully");
-
-            Reload.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-            //ClearGroupBox();
-        }  //Done
-        private void SaveBtn_Clicked(object sender, RoutedEventArgs e)
-        {
-            if (DepartmentGroupBox.IsVisible)
-                SaveDepartment();
-            else if (ClassGroupBox.IsVisible)
-                SaveClass();
-            else if (SubClassGroupBox.IsVisible)
-                SaveSubClass();
-            else if (ItemsGroupBox.IsVisible)
-            {
-                if(unit.Text !=unit2.Text && unit.Text != unit_txt1.Text)
-                {
-                    MessageBox.Show("Please Enter Correct Conversion table ");
-                }
-                else
-                {
-                    SaveItem();
-                }
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
             else
             {
-                CodeLabel.Visibility = Visibility.Visible;
-                Codetxt.Visibility = Visibility.Visible;
-                return;
-            }
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
 
-            //Reload.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-            //treeViewItems.Items.Refresh();
-            //CodeLabel.Visibility = Visibility.Visible;
-            //Codetxt.Visibility = Visibility.Visible;
-            UndifinedExists = null;
+                if ((treeViewItems.SelectedItem as TreeViewItem).HasItems)
+                {
+                    MessageBox.Show("Can not delete,because it has children !!!");
+                    return;
+                }
+
+                if (ItemsGroupBox.IsVisible)
+                {
+                    try
+                    {
+                        con.Open();
+                        string W = "SELECT Item_Code From Setup_RecipeItems Where Item_Code='" + Codetxt.Text + "'";
+                        SqlCommand cmd = new SqlCommand(W, con);
+                        if (cmd.ExecuteScalar() != null)
+                        {
+                            MessageBox.Show("Can Not Delete Item Because useing it in Recipes");
+                            return;
+                        }
+                        con.Close();
+                    }
+                    catch { }
+                }
+
+
+                string TableName = TableToDeleteFrom();
+                string code = TableCode(TableName);
+                try
+                {
+                    con.Open();
+                    string s = "delete from " + TableName + " where Code = " + code;
+                    SqlCommand cmd = new SqlCommand(s, con);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                }
+                MessageBox.Show("Deleted Successfully");
+
+                Reload.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                //ClearGroupBox();
+            }
+        }  //Done
+        private void SaveBtn_Clicked(object sender, RoutedEventArgs e)
+        {
+            if (Authenticated.IndexOf("SaveItems") == -1 && Authenticated.IndexOf("CheckAllItems") == -1)
+            {
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                if (DepartmentGroupBox.IsVisible)
+                    SaveDepartment();
+                else if (ClassGroupBox.IsVisible)
+                    SaveClass();
+                else if (SubClassGroupBox.IsVisible)
+                    SaveSubClass();
+                else if (ItemsGroupBox.IsVisible)
+                {
+                    if (unit.Text != unit2.Text && unit.Text != unit_txt1.Text)
+                    {
+                        MessageBox.Show("Please Enter Correct Conversion table ");
+                    }
+                    else
+                    {
+                        SaveItem();
+                    }
+                }
+                else
+                {
+                    CodeLabel.Visibility = Visibility.Visible;
+                    Codetxt.Visibility = Visibility.Visible;
+                    return;
+                }
+
+                //Reload.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                //treeViewItems.Items.Refresh();
+                //CodeLabel.Visibility = Visibility.Visible;
+                //Codetxt.Visibility = Visibility.Visible;
+                UndifinedExists = null;
+            }
         }
 
         private void TreeViewItems_SelectedItemChanged(object sender, MouseButtonEventArgs e)
@@ -1483,30 +1542,49 @@ namespace Food_Cost
             }
         }     //Done
 
-        private void unit2_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //private void unit2_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    try
+        //    {
+        //        string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
+        //        SqlConnection con = new SqlConnection(connString);
+
+        //        string s = string.Format("select Name from Units where Name <> '{0}'", unit2.SelectedItem.ToString());
+        //        DataTable dt = new DataTable();
+        //        using (SqlDataAdapter da = new SqlDataAdapter(s, con))
+        //            da.Fill(dt);
+
+        //        unit_txt1.Items.Clear();
+        //        for (int i = 0; i < dt.Rows.Count; i++)
+        //        {
+        //            unit_txt1.Items.Add(dt.Rows[i]["Name"]);
+        //        }
+        //    }
+        //    catch { }
+        //}    //Done
+
+        private void Vendor_Button(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-                SqlConnection con = new SqlConnection(connString);
+            AllVendor allVendor = new AllVendor(this);
+            allVendor.ShowDialog();
+        }
 
-                string s = string.Format("select Name from Units where Name <> '{0}'", unit2.SelectedItem.ToString());
-                DataTable dt = new DataTable();
-                using (SqlDataAdapter da = new SqlDataAdapter(s, con))
-                    da.Fill(dt);
-
-                unit_txt1.Items.Clear();
-                for (int i = 0; i < dt.Rows.Count; i++)
-                {
-                    unit_txt1.Items.Add(dt.Rows[i]["Name"]);
-                }
-            }
-            catch { }
-        }    //Done
-
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Unit1_Button(object sender, RoutedEventArgs e)
         {
+            AllUnits allUnits = new AllUnits(this,"Unit1");
+            allUnits.ShowDialog();
+        }
 
+        private void Unit2_Button(object sender, RoutedEventArgs e)
+        {
+            AllUnits allUnits = new AllUnits(this, "Unit2");
+            allUnits.ShowDialog();
+        }
+
+        private void Unit_Button(object sender, RoutedEventArgs e)
+        {
+            AllUnits allUnits = new AllUnits(this, "Unit");
+            allUnits.ShowDialog();
         }
     }
 }

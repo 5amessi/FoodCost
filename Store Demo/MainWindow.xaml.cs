@@ -45,6 +45,8 @@ namespace Food_Cost
             //int num = (DateTime.Now.Hour* DateTime.Now.Day) +0x21;
             Classes.TheConnectionString();
             //Check_Month();
+            LogIn logIn = new LogIn();
+            logIn.ShowDialog();
         }
 
         //private void Check_Month()
@@ -137,13 +139,13 @@ namespace Food_Cost
                     case "Transfer_Resturant":
                         usc = new Transfer_Resturant();
                         GridMain.Children.Add(usc);
-                        NameofForm.Text = "Transfer Two Kitchen";
+                        NameofForm.Text = "Transfer Restaurant";
                         break;
 
                     case "Inventory":
                         usc = new Store_Sertup();
                         GridMain.Children.Add(usc);
-                        NameofForm.Text = "Resturants";
+                        NameofForm.Text = "The Inventory";
                         break;
 
                     case "Vendors":
@@ -242,7 +244,6 @@ namespace Food_Cost
         {
             LogIn logIn = new LogIn();
             logIn.Login.Visibility = Visibility.Visible;
-            logIn.CheckPass.Visibility = Visibility.Hidden;
             logIn.Owner = this;
             logIn.ShowDialog();
         }

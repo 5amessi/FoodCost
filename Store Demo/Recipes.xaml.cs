@@ -29,19 +29,32 @@ namespace Food_Cost
         int codeTodelete = 0;
         string ValofStore = "";
         string ValofKitchen = "";
-        string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
+        List<string> Authenticated = new List<string>();
 
         public Recipes()
         {
-            InitializeComponent();
-            MainUiFormat();
-            FillRecpieDGV();
-            LoadUnits();
+            if (MainWindow.AuthenticationData.ContainsKey("Recipes"))
+            {
+                Authenticated = MainWindow.AuthenticationData["Recipes"];
+                if (Authenticated.Count == 0)
+                {
+                    MessageBox.Show("You Havent a Privilage to Open this Page");
+                    LogIn logIn = new LogIn();
+                    logIn.ShowDialog();
+                }
+                else
+                {
+                    InitializeComponent();
+                    MainUiFormat();
+                    FillRecpieDGV();
+                    LoadUnits();
+                }
+            }         
         }
 
         public void LoadUnits()
         {
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
 
             try
             {
@@ -70,8 +83,8 @@ namespace Food_Cost
         public void FillRecpieDGV()
         {
             //Hena ana b3red AlGrid aly feha "All Recipes" 
-            SqlConnection con = new SqlConnection(connString);
-            SqlConnection con2 = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
             string category = "";
             SqlDataReader reader = null;
 
@@ -223,96 +236,103 @@ namespace Food_Cost
 
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (codetxt.Text == "")
+            if (Authenticated.IndexOf("SaveRecipes") == -1 && Authenticated.IndexOf("CheckAllRecipes") == -1)
             {
-                MessageBox.Show("Code Field Can't Be Empty");
-                return;
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
-            if (Nametxt.Text == "")
+            else
             {
-                MessageBox.Show("Name Field Can't Be Empty");
-                return;
-            }
-            if (Categtxt.Text == "")
-            {
-                MessageBox.Show("Should Enter the Category First");
-                return;
-            }
-            if (SUBCategtxt.Text == "")
-            {
-                MessageBox.Show("Should Enter the Sub Category First");
-                return;
-            }
-            //if (Yiledtxt.Text == "")
-            //{
-            //    MessageBox.Show("Should Enter the Yiled Qty First");
-            //    return;
-            //}
-
-            if (Unittxt.Text == "")
-            {
-                MessageBox.Show("Should Enter the Unites First");
-                return;
-            }
-            if (Unitstxt.SelectedItem == null)
-            {
-                MessageBox.Show("Should Select the Unites First");
-                return;
-            }
-
-
-
-            foreach (DgvData item in AllRecipesDGV.Items)
-            {
-                if (item.Code.Equals(codetxt.Text))
+                if (codetxt.Text == "")
                 {
-                    MessageBox.Show("This Code Is Not Avaliable");
+                    MessageBox.Show("Code Field Can't Be Empty");
                     return;
                 }
-            }
-
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
-
-            try
-            {
-                con.Open();
-                string q = "insert into Setup_Recipes (Code,CrossCode,Name,Name2,Category_ID,SubCategory_ID,IsActive,Unit,UnitQty)Values(" + codetxt.Text + ",'" + CrossCodetxt.Text + "','" + Nametxt.Text + "','" + Name2txt.Text + "','" + Categtxt.Text + "','" + SUBCategtxt.Text + "','" + ActiveChbx.IsChecked + "','" + Unitstxt.Text + "','" + Unittxt.Text + "')";
-                SqlCommand cmd = new SqlCommand(q, con);
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-            }
-
-
-            try
-            {
-                con.Open();
-                for (int i = 0; i < RecipesDGV.Items.Count; i++)
+                if (Nametxt.Text == "")
                 {
-                    string H = "Insert into Setup_RecipeItems (Item_Code,Recipe_ID,Name,Name2,Qty,Recipe_Unit,Cost,Total_Cost,Cost_Precentage,Recipe_Code) Values('" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[0] + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[1] + "','" + (((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[2]) + "','" + (((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[3]) + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[4] + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[5] + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[6] + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[7] + "','" + (((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[8]) + "','" + codetxt.Text.ToString() + "')";
-                    SqlCommand cmd = new SqlCommand(H, con);
+                    MessageBox.Show("Name Field Can't Be Empty");
+                    return;
+                }
+                if (Categtxt.Text == "")
+                {
+                    MessageBox.Show("Should Enter the Category First");
+                    return;
+                }
+                if (SUBCategtxt.Text == "")
+                {
+                    MessageBox.Show("Should Enter the Sub Category First");
+                    return;
+                }
+                //if (Yiledtxt.Text == "")
+                //{
+                //    MessageBox.Show("Should Enter the Yiled Qty First");
+                //    return;
+                //}
+
+                if (Unittxt.Text == "")
+                {
+                    MessageBox.Show("Should Enter the Unites First");
+                    return;
+                }
+                if (Unitstxt.SelectedItem == null)
+                {
+                    MessageBox.Show("Should Select the Unites First");
+                    return;
+                }
+
+
+
+                foreach (DgvData item in AllRecipesDGV.Items)
+                {
+                    if (item.Code.Equals(codetxt.Text))
+                    {
+                        MessageBox.Show("This Code Is Not Avaliable");
+                        return;
+                    }
+                }
+
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+
+                try
+                {
+                    con.Open();
+                    string q = "insert into Setup_Recipes (Code,CrossCode,Name,Name2,Category_ID,SubCategory_ID,IsActive,Unit,UnitQty)Values(" + codetxt.Text + ",'" + CrossCodetxt.Text + "','" + Nametxt.Text + "','" + Name2txt.Text + "','" + Categtxt.Text + "','" + SUBCategtxt.Text + "','" + ActiveChbx.IsChecked + "','" + Unitstxt.Text + "','" + Unittxt.Text + "')";
+                    SqlCommand cmd = new SqlCommand(q, con);
                     cmd.ExecuteNonQuery();
                 }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                }
+
+
+                try
+                {
+                    con.Open();
+                    for (int i = 0; i < RecipesDGV.Items.Count; i++)
+                    {
+                        string H = "Insert into Setup_RecipeItems (Item_Code,Recipe_ID,Name,Name2,Qty,Recipe_Unit,Cost,Total_Cost,Cost_Precentage,Recipe_Code) Values('" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[0] + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[1] + "','" + (((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[2]) + "','" + (((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[3]) + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[4] + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[5] + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[6] + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[7] + "','" + (((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[8]) + "','" + codetxt.Text.ToString() + "')";
+                        SqlCommand cmd = new SqlCommand(H, con);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                }
+                MainUiFormat();
+                EmptyTexts();
+                SaveBtn.IsEnabled = false;
+                MessageBox.Show("Saved Successfully");
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-            }
-            MainUiFormat();
-            EmptyTexts();
-            SaveBtn.IsEnabled = false;
-            MessageBox.Show("Saved Successfully");
 
         }
 
@@ -325,8 +345,8 @@ namespace Food_Cost
 
         private void RowClicked(object sender, MouseButtonEventArgs e)
         {
-            SqlConnection con = new SqlConnection(connString);
-            SqlConnection con2 = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
             SqlDataReader reader = null;
             if (sender != null)
             {
@@ -408,10 +428,9 @@ namespace Food_Cost
             double totalCost = 0;
             double CostVlue = 0;
             string CodeOfRecipe = "";
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlCommand cmd = new SqlCommand();
-            SqlConnection con2 = new SqlConnection(connString);
+            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
             SqlCommand cmd2 = new SqlCommand();
             SqlDataReader reader = null;
             CountOfItems = 0;
@@ -506,14 +525,30 @@ namespace Food_Cost
 
         private void AddItemBtn_Click(object sender, RoutedEventArgs e)
         {
-            Items items = new Items(this);
-            items.ShowDialog();
+            if (Authenticated.IndexOf("AddItemRecipes") == -1 && Authenticated.IndexOf("CheckAllRecipes") == -1)
+            {
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                Items items = new Items(this);
+                items.ShowDialog();
+            }
         }
 
         private void AddRecipeBtn_Click(object sender, RoutedEventArgs e)
         {
-            AllRecipes allRecipes = new AllRecipes(this);
-            allRecipes.ShowDialog();
+            if (Authenticated.IndexOf("AddRecipes") == -1 && Authenticated.IndexOf("CheckAllRecipes") == -1)
+            {
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                AllRecipes allRecipes = new AllRecipes(this);
+                allRecipes.ShowDialog();
+            }
         }
 
         private void ItemRowClick(object sender, MouseButtonEventArgs e)
@@ -533,15 +568,22 @@ namespace Food_Cost
 
         private void RemoveBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (ValtoRemoveRecipe == true)
+            if (Authenticated.IndexOf("RemoveItemRecipes") == -1 && Authenticated.IndexOf("CheckAllRecipes") == -1)
             {
-                DataTable dt = new DataTable();
-                dt = ((DataView)RecipesDGV.ItemsSource).ToTable();
-                dt.Rows.RemoveAt(codeTodelete);
-                RecipesDGV.DataContext = dt;
-                ValtoRemoveRecipe = false;
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
-
+            else
+            {
+                if (ValtoRemoveRecipe == true)
+                {
+                    DataTable dt = new DataTable();
+                    dt = ((DataView)RecipesDGV.ItemsSource).ToTable();
+                    dt.Rows.RemoveAt(codeTodelete);
+                    RecipesDGV.DataContext = dt;
+                    ValtoRemoveRecipe = false;
+                }
+            }
         }
 
         private void GetCatBtn(object sender, RoutedEventArgs e)
@@ -563,225 +605,247 @@ namespace Food_Cost
 
         private void EditBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (Nametxt.Text == "")
+            if (Authenticated.IndexOf("Edit") == -1 && Authenticated.IndexOf("CheckAllRecipes") == -1)
             {
-                MessageBox.Show("Name Field Can't Be Empty");
-                return;
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
-            if (Categtxt.Text == "")
+            else
             {
-                MessageBox.Show("Should Enter the Category First");
-                return;
-            }
-            if (SUBCategtxt.Text == "")
-            {
-                MessageBox.Show("Should Enter the Sub Category First");
-                return;
-            }
-            //if (Yiledtxt.Text == "")
-            //{
-            //    MessageBox.Show("Should Enter the Yiled Qty First");
-            //    return;
-            //}
-
-            if (Unittxt.Text == "")
-            {
-                MessageBox.Show("Should Enter the Unites First");
-                return;
-            }
-            if (Unitstxt.SelectedItem == null)
-            {
-                MessageBox.Show("Should Select the Unites First");
-                return;
-            }
-
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
-            try
-            {
-                con.Open();
-                string s = "Update Setup_Recipes SET CrossCode='" + CrossCodetxt.Text +
-                                               "',Name='" + Nametxt.Text +
-                                               "',Name2='" + Name2txt.Text +
-                                               "',Category_ID='" + Convert.ToInt32(Categtxt.Text) +
-                                               "',SubCategory_ID='" + Convert.ToInt32(SUBCategtxt.Text) +
-                                               "',IsActive='" + ActiveChbx.IsChecked +
-                                               "',Unit  ='" + Unitstxt.Text.ToString() +
-                                               "',UnitQty='" + Unittxt.Text +
-                                               "'Where Code =" + codetxt.Text;
-                SqlCommand cmd = new SqlCommand(s, con);
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-            }
-            //Delete All RecipeItems
-            try
-            {
-                con.Open();
-                string q1 = "Delete Setup_RecipeItems Where Recipe_Code=" + codetxt.Text;
-                SqlCommand cmd = new SqlCommand(q1, con);
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-            }
-
-            try
-            {
-                con.Open();
-                for (int i = 0; i < RecipesDGV.Items.Count; i++)
+                if (Nametxt.Text == "")
                 {
-                    string H = "Insert into Setup_RecipeItems (Item_Code,Recipe_ID,Name,Name2,Qty,Recipe_Unit,Cost,Total_Cost,Cost_Precentage,Recipe_Code) Values('" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[0] + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[1] + "','" + (((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[2]) + "','" + (((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[3]) + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[4] + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[5] + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[6] + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[7] + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[8] + "','" + codetxt.Text.ToString() + "')";
-                    SqlCommand cmd = new SqlCommand(H, con);
-                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Name Field Can't Be Empty");
+                    return;
+                }
+                if (Categtxt.Text == "")
+                {
+                    MessageBox.Show("Should Enter the Category First");
+                    return;
+                }
+                if (SUBCategtxt.Text == "")
+                {
+                    MessageBox.Show("Should Enter the Sub Category First");
+                    return;
+                }
+                //if (Yiledtxt.Text == "")
+                //{
+                //    MessageBox.Show("Should Enter the Yiled Qty First");
+                //    return;
+                //}
+
+                if (Unittxt.Text == "")
+                {
+                    MessageBox.Show("Should Enter the Unites First");
+                    return;
+                }
+                if (Unitstxt.SelectedItem == null)
+                {
+                    MessageBox.Show("Should Select the Unites First");
+                    return;
                 }
 
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                try
+                {
+                    con.Open();
+                    string s = "Update Setup_Recipes SET CrossCode='" + CrossCodetxt.Text +
+                                                   "',Name='" + Nametxt.Text +
+                                                   "',Name2='" + Name2txt.Text +
+                                                   "',Category_ID='" + Convert.ToInt32(Categtxt.Text) +
+                                                   "',SubCategory_ID='" + Convert.ToInt32(SUBCategtxt.Text) +
+                                                   "',IsActive='" + ActiveChbx.IsChecked +
+                                                   "',Unit  ='" + Unitstxt.Text.ToString() +
+                                                   "',UnitQty='" + Unittxt.Text +
+                                                   "'Where Code =" + codetxt.Text;
+                    SqlCommand cmd = new SqlCommand(s, con);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                }
+                //Delete All RecipeItems
+                try
+                {
+                    con.Open();
+                    string q1 = "Delete Setup_RecipeItems Where Recipe_Code=" + codetxt.Text;
+                    SqlCommand cmd = new SqlCommand(q1, con);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                }
+
+                try
+                {
+                    con.Open();
+                    for (int i = 0; i < RecipesDGV.Items.Count; i++)
+                    {
+                        string H = "Insert into Setup_RecipeItems (Item_Code,Recipe_ID,Name,Name2,Qty,Recipe_Unit,Cost,Total_Cost,Cost_Precentage,Recipe_Code) Values('" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[0] + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[1] + "','" + (((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[2]) + "','" + (((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[3]) + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[4] + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[5] + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[6] + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[7] + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[8] + "','" + codetxt.Text.ToString() + "')";
+                        SqlCommand cmd = new SqlCommand(H, con);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
 
 
-                MainUiFormat();
-                EmptyTexts();
-                MessageBox.Show("Edited Successfully");
+                    MainUiFormat();
+                    EmptyTexts();
+                    MessageBox.Show("Edited Successfully");
+                }
             }
         }
 
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(connString);
-            try
+            if (Authenticated.IndexOf("DeleteRecipes") == -1 && Authenticated.IndexOf("CheckAllRecipes") == -1)
             {
-                con.Open();
-                string q1 = "Delete Setup_RecipeItems Where Recipe_Code=" + codetxt.Text;
-                SqlCommand cmd = new SqlCommand(q1, con);
-                cmd.ExecuteNonQuery();
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-            }
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                try
+                {
+                    con.Open();
+                    string q1 = "Delete Setup_RecipeItems Where Recipe_Code=" + codetxt.Text;
+                    SqlCommand cmd = new SqlCommand(q1, con);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                }
 
-            try
-            {
-                con.Open();
-                string q = "Delete Setup_Recipes Where Code=" + codetxt.Text;
-                SqlCommand cmd = new SqlCommand(q, con);
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-            }
+                try
+                {
+                    con.Open();
+                    string q = "Delete Setup_Recipes Where Code=" + codetxt.Text;
+                    SqlCommand cmd = new SqlCommand(q, con);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                }
 
-            MainUiFormat();
-            EmptyTexts();
-
-
+                MainUiFormat();
+                EmptyTexts();
+            }
         }
 
         private void RenewBtn_Click(object sender, RoutedEventArgs e)
         {
-            int LastVal = 0;
-            for (int i = 0; i < AllRecipesDGV.Items.Count; i++)
+            if (Authenticated.IndexOf("ReNewRecipes") == -1 && Authenticated.IndexOf("CheckAllRecipes") == -1)
             {
-                if (Convert.ToInt64(((DgvData)AllRecipesDGV.Items[i]).Code) > LastVal)
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                int LastVal = 0;
+                for (int i = 0; i < AllRecipesDGV.Items.Count; i++)
                 {
-                    LastVal = Convert.ToInt32(((DgvData)AllRecipesDGV.Items[i]).Code);
+                    if (Convert.ToInt64(((DgvData)AllRecipesDGV.Items[i]).Code) > LastVal)
+                    {
+                        LastVal = Convert.ToInt32(((DgvData)AllRecipesDGV.Items[i]).Code);
+                    }
                 }
-            }
-            LastVal += 1;
-            string VAL = LastVal.ToString();
-            codetxt.Text = VAL;
-            if (codetxt.Text == "")
-            {
-                MessageBox.Show("Code Field Can't Be Empty");
-                return;
-            }
-
-            foreach (DgvData item in AllRecipesDGV.Items)
-            {
-                if (item.Code.Equals(codetxt.Text))
+                LastVal += 1;
+                string VAL = LastVal.ToString();
+                codetxt.Text = VAL;
+                if (codetxt.Text == "")
                 {
-                    MessageBox.Show("This Code Is Not Avaliable And Click Save Button");
-                    codetxt.IsEnabled = true;
-                    codetxt.IsReadOnly = false;
+                    MessageBox.Show("Code Field Can't Be Empty");
                     return;
                 }
-            }
 
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
-
-            try
-            {
-                con.Open();
-                string q = "insert into Setup_Recipes (Code,CrossCode,Name,Name2,Category_ID,SubCategory_ID,IsActive,Unit,UnitQty)Values(" + codetxt.Text + ",'" + CrossCodetxt.Text + "','" + Nametxt.Text + "','" + Name2txt.Text + "','" + Categtxt.Text + "','" + SUBCategtxt.Text + "','" + ActiveChbx.IsChecked + "','" + Unitstxt.Text + "','" + Unittxt.Text + "')";
-                SqlCommand cmd = new SqlCommand(q, con);
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-            }
-
-            try
-            {
-                con.Open();
-                for (int i = 0; i < RecipesDGV.Items.Count; i++)
+                foreach (DgvData item in AllRecipesDGV.Items)
                 {
-                    string H = "Insert into Setup_RecipeItems (Item_Code,Recipe_ID,Name,Name2,Qty,Recipe_Unit,Cost,Total_Cost,Cost_Precentage,Recipe_Code) Values('" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[0] + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[1] + "','" + (((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[2]) + "','" + (((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[3]) + "','" + Convert.ToInt32(((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[4]) + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[5] + "','" + Convert.ToDouble(((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[6]) + "','" + Convert.ToDouble(((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[7]) + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[8] + "','" + codetxt.Text.ToString() + "')";
-                    SqlCommand cmd = new SqlCommand(H, con);
+                    if (item.Code.Equals(codetxt.Text))
+                    {
+                        MessageBox.Show("This Code Is Not Avaliable And Click Save Button");
+                        codetxt.IsEnabled = true;
+                        codetxt.IsReadOnly = false;
+                        return;
+                    }
+                }
+
+                string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
+                SqlConnection con = new SqlConnection(connString);
+
+                try
+                {
+                    con.Open();
+                    string q = "insert into Setup_Recipes (Code,CrossCode,Name,Name2,Category_ID,SubCategory_ID,IsActive,Unit,UnitQty)Values(" + codetxt.Text + ",'" + CrossCodetxt.Text + "','" + Nametxt.Text + "','" + Name2txt.Text + "','" + Categtxt.Text + "','" + SUBCategtxt.Text + "','" + ActiveChbx.IsChecked + "','" + Unitstxt.Text + "','" + Unittxt.Text + "')";
+                    SqlCommand cmd = new SqlCommand(q, con);
                     cmd.ExecuteNonQuery();
                 }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                }
+
+                try
+                {
+                    con.Open();
+                    for (int i = 0; i < RecipesDGV.Items.Count; i++)
+                    {
+                        string H = "Insert into Setup_RecipeItems (Item_Code,Recipe_ID,Name,Name2,Qty,Recipe_Unit,Cost,Total_Cost,Cost_Precentage,Recipe_Code) Values('" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[0] + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[1] + "','" + (((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[2]) + "','" + (((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[3]) + "','" + Convert.ToInt32(((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[4]) + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[5] + "','" + Convert.ToDouble(((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[6]) + "','" + Convert.ToDouble(((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[7]) + "','" + ((DataRowView)RecipesDGV.Items[i]).Row.ItemArray[8] + "','" + codetxt.Text.ToString() + "')";
+                        SqlCommand cmd = new SqlCommand(H, con);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                }
+                MainUiFormat();
+                EmptyTexts();
+                MessageBox.Show("Saved Successfully");
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-            }
-            MainUiFormat();
-            EmptyTexts();
-            MessageBox.Show("Saved Successfully");
         }
 
         private void RecipesDGV_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             DataTable dt = new DataTable();
-            dt = ((DataView)RecipesDGV.ItemsSource).ToTable();
-            dt.Columns["Cost"].ReadOnly = false;
-            dt.Columns["Total_Cost"].ReadOnly = false;
-            dt.Columns["Cost_Precentage"].ReadOnly = false;
+            dt = RecipesDGV.DataContext as DataTable;
+            for (int i=0;i<dt.Columns.Count;i++)
+            {
+                dt.Columns[i].ReadOnly = false;
+            }
             for (int i = 0; i < dt.Rows.Count; i++)
             {
                 if ((RecipesDGV.Items[i] as DataRowView) == RecipesDGV.SelectedItem)
@@ -806,10 +870,12 @@ namespace Food_Cost
                 _sum = (Convert.ToDouble(dt.Rows[i]["Total_Cost"]) / sum) * 100;
                 dt.Rows[i]["Cost_Precentage"] = _sum.ToString() + " %";
             }
+            for (int i = 0; i < dt.Columns.Count; i++)
+            {
+                dt.Columns[i].ReadOnly = true;
+            }
+            dt.Columns["Qty"].ReadOnly = false;
             Tottaltxt.Text = sum.ToString();
-            dt.Columns["Cost"].ReadOnly = true;
-            dt.Columns["Total_Cost"].ReadOnly = true;
-            dt.Columns["Cost_Precentage"].ReadOnly = true;
             RecipesDGV.DataContext = dt;
         }
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
@@ -834,16 +900,16 @@ namespace Food_Cost
                 {
                     if (grid.CurrentCell.Column.Header == "Recipe_Unit")
                     {
-                        Unit_Picker unit_picker = new Unit_Picker(this);
-                        unit_picker.ShowDialog();
+                        AllUnits allUnits = new AllUnits(this);
+                        allUnits.ShowDialog();
                     }
                 }
                 else if (grid != null && grid.SelectedItems != null && grid.SelectedItems.Count == 1 && ((grid.SelectedItem as DataRowView).Row.ItemArray[1] != ""))
                 {
                     if (grid.CurrentCell.Column.Header == "Recipe_Unit")
                     {
-                        Unit_Picker unit_picker = new Unit_Picker(this);
-                        unit_picker.ShowDialog();
+                        AllUnits allUnits = new AllUnits(this);
+                        allUnits.ShowDialog();
                     }
                 }
             }

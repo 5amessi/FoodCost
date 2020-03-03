@@ -34,6 +34,15 @@ namespace Food_Cost
             recipes = _recipes;
         }
 
+        GenerateBatch generatebatch;
+        public AllRecipes(GenerateBatch _GererateBatch)
+        {
+            InitializeComponent();
+            LoadToGrid();
+            generatebatch = _GererateBatch;
+        }
+
+
         public void LoadToGrid()
         {
             SqlConnection con = new SqlConnection(Classes.DataConnString);
@@ -42,10 +51,10 @@ namespace Food_Cost
                 con.Open();
                 DataTable dt = new DataTable();
 
-                using (SqlDataAdapter da = new SqlDataAdapter("SELECT * FROM Setup_Recipes where IsActive='True'", con))
+                using (SqlDataAdapter da = new SqlDataAdapter("SELECT Code,Name,Name2,(select Name From Setup_RecipeCategory where Code=Category_ID) as Category,(select Name From Setup_RecipeSubCategories where Code=SubCategory_ID) as 'SUB Category',Unit,UnitQty FROM Setup_Recipes where IsActive='True'", con))
                     da.Fill(dt);
 
-                ReciveOrdersOrderDGV.DataContext = dt;
+                AllRecipesDGV.DataContext = dt;
             }
             catch (Exception ex)
             {
@@ -59,98 +68,108 @@ namespace Food_Cost
 
         private void AllRecipesDGV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            string cost = "";
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
-            SqlCommand cmd = new SqlCommand();
-            DataRowView drv = ReciveOrdersOrderDGV.SelectedItem as DataRowView;
-            DataTable dt = new DataTable();
-            dt.Columns.Add("Item_Code");
-            dt.Columns.Add("Recipe_Code");
-            dt.Columns.Add("Name");
-            dt.Columns.Add("Name2");
-            dt.Columns.Add("Qty");
-            dt.Columns.Add("Recipe_Unit");
-            dt.Columns.Add("Cost");
-            dt.Columns.Add("Total_Cost");
-            dt.Columns.Add("Cost_Precentage");
-            //dt = recipes.RecipesDGV.DataContext as DataTable;
+            MainWindow main = Application.Current.MainWindow as MainWindow;
 
-            if (sender != null)
+            if (main.GridMain.Children[0].GetType().Name == "Recipes")
             {
-                DataGrid grid = sender as DataGrid;
-                if (grid != null && grid.SelectedItems != null && grid.SelectedItems.Count == 1)
+                string cost = "";
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                SqlCommand cmd = new SqlCommand();
+                DataRowView drv = AllRecipesDGV.SelectedItem as DataRowView;
+                DataTable dt = new DataTable();
+                dt.Columns.Add("Item_Code");
+                dt.Columns.Add("Recipe_Code");
+                dt.Columns.Add("Name");
+                dt.Columns.Add("Name2");
+                dt.Columns.Add("Qty");
+                dt.Columns.Add("Recipe_Unit");
+                dt.Columns.Add("Cost");
+                dt.Columns.Add("Total_Cost");
+                dt.Columns.Add("Cost_Precentage");
+                //dt = recipes.RecipesDGV.DataContext as DataTable;
+
+                if (sender != null)
                 {
-                    if (recipes.RecipesDGV.DataContext != null)
+                    DataGrid grid = sender as DataGrid;
+                    if (grid != null && grid.SelectedItems != null && grid.SelectedItems.Count == 1)
                     {
-                        dt = recipes.RecipesDGV.DataContext as DataTable;
-                        for (int i = 0; i < dt.Rows.Count; i++)
-                            if (dt.Rows[i]["Recipe_Code"].ToString() == drv.Row.ItemArray[0].ToString())
+                        if (recipes.RecipesDGV.DataContext != null)
+                        {
+                            dt = recipes.RecipesDGV.DataContext as DataTable;
+                            for (int i = 0; i < dt.Rows.Count; i++)
+                                if (dt.Rows[i]["Recipe_Code"].ToString() == drv.Row.ItemArray[0].ToString())
+                                {
+                                    MessageBox.Show("Item Existed");
+                                    return;
+                                }
+                        }
+
+                        //if (recipes.RecipesDGV.DataContext != null)
+                        //    dt = recipes.RecipesDGV.DataContext as DataTable;
+
+                        try
+                        {
+                            con.Open();
+                            string s = string.Format("select Price from RecipeQty where Recipe_ID={0}", drv.Row.ItemArray[0].ToString());
+                            cmd = new SqlCommand(s, con);
+                            if (cmd.ExecuteScalar() == null)
                             {
-                                MessageBox.Show("Item Existed");
-                                return;
+                                cost = "0";
                             }
-                    }
-                    
-                    //if (recipes.RecipesDGV.DataContext != null)
-                    //    dt = recipes.RecipesDGV.DataContext as DataTable;
+                            else
+                            {
+                                cost = cmd.ExecuteScalar().ToString();
 
-                    try
-                    {
-                        con.Open();
-                        string s = string.Format("select Price from RecipeQty where Recipe_ID={0}", drv.Row.ItemArray[0].ToString());
-                        cmd = new SqlCommand(s, con);
-                        if (cmd.ExecuteScalar() == null)
-                        {
-                            cost = "0";
+                            }
                         }
-                        else
+                        catch { }
+                        dt.Rows.Add("", (((DataRowView)grid.SelectedItem).Row.ItemArray[0]).ToString(), (((DataRowView)grid.SelectedItem).Row.ItemArray[1]).ToString(), (((DataRowView)grid.SelectedItem).Row.ItemArray[2]).ToString(), "1", (((DataRowView)grid.SelectedItem).Row.ItemArray[5]).ToString(), cost, cost, "");
+                        double sum = 0;
+                        double totalCost = 0;
+                        dt.Columns["Cost_Precentage"].ReadOnly = false;
+                        for (int i = 0; i < dt.Rows.Count; i++)
                         {
-                            cost = cmd.ExecuteScalar().ToString();
+                            sum += Convert.ToDouble(dt.Rows[i]["Total_Cost"]);
+                        }
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            dt.Rows[i]["Cost_Precentage"] = ((Convert.ToDouble(dt.Rows[i]["Total_Cost"])) / (sum) * 100).ToString() + " %";
+                            totalCost += (Convert.ToDouble(dt.Rows[i]["Total_Cost"]));
 
                         }
-                    }
-                    catch { }
-                    dt.Rows.Add( "", (((DataRowView)grid.SelectedItem).Row.ItemArray[0]).ToString(), (((DataRowView)grid.SelectedItem).Row.ItemArray[2]).ToString(), (((DataRowView)grid.SelectedItem).Row.ItemArray[3]).ToString(), "1", (((DataRowView)grid.SelectedItem).Row.ItemArray[8]).ToString(),cost,cost,"");
-                    double sum = 0;
-                    double totalCost = 0;
-                    dt.Columns["Cost_Precentage"].ReadOnly = false;
-                    for (int i = 0; i < dt.Rows.Count; i++)
-                    {
-                        sum += Convert.ToDouble(dt.Rows[i]["Total_Cost"]);
-                    }
-                    for (int i = 0; i < dt.Rows.Count; i++)
-                    {
-                        dt.Rows[i]["Cost_Precentage"] = ((Convert.ToDouble(dt.Rows[i]["Total_Cost"])) / (sum) * 100).ToString() + " %";
-                        totalCost += (Convert.ToDouble(dt.Rows[i]["Total_Cost"]));
 
+                        for (int i = 0; i < dt.Columns.Count; i++)
+                        {
+                            dt.Columns[i].ReadOnly = true;
+                        }
+                        dt.Columns["Qty"].ReadOnly = false;
+                        recipes.Tottaltxt.Text = totalCost.ToString();
                     }
+                    recipes.RecipesDGV.DataContext = dt;
 
-                    for (int i = 0; i < dt.Columns.Count; i++)
-                    {
-                        dt.Columns[i].ReadOnly = true;
-                    }
-                    dt.Columns["Qty"].ReadOnly = false;
-                    recipes.Tottaltxt.Text = totalCost.ToString();
+                    //if (recipes.RecipesDGV.Items.Count != 0)
+                    //{
+                    //    (recipes.RecipesDGV.Items[recipes.RecipesDGV.Items.Count - 1] as DataRowView).Row[7] = (recipes.RecipesDGV.Items[recipes.RecipesDGV.Items.Count - 1] as DataRowView).Row[6];
+                    //    double sum = 0;
+                    //    for (int i = 0; i < dt.Rows.Count; i++)
+                    //    {
+                    //        sum += Convert.ToDouble((recipes.RecipesDGV.Items[i] as DataRowView).Row.ItemArray[7]);
+                    //    }
+
+                    //    double _sum = 0;
+                    //    for (int i = 0; i < dt.Rows.Count; i++)
+                    //    {
+                    //        _sum = (Convert.ToDouble((recipes.RecipesDGV.Items[i] as DataRowView).Row.ItemArray[7]) / sum) * 100;
+                    //        (recipes.RecipesDGV.Items[i] as DataRowView).Row[8] = _sum.ToString() + " %";
+                    //    }
+                    //}
                 }
-                recipes.RecipesDGV.DataContext = dt;
-
-                //if (recipes.RecipesDGV.Items.Count != 0)
-                //{
-                //    (recipes.RecipesDGV.Items[recipes.RecipesDGV.Items.Count - 1] as DataRowView).Row[7] = (recipes.RecipesDGV.Items[recipes.RecipesDGV.Items.Count - 1] as DataRowView).Row[6];
-                //    double sum = 0;
-                //    for (int i = 0; i < dt.Rows.Count; i++)
-                //    {
-                //        sum += Convert.ToDouble((recipes.RecipesDGV.Items[i] as DataRowView).Row.ItemArray[7]);
-                //    }
-
-                //    double _sum = 0;
-                //    for (int i = 0; i < dt.Rows.Count; i++)
-                //    {
-                //        _sum = (Convert.ToDouble((recipes.RecipesDGV.Items[i] as DataRowView).Row.ItemArray[7]) / sum) * 100;
-                //        (recipes.RecipesDGV.Items[i] as DataRowView).Row[8] = _sum.ToString() + " %";
-                //    }
-                //}
+            }
+            else if(main.GridMain.Children[0].GetType().Name == "GenerateBatch")
+            {
+                generatebatch.Recipecbx.Text = ((DataRowView)AllRecipesDGV.SelectedItems[0]).Row.ItemArray[1].ToString();
+                generatebatch.valofRecipe = ((DataRowView)AllRecipesDGV.SelectedItems[0]).Row.ItemArray[0].ToString();
+                generatebatch.UnitofRecipelbl.Content = ((DataRowView)AllRecipesDGV.SelectedItems[0]).Row.ItemArray[5].ToString();
             }
 
             this.Close();
@@ -161,20 +180,20 @@ namespace Food_Cost
             SqlConnection con = new SqlConnection(Classes.DataConnString);
             if ((RadioByCode.IsChecked == true || RadioByName.IsChecked == true) && SearchTxt.Text != "")
             {
-                ReciveOrdersOrderDGV.DataContext = null;
+                AllRecipesDGV.DataContext = null;
                 if (RadioByCode.IsChecked == true && RadioByName.IsChecked == false)
                 {
                     try
                     {
                         con.Open();
                         //lsa 7etet el weight fe el select
-                        string Q = "SELECT * FROM Setup_Recipes where IsActive='True' and Code Like '%" + SearchTxt.Text + "%'";
+                        string Q = "SELECT Code,Name,Name2,(select Name From Setup_RecipeCategory where Code=Category_ID) as Category,(select Name From Setup_RecipeSubCategories where Code=SubCategory_ID) as 'SUB Category',Unit,UnitQty FROM Setup_Recipes where IsActive='True' and Code Like '%" + SearchTxt.Text + "%'";
                         DataTable dt = new DataTable();
 
                         using (SqlDataAdapter da = new SqlDataAdapter(Q, con))
                             da.Fill(dt);
 
-                        ReciveOrdersOrderDGV.DataContext = dt;
+                        AllRecipesDGV.DataContext = dt;
 
 
                     }
@@ -193,13 +212,13 @@ namespace Food_Cost
                     {
                         con.Open();
                         //lsa 7etet el weight fe el select
-                        string Q = "SELECT * FROM Setup_Recipes where IsActive='True' and Name Like '%" + SearchTxt.Text + "%'";
+                        string Q = "SELECT Code,Name,Name2,(select Name From Setup_RecipeCategory where Code=Category_ID) as Category,(select Name From Setup_RecipeSubCategories where Code=SubCategory_ID) as 'SUB Category',Unit,UnitQty FROM Setup_Recipes where IsActive='True' and Name Like '%" + SearchTxt.Text + "%'";
                         DataTable dt = new DataTable();
 
                         using (SqlDataAdapter da = new SqlDataAdapter(Q, con))
                             da.Fill(dt);
 
-                        ReciveOrdersOrderDGV.DataContext = dt;
+                        AllRecipesDGV.DataContext = dt;
                     }
                     catch (Exception ex)
                     {
@@ -218,10 +237,10 @@ namespace Food_Cost
                     con.Open();
                     DataTable dt = new DataTable();
 
-                    using (SqlDataAdapter da = new SqlDataAdapter("SELECT * FROM Setup_Recipes where IsActive='True'", con))
+                    using (SqlDataAdapter da = new SqlDataAdapter("SELECT Code,Name,Name2,(select Name From Setup_RecipeCategory where Code=Category_ID) as Category,(select Name From Setup_RecipeSubCategories where Code=SubCategory_ID) as 'SUB Category',Unit,UnitQty FROM Setup_Recipes where IsActive='True'", con))
                         da.Fill(dt);
 
-                    ReciveOrdersOrderDGV.DataContext = dt;
+                    AllRecipesDGV.DataContext = dt;
                 }
                 catch (Exception ex)
                 {

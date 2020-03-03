@@ -30,6 +30,7 @@ namespace Food_Cost
         public LogIn()
         {
             InitializeComponent();
+            UserNametxt.Focus();
         }
 
         private void SplitAuthentication()
@@ -269,21 +270,23 @@ namespace Food_Cost
             }
             MainWindow.AuthenticationData.Add(key, Values);
             //
-            oneAuthent = MainWindow.ArrAuthenctication[22].Split(':');
-            key = oneAuthent[0];
-            Values = new List<string>();
-            if (oneAuthent[1] != "")
-            {
-                Valuo = oneAuthent[1].Split(',');
-                Values.AddRange(Valuo);
-            }
-            MainWindow.AuthenticationData.Add(key, Values);
+            //oneAuthent = MainWindow.ArrAuthenctication[22].Split(':');
+            //key = oneAuthent[0];
+            //Values = new List<string>();
+            //if (oneAuthent[1] != "")
+            //{
+            //    Valuo = oneAuthent[1].Split(',');
+            //    Values.AddRange(Valuo);
+            //}
+            //MainWindow.AuthenticationData.Add(key, Values);
 
         }
 
         private void LoginBtn_Click(object sender, RoutedEventArgs e)      
         {
+
             SqlConnection con = new SqlConnection(Classes.DataConnString);
+            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
             try
             {
                 con.Open();
@@ -293,42 +296,53 @@ namespace Food_Cost
                 reader.Read();
                 if (reader.HasRows == true)
                 {
-                    for (int i = 0; i < MainWindow.ThetLogin.Count; i++)
+                    if (MainWindow.UserID == reader["ID"].ToString())
                     {
-                        if (MainWindow.ThetLogin[i].ToString() == reader["ID"].ToString())
+                        MessageBox.Show("You Are Already Logined");
+                        this.Close();
+                        return;
+                    }
+                    MainWindow.UserName = reader["Name"].ToString();
+                    MainWindow.JobID = reader["UserClass_ID"].ToString();
+                    MainWindow.UserID = reader["ID"].ToString();
+                    //MainWindow.ThetLogin.Add(Convert.ToInt32(MainWindow.UserID));
+                    MessageBox.Show("Welcome " + reader["Name"].ToString());
+                    try
+                    {
+                        con2.Open();
+                        s = string.Format("select ClassPrv from UserPrivilages_tbl where UserClass_ID='{0}'", reader["UserClass_ID"]);
+                        SqlCommand cmd2 = new SqlCommand(s, con2);
+                        if (cmd2.ExecuteScalar() != null)
                         {
-                            MessageBox.Show("You are Already Logined");
+                            MainWindow.Authentication = cmd2.ExecuteScalar().ToString();
+                            checkofCheckToLogin = true;
+                            MainWindow.AuthenticationData.Clear();
+                            SplitAuthentication();
                             this.Close();
                             return;
                         }
                     }
-
-                    MainWindow.UserName = reader["Name"].ToString();
-                    MainWindow.JobID = reader["UserClass_ID"].ToString();
-                    MainWindow.UserID = reader["ID"].ToString();
-                    MainWindow.ThetLogin.Add(Convert.ToInt32(MainWindow.UserID));
-                    MessageBox.Show("Welcome " + reader["Name"].ToString());
-
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                    con.Close();
                     this.Close();
                     reader.Close();
                 }
                 else
                 {
-                    MessageBox.Show("Please Enter The Correct UserName And Password");
+                    MessageBox.Show("Plea6se Enter The Correct UserName And Password");
                 }
             }
-            catch(Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
+            catch (Exception ex) { MessageBox.Show(ex.ToString()); }
         }
       
-        private void EnterBtn_Click(object sender, RoutedEventArgs e)
+        /*private void EnterBtn_Click(object sender, RoutedEventArgs e)
         {
             if (MainWindow.ThetLogin.Count>0)
             {
                 SqlConnection con = new SqlConnection(Classes.DataConnString);
-                SqlConnection con2 = new SqlConnection(Classes.DataConnString);
                 SqlCommand cmd = new SqlCommand();
                 SqlCommand cmd2 = new SqlCommand();
                 SqlDataReader reader = null;
@@ -347,26 +361,7 @@ namespace Food_Cost
                     catch (Exception ex) { MessageBox.Show(ex.ToString()); }
                     if (reader["Password"].ToString() == PasswordPrivtxt.Password)
                     {
-                        try
-                        {
-                            string s = string.Format("select ClassPrv from UserPrivilages_tbl where UserClass_ID='{0}'", reader["UserClass_ID"]);
-                            cmd2 = new SqlCommand(s, con2);
-                            if (cmd2.ExecuteScalar() != null)
-                            {
-                                MainWindow.UserID = MainWindow.ThetLogin[i].ToString();
-                                MainWindow.Authentication = cmd2.ExecuteScalar().ToString();
-                                checkofCheckToLogin = true;
-                                MainWindow.AuthenticationData.Clear();
-                                SplitAuthentication();
-                                this.Close();
-                                return;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.ToString());
-                        }
-                        con.Close();
+                       
                     }
                     reader.Close();
                 }
@@ -380,7 +375,7 @@ namespace Food_Cost
                 CheckPass.Visibility = Visibility.Hidden;
                 Login.Visibility = Visibility.Visible;
             }
-        }
+        }*/
 
         private void Window_Closed(object sender, EventArgs e)
         {

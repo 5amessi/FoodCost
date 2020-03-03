@@ -115,7 +115,7 @@ namespace Food_Cost
                 else if (ItemsFor == "KitchenItem")
                     s = "select Code,[Manual Code],Name,Name2,Unit,Category,Department,Class,SUBClass from Setup_Items where Active='True'";
                 else if (ItemsFor == "AdjacmentInventory")
-                    s = string.Format("select Code,[Manual Code],Name,Name2,Category,Department,Class,SUBClass from Setup_Items where  Active='True' and Code in (select Code from Items where RestaurantID='{0}' and KitchenID='{1}')", adjacmentInventory.ValOfResturant, adjacmentInventory.ValOfKitchen);
+                    s = string.Format("select Code,[Manual Code],Name,Name2,Category,Department,Class,SUBClass from Setup_Items where  Active='True' and Code in (select ItemID from Items where RestaurantID='{0}' and KitchenID='{1}')", adjacmentInventory.ValOfResturant, adjacmentInventory.ValOfKitchen);
                 else if (ItemsFor == "StockInventory" || ItemsFor == "PhysicalInventory")
                     s = "select Code,[Manual Code],Name,Name2,Category,Department,Class,SUBClass,Weight,Unit from Setup_Items where Active='True'";
 
@@ -798,12 +798,14 @@ namespace Food_Cost
                         else if (main.GridMain.Children[0].GetType().Name == "Transfer_Kitchens")
                             s = string.Format(" select Code,[Manual Code],Name,Name2 from Setup_Items where Active='True' and Code in (select ItemID from setup_KitchenItems where RestaurantID = (select Code from Setup_Restaurant where Name = '{0}') and KitchenID = (select Code from Setup_Kitchens where Name = '{1}') ) and Code in (select ItemID from setup_KitchenItems where RestaurantID = (select Code from Setup_Restaurant where Name = '{0}') and KitchenID = (select Code from Setup_Kitchens where Name = '{2}'))  and  (Code Like '%{3}%' OR [Manual Code] Like '%{3}%')", Transfer_Kitchens.Resturant.Text, Transfer_Kitchens.From_Kitchen.Text, Transfer_Kitchens.To_Kitchen.Text, SearchTxt.Text);
                         else if (main.GridMain.Children[0].GetType().Name == "Transfer_Resturant")
-                            s = string.Format("select Code,[Manual Code],Name,Name2 from Setup_Items where Active='True' and Code in (select ItemID from setup_KitchenItems where RestaurantID = (select Code from Setup_Restaurant where Name = '{0}') and KitchenID = (select Code from Setup_Kitchens where Name = '{1}') ) and Code in (select ItemID from setup_KitchenItems where RestaurantID = (select Code from Setup_Restaurant where Name = '{3}') and KitchenID = (select Code from Setup_Kitchens where Name = '{2}')) and (Code Like '%{4}%' OR [Manual Code] Like '%{4}%')", Transfer_Resturant.From_Resturant.Text, Transfer_Resturant.From_Kitchen.Text, Transfer_Resturant.To_Kitchen.Text, Transfer_Resturant.ToResturant.Text,SearchTxt.Text);
+                            s = string.Format("select Code,[Manual Code],Name,Name2 from Setup_Items where Active='True' and Code in (select ItemID from setup_KitchenItems where RestaurantID = (select Code from Setup_Restaurant where Name = '{0}') and KitchenID = (select Code from Setup_Kitchens where Name = '{1}') ) and Code in (select ItemID from setup_KitchenItems where RestaurantID = (select Code from Setup_Restaurant where Name = '{3}') and KitchenID = (select Code from Setup_Kitchens where Name = '{2}')) and (Code Like '%{4}%' OR [Manual Code] Like '%{4}%')", Transfer_Resturant.From_Resturant.Text, Transfer_Resturant.From_Kitchen.Text, Transfer_Resturant.To_Kitchen.Text, Transfer_Resturant.ToResturant.Text, SearchTxt.Text);
                         else if (main.GridMain.Children[0].GetType().Name == "Recipes")
                             s = "select Code,[Manual Code],BarCode,Name,Name2,Category,Department,Class,SUBClass,ExpDate,Is_TaxableItem as [Tax Included],Yield,Unit from Setup_Items Where Active='True' and (Code Like '%" + SearchTxt.Text + "%' OR [Manual Code] Like '%" + SearchTxt.Text + "%')";
                         else if (main.GridMain.Children[0].GetType().Name == "KitcheItemsn")
                             s = "select Code,[Manual Code],Name,Name2,Unit,Category,Department,Class,SUBClass from Setup_Items Where Active='True' and (Code Like '%" + SearchTxt.Text + "%' OR [Manual Code] Like '%" + SearchTxt.Text + "%')";
-                        else if (main.GridMain.Children[0].GetType().Name == "AdjacmentInventory" || main.GridMain.Children[0].GetType().Name == "StockInventory" || main.GridMain.Children[0].GetType().Name == "PhysicalInventory")
+                        else if (main.GridMain.Children[0].GetType().Name == "AdjacmentInventory")
+                            s = string.Format("select Code,[Manual Code],Name,Name2,Category,Department,Class,SUBClass from Setup_Items where  Active='True' and (code like '%{2}%' Or [Manual Code] like '%{2}%') and Code in (select ItemID from Items where RestaurantID='{0}' and KitchenID='{1}')", adjacmentInventory.ValOfResturant, adjacmentInventory.ValOfKitchen, SearchTxt.Text);
+                        else if (main.GridMain.Children[0].GetType().Name == "StockInventory" || main.GridMain.Children[0].GetType().Name == "PhysicalInventory")
                             s = "select Code,[Manual Code],Name,Name2,Category,Department,Class,SUBClass,Weight,Unit from Setup_Items where Active='True' and (Code Like '%" + SearchTxt.Text + "%' OR [Manual Code] Like '%" + SearchTxt.Text + "%')";
 
                         DataTable dt = new DataTable();
@@ -840,7 +842,9 @@ namespace Food_Cost
                             s = "select Code,[Manual Code],BarCode,Name,Name2,Category,Department,Class,SUBClass,ExpDate,Is_TaxableItem as [Tax Included],Yield,Unit from Setup_Items Where Name Like '%" + SearchTxt.Text + "%'";
                         else if (main.GridMain.Children[0].GetType().Name == "KitcheItemsn")
                             s = "select Code,[Manual Code],Name,Name2,Unit,Category,Department,Class,SUBClass from Setup_Items Where Name Like '%" + SearchTxt.Text + "%'";
-                        else if (main.GridMain.Children[0].GetType().Name == "AdjacmentInventory" || main.GridMain.Children[0].GetType().Name == "StockInventory" || main.GridMain.Children[0].GetType().Name == "PhysicalInventory")
+                        else if (main.GridMain.Children[0].GetType().Name == "AdjacmentInventory")
+                            s = string.Format("select Code,[Manual Code],Name,Name2,Category,Department,Class,SUBClass from Setup_Items where  Active='True' and Name like '%{2}%' and Code in (select ItemID from Items where RestaurantID='{0}' and KitchenID='{1}')", adjacmentInventory.ValOfResturant, adjacmentInventory.ValOfKitchen, SearchTxt.Text);
+                        else if (main.GridMain.Children[0].GetType().Name == "StockInventory" || main.GridMain.Children[0].GetType().Name == "PhysicalInventory")
                             s = "select Code,[Manual Code],Name,Name2,Category,Department,Class,SUBClass,Weight,Unit from Setup_Items where  Name Like '%" + SearchTxt.Text + "%'";
 
                         DataTable dt = new DataTable();
@@ -878,7 +882,10 @@ namespace Food_Cost
                         s = "select Code,[Manual Code],BarCode,Name,Name2,Category,Department,Class,SUBClass,Unit,ExpDate,Is_TaxableItem as [Tax Included],Yield,Unit from Setup_Items where Active='True'";
                     else if (main.GridMain.Children[0].GetType().Name == "KitcheItemsn")
                         s = "select Code,[Manual Code],Name,Name2,Unit,Category,Department,Class,SUBClass from Setup_Items where Active='True'";
-                    else if (main.GridMain.Children[0].GetType().Name == "AdjacmentInventory" || main.GridMain.Children[0].GetType().Name == "StockInventory" || main.GridMain.Children[0].GetType().Name == "PhysicalInventory")
+                    else if (main.GridMain.Children[0].GetType().Name == "AdjacmentInventory")
+                        s = string.Format("select Code,[Manual Code],Name,Name2,Category,Department,Class,SUBClass from Setup_Items where  Active='True' and (code like '%{2}%' Or [Manual Code] like '%{2}%') and Code in (select ItemID from Items where RestaurantID='{0}' and KitchenID='{1}')", adjacmentInventory.ValOfResturant, adjacmentInventory.ValOfKitchen, SearchTxt.Text);
+
+                    else if ( main.GridMain.Children[0].GetType().Name == "StockInventory" || main.GridMain.Children[0].GetType().Name == "PhysicalInventory")
                         s = string.Format("select Code,[Manual Code],Name,Name2,Category,Department,Class,SUBClass from Setup_Items where  Active='True' and Code in (select Code from Items where RestaurantID='{0}' and KitchenID='{1}')", adjacmentInventory.ValOfResturant, adjacmentInventory.ValOfKitchen); DataTable dt = new DataTable();
 
                     using (SqlDataAdapter da = new SqlDataAdapter(s, con))

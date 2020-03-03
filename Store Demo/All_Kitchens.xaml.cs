@@ -24,7 +24,16 @@ namespace Food_Cost
     {
         Transfer_Kitchens transfer_Kitchens;
         Transfer_Resturant Transfer_Resturant;
+        GenerateBatch generateBatch;
         string Kitchen, resturant;
+
+        public All_Kitchens(GenerateBatch _GenerateBatch,string Restaurant)
+        {
+            InitializeComponent();
+            resturant = Restaurant;
+            generateBatch = _GenerateBatch;
+            LoadKitchens("GenerateBatch");
+        }
 
         public All_Kitchens(Transfer_Resturant _Transfer_Resturant,string _kitchen , string _resturant)
         {
@@ -57,9 +66,13 @@ namespace Food_Cost
                         else
                             s = string.Format("select Code,Name,Name2,IsActive as Active from Setup_Kitchens where IsActive='True' and RestaurantID = (select Code from Setup_Restaurant where Name = '{0}') ", resturant, Transfer_Resturant.From_Kitchen.Text);
                     }
-                    else
+                    else if(kitchens == "Transfer_Kitchens")
                     {
                         s = string.Format("select Code,Name,Name2,IsActive as Active from Setup_Kitchens where IsActive='True' and RestaurantID = (select Code from Setup_Restaurant where Name = '{0}')  AND Name <> '{1}' order by Code", resturant, transfer_Kitchens.From_Kitchen.Text);
+                    }
+                    else if(kitchens == "GenerateBatch")
+                    {
+                    s = string.Format("select Code,Name,Name2,IsActive from Setup_Kitchens where IsActive='True' and RestaurantID=(Select Code From Setup_Restaurant where Name='{0}')", resturant);
                     }
                     DataTable dt = new DataTable();
 
@@ -182,6 +195,11 @@ namespace Food_Cost
                             Transfer_Resturant.To_Kitchen.Text = (grid.SelectedItem as DataRowView).Row["Name"] as string;
 
                         this.Close();
+                    }
+                    else if(main.GridMain.Children[0].GetType().Name == "GenerateBatch")
+                    {
+                        generateBatch.Kitchencbx.Text = (grid.SelectedItem as DataRowView).Row["Name"] as string;
+                        generateBatch.ValOfKitchen = ((DataRowView)KitchensDGV.SelectedItems[0]).Row.ItemArray[0].ToString();
                     }
                     this.Close();
                 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text.RegularExpressions;
@@ -13,11 +14,25 @@ namespace Food_Cost
     /// </summary>
     public partial class Transfer_Kitchens : UserControl
     {
+        List<string> Authenticated = new List<string>();
         int codeTodelete = 0;
         public Transfer_Kitchens()
         {
-            InitializeComponent();
-            increment_transferNO();
+            if (MainWindow.AuthenticationData.ContainsKey("TransferKitchen"))
+            {
+                Authenticated = MainWindow.AuthenticationData["TransferKitchen"];
+                if (Authenticated.Count == 0)
+                {
+                    MessageBox.Show("You Havent a Privilage to Open this Page");
+                    LogIn logIn = new LogIn();
+                    logIn.ShowDialog();
+                }
+                else
+                {
+                    InitializeComponent();
+                    increment_transferNO();
+                }
+            }
         } 
         private bool DoSomeChecks()
         {
@@ -104,8 +119,16 @@ namespace Food_Cost
         }  //Done
         private void AddBtn_Click(object sender, RoutedEventArgs e)
         {
-            Items itemswindow = new Items(this);
-            itemswindow.ShowDialog();
+            if (Authenticated.IndexOf("AddItemTransferKitchen") == -1 && Authenticated.IndexOf("CheckAllTransferKitchen") == -1)
+            {
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                Items itemswindow = new Items(this);
+                itemswindow.ShowDialog();
+            }
         }  //Done
         private void NewBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -243,57 +266,62 @@ namespace Food_Cost
         }
         private void TransferBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (!DoSomeChecks())
-                return;
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
-            try
+            if (Authenticated.IndexOf("TransferTrnsferKitchen") == -1 && Authenticated.IndexOf("CheckAllTransferKitchen") == -1)
             {
-                con2.Open();
-                string s = string.Format("select Transfer_Serial From Transfer_Kitchens Where Transfer_Serial='{0}'", transfer_No.Text);
-                SqlCommand cmd = new SqlCommand(s, con2);
-                if (cmd.ExecuteScalar() == null)
-                {
-                    try
-                    {
-                        con.Open();
-
-                        Save_TIK_Items(con);
-                        Save_TIK(con);
-                        MessageBox.Show("Transfer saved Sussesfully");
-                        MainGrid.IsEnabled = false;
-                        TransferBtn.IsEnabled = false;
-                        NewBtn.IsEnabled = true;
-                    }
-                    finally
-                    {
-                        con.Close();
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        con.Open();
-                        string W = string.Format("delete from Transfer_Kitchens_Items where Transfer_ID={0}", transfer_No.Text);
-                        SqlCommand cmd2 = new SqlCommand(W, con);
-                        cmd2.ExecuteNonQuery();
-                        con.Close();
-                        con.Open();
-                        Edit_TKI(con);
-                        Save_TIK_Items(con);
-                        MessageBox.Show("Transfer Edited Sussesfully");
-                        MainGrid.IsEnabled = false;
-                        TransferBtn.IsEnabled = false;
-                        NewBtn.IsEnabled = true;
-                    }
-                    finally { con.Close(); }
-                }
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
-            catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+            else
+            {
+                if (!DoSomeChecks())
+                    return;
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                SqlConnection con2 = new SqlConnection(Classes.DataConnString);
+                try
+                {
+                    con2.Open();
+                    string s = string.Format("select Transfer_Serial From Transfer_Kitchens Where Transfer_Serial='{0}'", transfer_No.Text);
+                    SqlCommand cmd = new SqlCommand(s, con2);
+                    if (cmd.ExecuteScalar() == null)
+                    {
+                        try
+                        {
+                            con.Open();
 
-
-
+                            Save_TIK_Items(con);
+                            Save_TIK(con);
+                            MessageBox.Show("Transfer saved Sussesfully");
+                            MainGrid.IsEnabled = false;
+                            TransferBtn.IsEnabled = false;
+                            NewBtn.IsEnabled = true;
+                        }
+                        finally
+                        {
+                            con.Close();
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            con.Open();
+                            string W = string.Format("delete from Transfer_Kitchens_Items where Transfer_ID={0}", transfer_No.Text);
+                            SqlCommand cmd2 = new SqlCommand(W, con);
+                            cmd2.ExecuteNonQuery();
+                            con.Close();
+                            con.Open();
+                            Edit_TKI(con);
+                            Save_TIK_Items(con);
+                            MessageBox.Show("Transfer Edited Sussesfully");
+                            MainGrid.IsEnabled = false;
+                            TransferBtn.IsEnabled = false;
+                            NewBtn.IsEnabled = true;
+                        }
+                        finally { con.Close(); }
+                    }
+                }
+                catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+            }
         }
         private void Row_Changed(object sender, DataGridCellEditEndingEventArgs e)
         {
@@ -422,19 +450,35 @@ namespace Food_Cost
         }  //Done
         private void RemoveItemBtn_Click(object sender, RoutedEventArgs e)
         {
-            DataTable dt = ItemsDGV.DataContext as DataTable;
-            dt.Rows.RemoveAt(codeTodelete);
-            ItemsDGV.DataContext = dt;
+            if (Authenticated.IndexOf("RemoveItemTransferKitchen") == -1 && Authenticated.IndexOf("CheckAllTransferKitchen") == -1)
+            {
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                DataTable dt = ItemsDGV.DataContext as DataTable;
+                dt.Rows.RemoveAt(codeTodelete);
+                ItemsDGV.DataContext = dt;
+            }
         }  //Done
         private void SearchBtn_Click(object sender, RoutedEventArgs e)
         {
-            NewBtn.IsEnabled = false;
-            UpdateBtn.IsEnabled = false;
-            DeleteBtn.IsEnabled = false;
-            SearchBtn.IsEnabled = false;
+            if (Authenticated.IndexOf("SearchTransferKitchen") == -1 && Authenticated.IndexOf("CheckAllTransferKitchen") == -1)
+            {
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                NewBtn.IsEnabled = false;
+                UpdateBtn.IsEnabled = false;
+                DeleteBtn.IsEnabled = false;
+                SearchBtn.IsEnabled = false;
 
-            All_Purchase_Orders all_Purchase_Orders = new All_Purchase_Orders(this);
-            all_Purchase_Orders.ShowDialog();
+                All_Purchase_Orders all_Purchase_Orders = new All_Purchase_Orders(this);
+                all_Purchase_Orders.ShowDialog();
+            }
         }
 
         private void UndoBtn_Click(object sender, RoutedEventArgs e)

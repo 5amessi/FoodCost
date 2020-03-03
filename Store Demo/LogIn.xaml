@@ -7,8 +7,9 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Title="LogIn" Height="350" Width="451" WindowStartupLocation="CenterScreen" FontSize="20" FontWeight="Bold" Closing="Window_Closed">
+    
     <Grid>
-        <Grid Name="Login" Visibility="Hidden">
+        <Grid Name="Login" Visibility="Visible">
             <StackPanel Orientation="Vertical" Background="#FF5C99D6" Margin="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                 <Border CornerRadius="25" Margin="20,10,20,10" BorderBrush="Red" Background="White" Width="400" Height="300" >
                     <StackPanel Orientation="Vertical">
@@ -17,8 +18,9 @@
 
                         <Grid Margin="2" >
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="3*"/>
                                 <ColumnDefinition Width="4*"/>
+                                <ColumnDefinition Width="2*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition />
@@ -41,7 +43,7 @@
         </Grid>
 
 
-        <Grid Name="CheckPass" Visibility="Visible">
+       <!-- <Grid Name="CheckPass" Visibility="Visible">
             <StackPanel Orientation="Vertical" Background="#FF5C99D6" Margin="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                 <Border CornerRadius="25" Margin="20,10,20,10" BorderBrush="Red" Background="White" Width="400" Height="300" >
                     <StackPanel Orientation="Vertical">
@@ -68,6 +70,6 @@
                     </StackPanel>
                 </Border>
             </StackPanel>
-        </Grid>
+        </Grid>-->
     </Grid>
 </Window>

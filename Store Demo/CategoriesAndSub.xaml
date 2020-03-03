@@ -129,14 +129,13 @@
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
 
                             <TextBlock FontWeight="Bold" Text="Code" Foreground="#FFCD0E0E"/>
                             <TextBox Name="CodeSub_txt" Grid.Row="1" Grid.ColumnSpan="2" PreviewTextInput="NumberValidationTextBox"/>
 
                             <CheckBox Name="ActiveSub_chbx" Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Right">
-                                <TextBlock FontSize="14" > <Run Foreground="Green" FontWeight="Bold">Active</Run>
+                                <TextBlock  > <Run Foreground="Green" FontWeight="Bold">Active</Run>
                                 </TextBlock>
                             </CheckBox>
 
@@ -147,7 +146,7 @@
                             <TextBlock Text="Category" Grid.Row="6" Foreground="#FFCD0E0E"/>
                             <StackPanel Orientation="Horizontal" Grid.Row="7">
                                 <TextBox Grid.Column="5" Name="Categorycbx" Width="200" VerticalAlignment="Center" IsReadOnly="True"/>
-                                <Button Name="GetCategoryBtn" Foreground="White" Background="#cb4335"  FontSize="12" Margin="10 5 5 5" Click="CategoryBtn">
+                                <Button Name="GetCategoryBtn" Foreground="White" Background="#cb4335"  Margin="10 0 5 0" Click="CategoryBtn">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" >
                                         <TextBlock Padding="0" Margin="0" HorizontalAlignment="Right"> ...</TextBlock>
                                     </StackPanel>
@@ -166,7 +165,7 @@
 
                                 <Button Grid.Column="0" Name="NewSubBtn" Foreground="Black" Background="#cacfd2" Margin="5" Click="NewButtonSubClicked">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                                        <materialDesign:PackIcon Kind="Plus" HorizontalAlignment="Left" Width="20"/>
+                                        <materialDesign:PackIcon Kind="Plus" HorizontalAlignment="Left" />
                                         <TextBlock HorizontalAlignment="Right"> New</TextBlock>
                                     </StackPanel>
                                 </Button>

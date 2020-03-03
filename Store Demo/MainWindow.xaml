@@ -184,12 +184,12 @@
                             </StackPanel>
                         </ListViewItem>
 
-                        <ListViewItem x:Name="StockInventory" Height="50">
+                        <!--<ListViewItem x:Name="StockInventory" Height="50">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Tractor"  Height="30" Width="25" Margin="5 0"/>
                                 <TextBlock FontSize="12" Text="Stock Inventory" VerticalAlignment="Center" Margin="30 0"/>
                             </StackPanel>
-                        </ListViewItem>
+                        </ListViewItem>-->
 
                         <ListViewItem x:Name="PhysicalInventory" Height="50">
                             <StackPanel Orientation="Horizontal">
@@ -198,12 +198,12 @@
                             </StackPanel>
                         </ListViewItem>
 
-                        <ListViewItem x:Name="OutletRecipeSubtraction" Height="50">
+                        <!--<ListViewItem x:Name="OutletRecipeSubtraction" Height="50">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="CalculatorVariant"  Height="30" Width="25" Margin="5 0"/>
                                 <TextBlock FontSize="12" Text="Recipe Subtraction" VerticalAlignment="Center" Margin="30 0"/>
                             </StackPanel>
-                        </ListViewItem>
+                        </ListViewItem>-->
 
                         <ListViewItem x:Name="Vendors" Height="50">
                             <StackPanel Orientation="Horizontal">

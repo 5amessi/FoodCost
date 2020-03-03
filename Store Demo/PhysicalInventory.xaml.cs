@@ -23,10 +23,11 @@ namespace Food_Cost
     /// </summary>
     public partial class PhysicalInventory : UserControl
     {
-        string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
         public string ValOfResturant = "";
         public string ValOfKitchen = "";
         public string Valoftype = "";
+        bool Blind = false;
+
         public PhysicalInventory()
         {
             InitializeComponent();
@@ -34,12 +35,12 @@ namespace Food_Cost
         }
         public void LoadAllResturant()
         {
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlDataReader reader = null;
             try
             {
                 con.Open();
-                string s = "select Name from Setup_Restaurant";
+                string s = "select Name from Setup_Restaurant where IsActive='True'";
                 SqlCommand cmd = new SqlCommand(s, con);
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -57,17 +58,16 @@ namespace Food_Cost
                 reader.Close();
                 con.Close();
             }
-        }
-
+        }    //Done
         private void ResturantComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Kitchencbx.Items.Clear();
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlDataReader reader = null;
             try
             {
                 con.Open();
-                string s = "select Name from Setup_Kitchens Where RestaurantID=(select Code From Setup_Restaurant Where Name='" + Outletcbx.SelectedItem.ToString() + "')";
+                string s = "select Name from Setup_Kitchens Where IsActive='True' and RestaurantID=(select Code From Setup_Restaurant Where Name='" + Outletcbx.SelectedItem.ToString() + "')";
                 SqlCommand cmd = new SqlCommand(s, con);
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -85,11 +85,14 @@ namespace Food_Cost
                 reader.Close();
                 con.Close();
             }
-        }
-
+        }    //Done
+        private void Kitchencbx_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            TheInventoryDetails.IsEnabled = true;
+        }  //Done
         private void GetCodeofResturantAndKitchen()
         {
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlCommand cmd = new SqlCommand();
             try
             {
@@ -124,36 +127,124 @@ namespace Food_Cost
                 con.Close();
             }
         }  //Done
-
-        private void GetInventoryID()
+        private void InsertToONHandTable()
         {
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             try
             {
                 con.Open();
-                string s = "Select TOP(1)Inventory_ID From PhysicalInventory_tbl ORDER BY Inventory_ID DESC";
+                SqlCommand cmd = new SqlCommand("MakeAnPhysicalInventory", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@ResturantID", ValOfResturant);
+                cmd.Parameters.AddWithValue("@KitchenID", ValOfKitchen);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            finally
+            {
+                con.Close();
+            }
+
+        }   //Done
+        private void StartInventory()
+        {
+            inventory.Visibility = Visibility.Visible;
+            NumberOfItemText.Visibility = Visibility.Visible;
+            NUmberOfItems.Visibility = Visibility.Visible;
+            TotalofItems.Visibility = Visibility.Visible;
+            Total_Price.Visibility = Visibility.Visible;
+            searchBtn.Visibility = Visibility.Visible;
+            InventoryChose.Visibility = Visibility.Hidden;
+            UndoBtn.Visibility = Visibility.Visible;
+            SaveBtn.Visibility = Visibility.Visible;
+            InventoryInfo.Visibility = Visibility.Visible;
+        }   //Done
+        private void GetInventoryID()
+        {
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            try
+            {
+                con.Open();
+                string s = string.Format("Select TOP(1) Inventory_ID From PhysicalInventory_tbl where Inventory_ID like '{0}%' ORDER BY Inventory_ID DESC", Classes.IDs);
                 SqlCommand cmd = new SqlCommand(s, con);
                 if (cmd.ExecuteScalar() == null)
                 {
-                    Serial_Inventory_NO.Text = "1";
+                    Serial_Inventory_NO.Text = Classes.IDs + "0000001";
                 }
                 else
                 {
-                    Serial_Inventory_NO.Text = (int.Parse(cmd.ExecuteScalar().ToString()) + 1).ToString();
+                    Serial_Inventory_NO.Text = "0" + (Int64.Parse(cmd.ExecuteScalar().ToString()) + 1).ToString();
                 }
                 con.Close();
             }
             catch { }
-
         }  //Done
+        private void TheInventoryDetails_Click(object sender, RoutedEventArgs e)
+        {
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            try
+            {
+                con.Open();
+                string s = string.Format("select Inventory_ID,Inventory_Type From PhysicalInventory_tbl where Inventory_Type='Open'");
+                SqlCommand cmd = new SqlCommand(s, con);
+                if (cmd.ExecuteScalar() != null)
+                {
+                    MessageBoxResult result = MessageBox.Show("You Hve an Opened Physical Inventory , You wan't to Open It ?", "Confirmation",
+                             MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                    if (result == MessageBoxResult.OK)
+                    {
+                        string W = string.Format("select Top(1)Inventory_ID From PhysicalInventory_tbl ORDER BY Inventory_ID DESC");
+                        cmd = new SqlCommand(W, con);
+                        StartInventory();
+                        LoadOpenPhysicalInventory(cmd.ExecuteScalar().ToString());
+                    }
+                }
+                else
+                {
+                    if (Outletcbx.Text.Equals(""))
+                    {
+                        MessageBox.Show("you Shoud Choose The Resturant first !");
+                        return;
+                    }
+                    else if (Kitchencbx.Text.Equals(""))
+                    {
+                        MessageBox.Show("you Shoud Choose The Kitchen first !");
+                        return;
+                    }
+                    DeleteDataAtQtyOnHand();
+                    GetCodeofResturantAndKitchen();
+                    InsertToONHandTable();
+                    StartInventory();
+                    GetInventoryID();
+                    LoadAllItems();
+                }
+            }
+            catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+            con.Close();
 
+        }   //Done
+        private void DeleteDataAtQtyOnHand()
+        {
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            try
+            {
+                con.Open();
+                string s = "delete PhysicalInventory_QtyOnHand";
+                SqlCommand cmd = new SqlCommand(s, con);
+                cmd.ExecuteNonQuery();
+            }
+            catch { }
+        }   //Done
         private void LoadAllItems()
         {
             int NumberOfItems = 0; double SumOfCOst = 0;
             DataTable dt = new DataTable();
-            if (NotBlindChx.IsChecked == false)
+            if (NotBlindChx.IsChecked == true)
             {
-                dt.Columns.Add("ItemsID");
+                dt.Columns.Add("Code");
                 dt.Columns.Add("Name");
                 dt.Columns.Add("Name2");
                 dt.Columns.Add("Qty");
@@ -163,8 +254,8 @@ namespace Food_Cost
                 string FirstName = ""; string SeconName = "";
                 SqlDataReader reader = null;
                 SqlDataReader reader2 = null;
-                SqlConnection con = new SqlConnection(connString);
-                SqlConnection con2 = new SqlConnection(connString);
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                SqlConnection con2 = new SqlConnection(Classes.DataConnString);
                 SqlCommand cmd = new SqlCommand();
                 SqlCommand cmd2 = new SqlCommand();
                 try
@@ -215,9 +306,9 @@ namespace Food_Cost
                     con.Close();
                 }
             }
-            else if (NotBlindChx.IsChecked == true)
+            else if (NotBlindChx.IsChecked == false)
             {
-                dt.Columns.Add("ItemsID");
+                dt.Columns.Add("Code");
                 dt.Columns.Add("Name");
                 dt.Columns.Add("Name2");
                 dt.Columns.Add("Qty");
@@ -225,8 +316,8 @@ namespace Food_Cost
                 string FirstName = ""; string SeconName = "";
                 SqlDataReader reader = null;
                 SqlDataReader reader2 = null;
-                SqlConnection con = new SqlConnection(connString);
-                SqlConnection con2 = new SqlConnection(connString);
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                SqlConnection con2 = new SqlConnection(Classes.DataConnString);
                 SqlCommand cmd = new SqlCommand();
                 SqlCommand cmd2 = new SqlCommand();
                 try
@@ -280,249 +371,19 @@ namespace Food_Cost
             }
             NUmberOfItems.Text = NumberOfItems.ToString();
             Total_Price.Text = SumOfCOst.ToString();
-        }
-
-        private void ItemsDGV_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
-        {
-            int CountOfBindItems = 0;
-            int CountOfChecked = 0;
-            int CountOfComment = 0;
-            DataTable dt = new DataTable();
-            dt = ItemsDGV.DataContext as DataTable;
-            if (NotBlindChx.IsChecked == false)
-            {
-                int CountOfItems = 0;
-                try
-                {
-                    dt.Columns["Variance"].ReadOnly = false;
-                    dt = ((DataView)ItemsDGV.ItemsSource).ToTable();
-                    if (e.Column.Header == "Phsycal Qty")
-                    {
-                        try
-                        {
-                            (ItemsDGV.SelectedItem as DataRowView).Row[5] = (Convert.ToDouble((ItemsDGV.SelectedItem as DataRowView).Row.ItemArray[3]) - double.Parse((e.EditingElement as TextBox).Text)).ToString();
-                        }
-                        catch { }
-                    }
-                    dt.Columns["Phsycal Qty"].ReadOnly = false;
-                    dt.Columns["Variance"].ReadOnly = true;
-                }
-                catch { }
-            }  
+            Blind =(bool)NotBlindChx.IsChecked;
         }   //Done
-        
-       /* private void BackUpData()
-        {
-            string Path = System.IO.File.ReadAllText("BackUpData.txt");
-            SqlConnection con = new SqlConnection(connString);
-            string folderName = Path + "\\" + "FoodCost.bak";
-            con.Open();
-            SqlCommand cmd = new SqlCommand("BackUpDataBase", con);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@Name", folderName);
-            cmd.ExecuteNonQuery();
-            con.Close();
-        }*/
 
-        private void SaveBtn_Click(object sender, RoutedEventArgs e)
-        {
-           
-            if (Serial_Inventory_NO.Text.Equals(""))
-            {
-                MessageBox.Show("First You should Enter The Serial !");
-                return;
-            }
-            if (Inventory_NO.Text.Equals(""))
-            {
-                MessageBox.Show("First You should Enter The Manual Number !");
-                return;
-            }
-            if (Typecbx.Text.Equals(""))
-            {
-                MessageBox.Show("First You should Choose The Type !");
-                return;
-            }
-            if (InventoryDate.Text.Equals(""))
-            {
-                MessageBox.Show("First You should Choose The Date !");
-                return;
-            }
-            SaveInfoANdData();
-        }          //Done
-
-        private void SaveInfoANdData()
-        {
-            SqlConnection con = new SqlConnection(connString);
-            SqlConnection con2 = new SqlConnection(connString);
-            try
-            {
-                con2.Open();
-                string s = string.Format("select Blind From PhysicalInventory_tbl where Inventory_Type='Open'");
-                SqlCommand cmd2 = new SqlCommand(s, con2);
-                if (cmd2.ExecuteScalar() != null)
-                {
-                    if (cmd2.ExecuteScalar().ToString() == "False")
-                    {
-                        try
-                        {
-                            con.Open();
-                            for (int i = 0; i < ItemsDGV.Items.Count; i++)
-                            {
-                                s = string.Format("update PhysicalInventory_Items set Qty={0},InventoryQty={1},Variance={2} where Inventory_ID={3} and Item_ID={4}", Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]), Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]), Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[5]), Serial_Inventory_NO.Text, (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]));
-                                SqlCommand cmd = new SqlCommand(s, con);
-                                cmd.ExecuteNonQuery();
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.ToString());
-                        }
-                        finally
-                        {
-                            con.Close();
-                        }
-                    }
-                    else if (cmd2.ExecuteScalar().ToString() == "True")
-                    {
-                        try
-                        {
-                            con.Open();
-                            for (int i = 0; i < ItemsDGV.Items.Count; i++)
-                            {
-                                s = string.Format("update PhysicalInventory_Items set Qty={0} where Inventory_ID={1} and Item_ID={2}", Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]), Serial_Inventory_NO.Text, (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]));
-                                SqlCommand cmd = new SqlCommand(s, con);
-                                cmd.ExecuteNonQuery();
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.ToString());
-                        }
-                        finally
-                        {
-                            con.Close();
-                        }
-                    }
-                    try
-                    {
-                        con.Open();
-                        s = string.Format("update PhysicalInventory_tbl set Inventory_Num={0},Inventory_Date='{1}',Comment='{2}' where Inventory_ID={3}", Inventory_NO.Text, InventoryDate, commenttxt.Text, Serial_Inventory_NO.Text);
-                        SqlCommand cmd = new SqlCommand(s, con);
-                        cmd.ExecuteNonQuery();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.ToString());
-                    }
-                    finally
-                    {
-                        con.Close();
-                        MessageBox.Show("The inventory Saved Sucessfully !");
-                    }
-                }
-                else
-                {
-                    if (NotBlindChx.IsChecked == false)
-                    {
-                        try
-                        {
-                            con.Open();
-                            for (int i = 0; i < ItemsDGV.Items.Count; i++)
-                            {
-                                s = "Insert into PhysicalInventory_Items(Inventory_ID,Item_ID,Qty,InventoryQty,Variance,Cost) Values ( " + Serial_Inventory_NO.Text + ",'" + (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]) + "'," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[5]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6]) + ")";
-                                SqlCommand cmd = new SqlCommand(s, con);
-                                cmd.ExecuteNonQuery();
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.ToString());
-                        }
-                        finally
-                        {
-                            con.Close();
-                        }
-                    }
-                    else if (NotBlindChx.IsChecked == true)
-                    {
-                        try
-                        {
-                            con.Open();
-                            for (int i = 0; i < ItemsDGV.Items.Count; i++)
-                            {
-                                s = "Insert into PhysicalInventory_Items(Inventory_ID,Item_ID,Qty,Cost) Values ( " + Serial_Inventory_NO.Text + ",'" + (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]) + "'," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]) + ")";
-                                SqlCommand cmd = new SqlCommand(s, con);
-                                cmd.ExecuteNonQuery();
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.ToString());
-                        }
-                        finally
-                        {
-                            con.Close();
-                        }
-                    }
-                    try
-                    {
-                        con.Open();
-                        s = string.Format("insert into PhysicalInventory_tbl(Inventory_ID,Inventory_Num,Inventory_Type,Inventory_Date,Comment,Resturant_ID,KitchenID,Post_Date,UserID,Blind) values({0},{1},'{2}',{3},'{4}',{5},{6},GETDATE(),'{7}','{8}')", Serial_Inventory_NO.Text, Inventory_NO.Text, Typecbx.Text, InventoryDate.Text, commenttxt.Text, ValOfResturant, ValOfKitchen, MainWindow.UserID, NotBlindChx.IsChecked);
-                        SqlCommand cmd = new SqlCommand(s, con);
-                        cmd.ExecuteNonQuery();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.ToString());
-                    }
-                    finally
-                    {
-                        con.Close();
-                        MessageBox.Show("The inventory Saved Sucessfully !");
-                    }
-                }
-            }
-            catch { }
-        }
-
-        private void InsertToONHandTable()
-        {
-            SqlConnection con = new SqlConnection(connString);
-            try
-            {
-                con.Open();
-                SqlCommand cmd = new SqlCommand("MakeAnPhysicalInventory", con);
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@ResturantID", ValOfResturant);
-                cmd.Parameters.AddWithValue("@KitchenID", ValOfKitchen);
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-            }
-
-        }   //Done
         private void LoadOpenPhysicalInventory(string PhycialInventoryID)
         {
-            int NumOfItems = 0;double totalCost = 0;
-            bool Blind = false;
+            int NumOfItems = 0; double totalCost = 0;
             DataTable dt = new DataTable();
             DataTable Dat = new DataTable();
-            //Dat.Columns.Add("ItemsID");
-            //Dat.Columns.Add("Name");
-            //Dat.Columns.Add("Name2");
-            //Dat.Columns.Add("Qty");
-            //Dat.Columns.Add("Cost");
             string FirstName = ""; string SeconName = "";
             SqlDataReader reader = null;
             SqlDataReader reader2 = null;
-            SqlConnection con = new SqlConnection(connString);
-            SqlConnection con2 = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
             SqlCommand cmd = new SqlCommand();
             SqlCommand cmd2 = new SqlCommand();
             //
@@ -537,7 +398,7 @@ namespace Food_Cost
                 Serial_Inventory_NO.Text = row["Inventory_ID"].ToString();
                 Inventory_NO.Text = row["Inventory_Num"].ToString();
                 Typecbx.Text = row["Inventory_Type"].ToString();
-                InventoryDate.Text = row["Inventory_Date"].ToString();
+                InventoryDate.Text = Convert.ToDateTime(row["Inventory_Date"]).ToString("dd-MM-yyyy");
                 commenttxt.Text = row["Comment"].ToString();
                 Blind = Convert.ToBoolean(row["Blind"].ToString());
             }
@@ -549,9 +410,9 @@ namespace Food_Cost
             {
                 con.Close();
             }
-            if(Blind == false)
+            if (Blind == true)
             {
-                dt.Columns.Add("ItemsID");
+                dt.Columns.Add("Code");
                 dt.Columns.Add("Name");
                 dt.Columns.Add("Name2");
                 dt.Columns.Add("Qty");
@@ -611,7 +472,7 @@ namespace Food_Cost
             }
             else
             {
-                dt.Columns.Add("ItemsID");
+                dt.Columns.Add("Code");
                 dt.Columns.Add("Name");
                 dt.Columns.Add("Name2");
                 dt.Columns.Add("Qty");
@@ -667,83 +528,224 @@ namespace Food_Cost
                 NUmberOfItems.Text = NumOfItems.ToString();
                 Total_Price.Text = totalCost.ToString();
             }
-           
+
         }   //Done
 
-        private void TheInventoryDetails_Click(object sender, RoutedEventArgs e)
+        private void ItemsDGV_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
+            int CountOfBindItems = 0;
+            int CountOfChecked = 0;
+            int CountOfComment = 0;
+            DataTable dt = new DataTable();
+            dt = ItemsDGV.DataContext as DataTable;
+            if (NotBlindChx.IsChecked == true)
+            {
+                int CountOfItems = 0;
+                try
+                {
+                    dt.Columns["Variance"].ReadOnly = false;
+                    dt = ((DataView)ItemsDGV.ItemsSource).ToTable();
+                    if (e.Column.Header == "Phsycal Qty")
+                    {
+                        try
+                        {
+                            (ItemsDGV.SelectedItem as DataRowView).Row[5] = (double.Parse((e.EditingElement as TextBox).Text) - Convert.ToDouble((ItemsDGV.SelectedItem as DataRowView).Row.ItemArray[3]) ).ToString();
+                        }
+                        catch { }
+                    }
+                    dt.Columns["Phsycal Qty"].ReadOnly = false;
+                    dt.Columns["Variance"].ReadOnly = true;
+                }
+                catch { }
+            }  
+        }   //Done
+        
+       /* private void BackUpData()
+        {
+            string Path = System.IO.File.ReadAllText("BackUpData.txt");
             SqlConnection con = new SqlConnection(connString);
+            string folderName = Path + "\\" + "FoodCost.bak";
+            con.Open();
+            SqlCommand cmd = new SqlCommand("BackUpDataBase", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@Name", folderName);
+            cmd.ExecuteNonQuery();
+            con.Close();
+        }*/
+
+        private void SaveBtn_Click(object sender, RoutedEventArgs e)
+        {
+           
+            if (Serial_Inventory_NO.Text.Equals(""))
+            {
+                MessageBox.Show("First You should Enter The Serial !");
+                return;
+            }
+            if (Inventory_NO.Text.Equals(""))
+            {
+                MessageBox.Show("First You should Enter The Manual Number !");
+                return;
+            }
+            if (Typecbx.Text.Equals(""))
+            {
+                MessageBox.Show("First You should Choose The Type !");
+                return;
+            }
+            if (InventoryDate.Text.Equals(""))
+            {
+                MessageBox.Show("First You should Choose The Date !");
+                return;
+            }
+            SaveInfoANdData();
+        }          //Done
+
+        private void SaveInfoANdData()
+        {
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
             try
             {
-                con.Open();
-                string s = string.Format("select Inventory_ID,Inventory_Type From PhysicalInventory_tbl where Inventory_Type='Open'");
-                SqlCommand cmd = new SqlCommand(s, con);
-                if (cmd.ExecuteScalar() != null)
+                con2.Open();
+                string s = string.Format("select Blind From PhysicalInventory_tbl where Inventory_Type='Open'");
+                SqlCommand cmd2 = new SqlCommand(s, con2);
+                if (cmd2.ExecuteScalar() != null)
                 {
-                    MessageBoxResult result = MessageBox.Show("You Hve an Opened Physical Inventory , You wan't to Open It ?", "Confirmation",
-                             MessageBoxButton.OKCancel, MessageBoxImage.Warning);
-                    if (result == MessageBoxResult.OK)
+                    if (cmd2.ExecuteScalar().ToString() == "True")
                     {
-                        string W = string.Format("select Top(1)Inventory_ID From PhysicalInventory_tbl ORDER BY Inventory_ID DESC");
-                        cmd = new SqlCommand(W, con);
-                        StartInventory();
-                        LoadOpenPhysicalInventory(cmd.ExecuteScalar().ToString());
+                        try
+                        {
+                            con.Open();
+                            for (int i = 0; i < ItemsDGV.Items.Count; i++)
+                            {
+                                s = string.Format("update PhysicalInventory_Items set Qty={0},InventoryQty={1},Variance={2} where Inventory_ID={3} and Item_ID={4}", Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]), Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]), Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[5]), Serial_Inventory_NO.Text, (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]));
+                                SqlCommand cmd = new SqlCommand(s, con);
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.ToString());
+                        }
+                        finally
+                        {
+                            con.Close();
+                        }
+                    }
+                    else if (cmd2.ExecuteScalar().ToString() == "False")
+                    {
+                        try
+                        {
+                            con.Open();
+                            for (int i = 0; i < ItemsDGV.Items.Count; i++)
+                            {
+                                s = string.Format("update PhysicalInventory_Items set Qty={0} where Inventory_ID={1} and Item_ID={2}", Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]), Serial_Inventory_NO.Text, (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]));
+                                SqlCommand cmd = new SqlCommand(s, con);
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.ToString());
+                        }
+                        finally
+                        {
+                            con.Close();
+                        }
+                    }
+                    try
+                    {
+                        con.Open();
+                        s = string.Format("update PhysicalInventory_tbl set Inventory_Num={0},Inventory_Date='{1}',Comment='{2}' where Inventory_ID='{3}'", Inventory_NO.Text,Convert.ToDateTime(InventoryDate.Text).ToString("MM-dd-yyyy"), commenttxt.Text, Serial_Inventory_NO.Text);
+                        SqlCommand cmd = new SqlCommand(s, con);
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                    finally
+                    {
+                        con.Close();
+                        MessageBox.Show("The inventory Saved Sucessfully !");
                     }
                 }
                 else
                 {
-                    if (Outletcbx.Text.Equals(""))
+                    if (NotBlindChx.IsChecked == true)
                     {
-                        MessageBox.Show("you Shoud Choose The Resturant first !");
-                        return;
+                        try
+                        {
+                            con.Open();
+                            for (int i = 0; i < ItemsDGV.Items.Count; i++)
+                            {
+                                s = "Insert into PhysicalInventory_Items(Inventory_ID,Item_ID,Qty,InventoryQty,Variance,Cost) Values ( " + Serial_Inventory_NO.Text + ",'" + (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]) + "'," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[5]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6]) + ")";
+                                SqlCommand cmd = new SqlCommand(s, con);
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.ToString());
+                        }
+                        finally
+                        {
+                            con.Close();
+                        }
                     }
-                    else if (Kitchencbx.Text.Equals(""))
+                    else if (NotBlindChx.IsChecked == false)
                     {
-                        MessageBox.Show("you Shoud Choose The Kitchen first !");
-                        return;
+                        try
+                        {
+                            con.Open();
+                            for (int i = 0; i < ItemsDGV.Items.Count; i++)
+                            {
+                                s = "Insert into PhysicalInventory_Items(Inventory_ID,Item_ID,Qty,Cost) Values (' " + Serial_Inventory_NO.Text + "','" + (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]) + "'," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]) + ")";
+                                SqlCommand cmd = new SqlCommand(s, con);
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.ToString());
+                        }
+                        finally
+                        {
+                            con.Close();
+                        }
                     }
-
-                    GetCodeofResturantAndKitchen();
-                    InsertToONHandTable();
-                    StartInventory();
-                    GetInventoryID();
-                    LoadAllItems();
+                    try
+                    {
+                        con.Open();
+                        s = string.Format("insert into PhysicalInventory_tbl(Inventory_ID,Inventory_Num,Inventory_Type,Inventory_Date,Comment,Resturant_ID,KitchenID,Post_Date,UserID,Blind,WS,Create_Date) values('{0}',{1},'{2}','{3}','{4}',{5},{6},GETDATE(),'{7}','{8}','{9}',GETDATE())", Serial_Inventory_NO.Text, Inventory_NO.Text, Typecbx.Text,Convert.ToDateTime(InventoryDate.Text).ToString("MM-dd-yyyy"), commenttxt.Text, ValOfResturant, ValOfKitchen, MainWindow.UserID, NotBlindChx.IsChecked,Classes.WS);
+                        SqlCommand cmd = new SqlCommand(s, con);
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                    finally
+                    {
+                        con.Close();
+                        MessageBox.Show("The inventory Saved Sucessfully !");
+                    }
                 }
             }
-            catch (Exception ex) { MessageBox.Show(ex.ToString()); }
-            con.Close();
-            
-        }   //Done
-
-        private void StartInventory()
-        {
-            inventory.Visibility = Visibility.Visible;
-            NumberOfItemText.Visibility = Visibility.Visible;
-            NUmberOfItems.Visibility = Visibility.Visible;
-            TotalofItems.Visibility = Visibility.Visible;
-            Total_Price.Visibility = Visibility.Visible;
-            searchBtn.Visibility = Visibility.Visible;
-            InventoryChose.Visibility = Visibility.Hidden;
-            UndoBtn.Visibility = Visibility.Visible;
-            SaveBtn.Visibility = Visibility.Visible;
-            InventoryInfo.Visibility = Visibility.Visible;
-        }   //Done
-
-        private void Kitchencbx_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            TheInventoryDetails.IsEnabled = true;
-        }  //Done
-
+            catch { }
+        }
+        
         private void Typecbx_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if(Typecbx.Text !="")
             {
                if((Typecbx.SelectedItem as ComboBoxItem).Content.ToString() == "Closed")
                 {
+                    SaveBtn.IsEnabled = false;
                     inventory.IsEnabled = true;
                 }
                else if((Typecbx.SelectedItem as ComboBoxItem).Content.ToString() == "Open")
                 {
+                    SaveBtn.IsEnabled = true;
                     inventory.IsEnabled = false;
                 }
             }
@@ -751,7 +753,7 @@ namespace Food_Cost
 
         private void UndoBtn_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             try
             {
                 con.Open();

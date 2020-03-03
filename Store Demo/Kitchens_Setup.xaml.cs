@@ -23,13 +23,27 @@ namespace Food_Cost
     public partial class Setup_Kitchens : Window
     {
         string ResturantCode = "";
+        List<string> Authenticated = new List<string>();
         public Setup_Kitchens(string _RestaurantCode)
         {
-            ResturantCode = _RestaurantCode;
-            InitializeComponent();
-            ParentStore(_RestaurantCode);
-            FillDGV(_RestaurantCode);
-            MainUiFormat();
+            if (MainWindow.AuthenticationData.ContainsKey("Kitchens"))
+            {
+                Authenticated = MainWindow.AuthenticationData["Kitchens"];
+                if (Authenticated.Count == 0)
+                {
+                    MessageBox.Show("You Havent a Privilage to Open this Page");
+                    LogIn logIn = new LogIn();
+                    logIn.ShowDialog();
+                }
+                else
+                {
+                    ResturantCode = _RestaurantCode;
+                    InitializeComponent();
+                    ParentStore(_RestaurantCode);
+                    FillDGV(_RestaurantCode);
+                    MainUiFormat();
+                }
+            }
         }
 
         private void ParentStore(string Code)
@@ -135,141 +149,157 @@ namespace Food_Cost
 
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
-            DataTable DT = new DataTable();
-            if (Code_txt.Text == "")
+            if (Authenticated.IndexOf("SaveKitchens") == -1 && Authenticated.IndexOf("CheckAllKitchens") == -1)
             {
-                MessageBox.Show("Code Field Can't Be Empty");
-                return;
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
-
-            for (int i = 0; i < Stores_DGV.Items.Count; i++)
+            else
             {
-                if (Code_txt.Text == ((DataRowView)Stores_DGV.Items[i]).Row.ItemArray[0].ToString())
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                SqlConnection con2 = new SqlConnection(Classes.DataConnString);
+                DataTable DT = new DataTable();
+                if (Code_txt.Text == "")
                 {
-                    MessageBox.Show("This Code Is Not Avaliable");
+                    MessageBox.Show("Code Field Can't Be Empty");
                     return;
                 }
-            }
 
-            if(IsMain.IsChecked==true)
-            {
-                con.Open();
-                string s = string.Format("select IsMain from Setup_Kitchens where IsMain='True' and RestaurantID='{0}'", ResturantCode);
-                SqlCommand cmd = new SqlCommand(s, con);
-                if(cmd.ExecuteScalar()!=null)
+                for (int i = 0; i < Stores_DGV.Items.Count; i++)
                 {
-                    MessageBox.Show("Can't be more Than Main Kitchen !");
-                    return;
+                    if (Code_txt.Text == ((DataRowView)Stores_DGV.Items[i]).Row.ItemArray[0].ToString())
+                    {
+                        MessageBox.Show("This Code Is Not Avaliable");
+                        return;
+                    }
                 }
-            }
 
-            try
-            {
-                string FiledSelection = "Code,Name,Name2,IsMain,IsOutlet,IsActive,RestaurantID,Create_Date,WS,UserID";
-                string values = string.Format("'{0}', N'{1}', N'{2}', '{3}','{4}','{5}','{6}',{7},'{8}','{9}'", Code_txt.Text, Name_txt.Text, Name2_txt.Text, IsMain.IsChecked, IsOutlet.IsChecked, Active_chbx.IsChecked, ResturantCode, "GETDATE()", Classes.WS, MainWindow.UserID);
-                Classes.InsertRow("Setup_Kitchens", FiledSelection, values);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-                MainUiFormat();
+                if (IsMain.IsChecked == true)
+                {
+                    con.Open();
+                    string s = string.Format("select IsMain from Setup_Kitchens where IsMain='True' and RestaurantID='{0}'", ResturantCode);
+                    SqlCommand cmd = new SqlCommand(s, con);
+                    if (cmd.ExecuteScalar() != null)
+                    {
+                        MessageBox.Show("Can't be more Than Main Kitchen !");
+                        return;
+                    }
+                }
 
-                Stores_DGV.DataContext = null;
-                FillDGV(ResturantCode);
-            }
-            if (IsMain.IsChecked == true || IsOutlet.IsChecked == true)
-            {
-                string FiledSelectionKitchenItems = "KitchenID,ItemID,RestaurantID";
-                string FiledSelectionItems = "KitchenID,ItemID,RestaurantID,Qty,Units,Last_Cost,Current_Cost,Net_Cost";
-                string valuesItems = "";string ValuesKitchenItems = "";string Comma = "";
                 try
                 {
-                    DT = Classes.RetrieveData("Code", "Setup_Items");
-                    int NumOfItemsPerRec = DT.Rows.Count % 1000;
-                    int NumOfItems = 0;
-                    if (DT.Rows.Count > 1000)
-                    {
-                        for (int i = 0; i <= NumOfItemsPerRec; i++)
-                        {
-                            for (int q = NumOfItems; q < (i + 1) * 1000; q++)
-                            {
-                                ValuesKitchenItems = Comma + string.Format("('{0}','{1}','{2}')", Code_txt.Text, DT.Rows[0].ItemArray[0], ResturantCode);
-                                valuesItems = Comma + string.Format("('{0}','{1}','{2}','0','','','0','')", Code_txt.Text, DT.Rows[0].ItemArray[0], ResturantCode);
-                                Comma = ",";
-                            }
-                            NumOfItems = (i + 1) * 1000;
-                        }
-                        Classes.InsertRows("Setup_KitchenItems", FiledSelectionKitchenItems, ValuesKitchenItems);
-                        Classes.InsertRows("Items", FiledSelectionItems, valuesItems);
-                    }
-                    else
-                    {
-
-                        for(int i=0;i<DT.Rows.Count;i++)
-                        {
-                            ValuesKitchenItems += Comma + string.Format("('{0}','{1}','{2}')", Code_txt.Text, DT.Rows[0].ItemArray[0] , ResturantCode);
-                            valuesItems += Comma + string.Format("('{0}','{1}','{2}','0','','','','')", Code_txt.Text, DT.Rows[0].ItemArray[0], ResturantCode);
-                            Comma = ",";
-                        }
-                        Classes.InsertRows("Setup_KitchenItems", FiledSelectionKitchenItems, ValuesKitchenItems);
-                        Classes.InsertRows("Items", FiledSelectionItems, valuesItems);
-                    }
+                    string FiledSelection = "Code,Name,Name2,IsMain,IsOutlet,IsActive,RestaurantID,Create_Date,WS,UserID";
+                    string values = string.Format("'{0}', N'{1}', N'{2}', '{3}','{4}','{5}','{6}',{7},'{8}','{9}'", Code_txt.Text, Name_txt.Text, Name2_txt.Text, IsMain.IsChecked, IsOutlet.IsChecked, Active_chbx.IsChecked, ResturantCode, "GETDATE()", Classes.WS, MainWindow.UserID);
+                    Classes.InsertRow("Setup_Kitchens", FiledSelection, values);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     MessageBox.Show(ex.ToString());
                 }
                 finally
                 {
                     con.Close();
-                    con2.Close();
+                    MainUiFormat();
+
+                    Stores_DGV.DataContext = null;
+                    FillDGV(ResturantCode);
                 }
+                if (IsMain.IsChecked == true || IsOutlet.IsChecked == true)
+                {
+                    string FiledSelectionKitchenItems = "KitchenID,ItemID,RestaurantID,MinQty,MaxQty,shulfID";
+                    string FiledSelectionItems = "KitchenID,ItemID,RestaurantID,Qty,Units,Last_Cost,Current_Cost,Net_Cost";
+                    string valuesItems = ""; string ValuesKitchenItems = ""; string Comma = "";
+                    try
+                    {
+                        DT = Classes.RetrieveData("Code", "Setup_Items");
+                        int NumOfItemsPerRec = DT.Rows.Count % 1000;
+                        int NumOfItems = 0;
+                        if (DT.Rows.Count > 1000)
+                        {
+                            for (int i = 0; i <= NumOfItemsPerRec; i++)
+                            {
+                                for (int q = NumOfItems; q < (i + 1) * 1000; q++)
+                                {
+                                    ValuesKitchenItems = Comma + string.Format("('{0}','{1}','{2}','0','0','0')", Code_txt.Text, DT.Rows[q].ItemArray[0], ResturantCode);
+                                    valuesItems = Comma + string.Format("('{0}','{1}','{2}','0','','','0','')", Code_txt.Text, DT.Rows[q].ItemArray[0], ResturantCode);
+                                    Comma = ",";
+                                }
+                                NumOfItems = (i + 1) * 1000;
+                            }
+                            Classes.InsertRows("Setup_KitchenItems", FiledSelectionKitchenItems, ValuesKitchenItems);
+                            Classes.InsertRows("Items", FiledSelectionItems, valuesItems);
+                        }
+                        else
+                        {
+
+                            for (int i = 0; i < DT.Rows.Count; i++)
+                            {
+                                ValuesKitchenItems += Comma + string.Format("('{0}','{1}','{2}','0','0','0')", Code_txt.Text, DT.Rows[i].ItemArray[0], ResturantCode);
+                                valuesItems += Comma + string.Format("('{0}','{1}','{2}','0','','','','')", Code_txt.Text, DT.Rows[i].ItemArray[0], ResturantCode);
+                                Comma = ",";
+                            }
+                            Classes.InsertRows("Setup_KitchenItems", FiledSelectionKitchenItems, ValuesKitchenItems);
+                            Classes.InsertRows("Items", FiledSelectionItems, valuesItems);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                    finally
+                    {
+                        con.Close();
+                        con2.Close();
+                    }
+                }
+                MessageBox.Show("Saved Successfully");
             }
-            MessageBox.Show("Saved Successfully");
         }
 
         private void UpdateBtn_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-
-            if (IsMain.IsChecked == true)
+            if (Authenticated.IndexOf("UpdateKitchens") == -1 && Authenticated.IndexOf("CheckAllKitchens") == -1)
             {
-                con.Open();
-                string s = string.Format("select IsMain from Setup_Kitchens where IsMain='True' and RestaurantID='{0}'", ResturantCode);
-                SqlCommand cmd = new SqlCommand(s, con);
-                if (cmd.ExecuteScalar() != null)
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+
+                if (IsMain.IsChecked == true)
                 {
-                    MessageBox.Show("Can't be more Than Main Kitchen !");
-                    return;
+                    con.Open();
+                    string s = string.Format("select IsMain from Setup_Kitchens where IsMain='True' and RestaurantID='{0}'", ResturantCode);
+                    SqlCommand cmd = new SqlCommand(s, con);
+                    if (cmd.ExecuteScalar() != null)
+                    {
+                        MessageBox.Show("Can't be more Than Main Kitchen !");
+                        return;
+                    }
                 }
-            }
 
-            try
-            {
-                string FiledSlection = "Name,Name2,IsMain,IsOutlet,IsActive,Last_Modified_Date";
-                string values = string.Format("N'{0}', N'{1}', '{2}', '{3}','{4}',{5}", Name_txt.Text, Name2_txt.Text, IsMain.IsChecked,IsOutlet.IsChecked, Active_chbx.IsChecked, "GETDATE()");
-                string Where = string.Format("Code={0} and RestaurantID='{1}'", Code_txt.Text,ResturantCode);
-                Classes.UpdateRow(FiledSlection, values, Where, "Setup_Kitchens");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-                MainUiFormat();
+                try
+                {
+                    string FiledSlection = "Name,Name2,IsMain,IsOutlet,IsActive,Last_Modified_Date";
+                    string values = string.Format("N'{0}', N'{1}', '{2}', '{3}','{4}',{5}", Name_txt.Text, Name2_txt.Text, IsMain.IsChecked, IsOutlet.IsChecked, Active_chbx.IsChecked, "GETDATE()");
+                    string Where = string.Format("Code={0} and RestaurantID='{1}'", Code_txt.Text, ResturantCode);
+                    Classes.UpdateRow(FiledSlection, values, Where, "Setup_Kitchens");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                    MainUiFormat();
 
-                Stores_DGV.DataContext = null;
-                FillDGV(ResturantCode);
+                    Stores_DGV.DataContext = null;
+                    FillDGV(ResturantCode);
+                }
+                MessageBox.Show("Updated Successfully");
             }
-            MessageBox.Show("Updated Successfully");
         }
 
         private void UndoBtn_Click(object sender, RoutedEventArgs e)
@@ -279,36 +309,44 @@ namespace Food_Cost
 
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-            try
+            if (Authenticated.IndexOf("DeleteKitchens") == -1 && Authenticated.IndexOf("CheckAllKitchens") == -1)
             {
-                con.Open();
-                string s = string.Format("delete Setup_Kitchens where Code='{0}' and RestaurantID='{1}'", Code_txt.Text, ResturantCode);
-                SqlCommand cmd = new SqlCommand(s, con);
-                cmd.ExecuteNonQuery();
-
-                s =string.Format("delete Setup_KitchenItems where KitchenID='{0}' and RestaurantID='{1}'",Code_txt.Text,ResturantCode);
-                cmd = new SqlCommand(s, con);
-                cmd.ExecuteNonQuery();
-
-
-                s = string.Format("delete Items where KitchenID='{0}' and RestaurantID='{1}'", Code_txt.Text, ResturantCode);
-                cmd = new SqlCommand(s, con);
-                cmd.ExecuteNonQuery();
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-                MainUiFormat();
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                try
+                {
+                    con.Open();
+                    string s = string.Format("delete Setup_Kitchens where Code='{0}' and RestaurantID='{1}'", Code_txt.Text, ResturantCode);
+                    SqlCommand cmd = new SqlCommand(s, con);
+                    cmd.ExecuteNonQuery();
 
-                Stores_DGV.DataContext = null;
-                FillDGV(ResturantCode);
-            }
-            MessageBox.Show("Deleted Successfully");
+                    s = string.Format("delete Setup_KitchenItems where KitchenID='{0}' and RestaurantID='{1}'", Code_txt.Text, ResturantCode);
+                    cmd = new SqlCommand(s, con);
+                    cmd.ExecuteNonQuery();
+
+
+                    s = string.Format("delete Items where KitchenID='{0}' and RestaurantID='{1}'", Code_txt.Text, ResturantCode);
+                    cmd = new SqlCommand(s, con);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                    MainUiFormat();
+
+                    Stores_DGV.DataContext = null;
+                    FillDGV(ResturantCode);
+                }
+                MessageBox.Show("Deleted Successfully");
+            }   
         }
         
         private void RowClicked(object sender, MouseButtonEventArgs e)

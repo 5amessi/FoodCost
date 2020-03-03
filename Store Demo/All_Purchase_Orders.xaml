@@ -30,7 +30,7 @@
 
         <DataGrid  Name="PO_DGV" Grid.Row="1" ItemsSource="{Binding}" AutoGenerateColumns="True"  ColumnWidth="*" VerticalAlignment="Stretch"  ScrollViewer.CanContentScroll="True" MouseDoubleClick="PO_DGV_MouseDoubleClick" 
                           ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Auto" IsReadOnly="True"
-                          Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ActualHeight}" HorizontalContentAlignment="Center"/>
+                           HorizontalContentAlignment="Center"/>
 
     </Grid>
 </Window>

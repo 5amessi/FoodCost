@@ -31,7 +31,7 @@
 
         <DataGrid  Name="ResturantsDGV" Grid.Row="1" ItemsSource="{Binding}" AutoGenerateColumns="True"  ColumnWidth="*" VerticalAlignment="Stretch"  ScrollViewer.CanContentScroll="True" 
                    MouseDoubleClick="ResturantDGV_MouseDoubleClick"  ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" IsReadOnly="True"
-                          Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ActualHeight}" HorizontalContentAlignment="Center"/>
+                          HorizontalContentAlignment="Center"/>
 
     </Grid>
   

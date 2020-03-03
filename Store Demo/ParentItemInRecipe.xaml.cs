@@ -23,7 +23,6 @@ namespace Food_Cost
     public partial class ParentItemInRecipe : Window
     {
         GenerateBatch generateBatch;
-        string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
         string valofRecipe = "";
         string valofResturant = "";
         string valofKitchen = "";
@@ -59,10 +58,9 @@ namespace Food_Cost
         private void LoadAllItems(string Item)
         {
             string valofQtyItem = "";
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlDataReader reader = null;
-            SqlConnection con2 = new SqlConnection(connString);
+            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
             SqlDataReader reader2 = null;
             try
             {
@@ -164,7 +162,7 @@ namespace Food_Cost
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             string BaseWeight = ""; string BaseUnit = ""; string secondWeight = ""; string SecondUnit = ""; string YeildofQty = "";
             SqlCommand cmd = new SqlCommand();
             SqlDataReader reader = null;
@@ -199,6 +197,7 @@ namespace Food_Cost
                                 generateBatch.RecipeItemDData[generateBatch.CountofRecipeItemData, 0] = ((DataRowView)ParentItemsDGV.Items[i]).Row.ItemArray[1].ToString();
                                 generateBatch.RecipeItemDData[generateBatch.CountofRecipeItemData, 1] = (Convert.ToDouble((((DataRowView)ParentItemsDGV.Items[i]).Row.ItemArray[5]))/Convert.ToDouble(BaseWeight)).ToString();
                                 generateBatch.RecipeItemDData[generateBatch.CountofRecipeItemData, 2] = ((Convert.ToDouble(RecipeQty)) * (Convert.ToDouble(RecipeQeneration)) * Convert.ToDouble(((DataRowView)ParentItemsDGV.Items[i]).Row.ItemArray[5]) * (Convert.ToDouble(YeildofQty) / 100) * (Convert.ToDouble(reader["Current_Cost"]))).ToString();
+                                generateBatch.RecipeItemDData[generateBatch.CountofRecipeItemData, 3] = ((Convert.ToDouble((((DataRowView)ParentItemsDGV.Items[i]).Row.ItemArray[5])) - Convert.ToDouble((((DataRowView)ParentItemsDGV.Items[i]).Row.ItemArray[3])))*Convert.ToDouble(BaseWeight)).ToString();
                                 generateBatch.CountofRecipeItemData++;
                             }
                             else if (RecipeUnit == SecondUnit)
@@ -206,6 +205,8 @@ namespace Food_Cost
                                 generateBatch.RecipeItemDData[generateBatch.CountofRecipeItemData, 0] = ((DataRowView)ParentItemsDGV.Items[i]).Row.ItemArray[1].ToString();
                                 generateBatch.RecipeItemDData[generateBatch.CountofRecipeItemData, 1] = (Convert.ToDouble((((DataRowView)ParentItemsDGV.Items[i]).Row.ItemArray[5])) / Convert.ToDouble(BaseWeight)).ToString();
                                 generateBatch.RecipeItemDData[generateBatch.CountofRecipeItemData, 2] = ((Convert.ToDouble(RecipeQty)) * (Convert.ToDouble(RecipeQeneration)) * Convert.ToDouble(((DataRowView)ParentItemsDGV.Items[i]).Row.ItemArray[5]) * (Convert.ToDouble(secondWeight)) * (Convert.ToDouble(YeildofQty) / 100) * (Convert.ToDouble(reader["Current_Cost"]))).ToString();
+                                generateBatch.RecipeItemDData[generateBatch.CountofRecipeItemData, 3] = ((Convert.ToDouble((((DataRowView)ParentItemsDGV.Items[i]).Row.ItemArray[5])) - Convert.ToDouble((((DataRowView)ParentItemsDGV.Items[i]).Row.ItemArray[3])))*Convert.ToDouble(secondWeight)*Convert.ToDouble(BaseWeight)).ToString();
+
                                 generateBatch.CountofRecipeItemData++;
                             }
                         }

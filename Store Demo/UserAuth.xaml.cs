@@ -33,8 +33,7 @@ namespace Food_Cost
         }
         private void LoadUserClasses()
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             try
             {
                 con.Open();
@@ -79,8 +78,7 @@ namespace Food_Cost
         }
         private void IncreaseUserID()
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
 
             try
             {
@@ -135,8 +133,7 @@ namespace Food_Cost
                 MessageBox.Show("Please enter Name Field");
                 return;
             }
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             try
             {
                 con.Open();
@@ -176,14 +173,13 @@ namespace Food_Cost
         {
             int length = 0;
             var Privilage = new StringBuilder();
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             if(ListBox_UserPrivileges.IsVisible ==true)
             {
                 for(int i=1;i< ListBox_UserPrivileges.Items.Count;i++)
                 {
                     TreeViewItem TreeName = (ListBox_UserPrivileges.Items[i] as TreeViewItem);
-                    if (i != 1)
+                    if (i != 2)
                     {
                         Privilage.Append((ListBox_UserPrivileges.Items[i] as TreeViewItem).Name);
                         Privilage.Append(":");
@@ -250,9 +246,16 @@ namespace Food_Cost
                 try
                 {
                     con.Open();
-                    string s = string.Format("insert into UserPrivilages_tbl values ('{0}','{1}',GETDATE(),GETDATE(),'{2}')", UserClassIDtxt.Text,Privilage,MainWindow.UserID);
+                    string s = string.Format("update UserPrivilages_tbl set ClassPrv='{0}', ModifiedDate=GETDATE() where UserClass_ID='{1}'", Privilage, UserClassIDtxt.Text);
                     SqlCommand cmd = new SqlCommand(s, con);
-                    cmd.ExecuteNonQuery();
+                    int IfExist = cmd.ExecuteNonQuery();
+
+                    if (IfExist == 0)
+                    {
+                        s = string.Format("insert into UserPrivilages_tbl values ('{0}','{1}',GETDATE(),GETDATE(),'{2}')", UserClassIDtxt.Text, Privilage, MainWindow.UserID);
+                        cmd = new SqlCommand(s, con);
+                        cmd.ExecuteNonQuery();
+                    }
                 }
                 catch(Exception ex)
                 {
@@ -286,8 +289,7 @@ namespace Food_Cost
         }
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
 
             try
             {
@@ -316,8 +318,7 @@ namespace Food_Cost
                 ListView listView = sender as ListView;
                 if (sender != null && listView.SelectedItems != null && listView.SelectedItems.Count == 1)
                 {
-                    string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-                    SqlConnection con = new SqlConnection(connString);
+                    SqlConnection con = new SqlConnection(Classes.DataConnString);
                     try
                     {
                         con.Open();

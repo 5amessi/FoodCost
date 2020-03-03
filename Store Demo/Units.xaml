@@ -7,112 +7,221 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d">
 
-    <Border Padding="10">
-        <StackPanel>
+        <Grid Background="White" Margin="80 65 0 0">
+            <TabControl>
+                <TabItem Name="Unit" Header="Units">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="4*"/>
+                            <RowDefinition Height="6*"/>
+                        </Grid.RowDefinitions>
 
-            <Grid Margin="0 80 0 0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="70"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="1">
-                    <materialDesign:PackIcon Kind="Unity" Foreground="#566573" Height="24" Width="24" Margin="3"/>
-
-                    <GroupBox Foreground="Black" VerticalAlignment="Top"  Name="StoreGBX" Margin="0 0 20 0"  BorderBrush="#D0D3D4" BorderThickness="2" Padding="18" Header="Unit" FontSize="18" >
-                        <StackPanel>
-                            <Grid >
+                        <GroupBox Foreground="Black"  Name="StoreGBX" Margin="5" BorderBrush="#D0D3D4" BorderThickness="2" Header="Unit">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <StackPanel Margin="0 0 0 18" >
-                                    <TextBlock FontWeight="Bold" Text="Code" Margin="0" FontSize="14" Foreground="#FFCD0E0E" />
-                                    <TextBox Name="Code_txt" Padding="1" FontSize="13" IsReadOnly="True"/>
-                                </StackPanel>
 
-                                <StackPanel  Grid.Column="1" Margin="0 0 10 18" >
-                                    <TextBlock Text="" Margin="0 0" FontSize="12"  />
+                                <TextBlock FontWeight="Bold" Text="Code" Margin="0" Foreground="#FFCD0E0E"/>
+                                <TextBox Name="Code_txt" Padding="1" Grid.Row="1" Grid.ColumnSpan="2" IsReadOnly="True"/>
+
+                                <StackPanel  Grid.Column="1" >
+                                    <TextBlock Text=""/>
                                     <CheckBox Name="Active_chbx" VerticalAlignment="Bottom" HorizontalAlignment="Right">
-                                        <TextBlock FontSize="14" > <Run Foreground="Green" FontWeight="Bold">Active</Run>
+                                        <TextBlock> <Run Foreground="Green" FontWeight="Bold">Active</Run>
                                         </TextBlock>
                                     </CheckBox>
                                 </StackPanel>
 
+                                <TextBlock FontWeight="Bold" Grid.Row="2"  Foreground="#FFCD0E0E" Text="Name" />
+                                <TextBox Name="Name_txt" Padding="1" Grid.Row="3" Grid.ColumnSpan="2"/>
+
+
+                                <Grid Grid.Row="4" Grid.ColumnSpan="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+
+
+                                    <Button Grid.Column="0" Name="NewBtn" Foreground="Black" Background="#cacfd2"  Click="NewButtonClicked" Margin="5">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                            <materialDesign:PackIcon Kind="Plus" HorizontalAlignment="Left" />
+                                            <TextBlock HorizontalAlignment="Right"> New</TextBlock>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Name="SaveBtn" Grid.Column="1" Background="Green" Margin="5" Click="SaveBtn_Click">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                            <materialDesign:PackIcon Kind="CheckboxMarkedCircle" HorizontalAlignment="Left"/>
+                                            <TextBlock HorizontalAlignment="Right"> Save</TextBlock>
+                                        </StackPanel>
+                                    </Button>
+
+                                    <Button Name="UpdateBtn" Grid.Column="2" Background="Green" Margin="5" Click="UpdateBtn_Click">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                            <materialDesign:PackIcon Kind="ArrowDown" HorizontalAlignment="Left"  />
+                                            <TextBlock HorizontalAlignment="Right"> Update</TextBlock>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Grid.Column="3" Name="UndoBtn" Margin="5" Click="UndoBtn_Click">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                            <materialDesign:PackIcon Kind="Undo" HorizontalAlignment="Left" />
+                                            <TextBlock HorizontalAlignment="Right"> Undo</TextBlock>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Name="DeleteBtn" Grid.Column="4" Foreground="White" Background="#cb4335" Margin="5" Click="DeleteBtn_Click">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                            <materialDesign:PackIcon Kind="Delete" HorizontalAlignment="Left" />
+                                            <TextBlock HorizontalAlignment="Right"> Delete</TextBlock>
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+
                             </Grid>
+                        </GroupBox>
 
-                            <Grid>
-
-                                <StackPanel>
-                                    <TextBlock FontWeight="Bold"  Foreground="#FFCD0E0E" Text="Name" FontSize="14" />
-                                    <TextBox Name="Name_txt" Padding="1" FontSize="13" Margin="0 0 0 18"/>
-                                </StackPanel>
-
-                            </Grid>
-                            <Grid Margin="0 20 0 0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="0"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
-                                    <ColumnDefinition Width="*"></ColumnDefinition>
-                                    <ColumnDefinition Width="0"></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-
-
-                                <Button Grid.Column="1" Name="NewBtn" Foreground="Black" Background="#cacfd2"  Click="NewButtonClicked" FontSize="12" Padding="0" Margin="0,0,10.2,0" Height="Auto">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0">
-                                        <materialDesign:PackIcon Kind="Plus" HorizontalAlignment="Left" Width="20"/>
-                                        <TextBlock Padding="0" Margin="0" HorizontalAlignment="Right"> New</TextBlock>
-                                    </StackPanel>
-                                </Button>
-                                <Button Name="SaveBtn" Grid.Column="2"   Background="Green" FontSize="12" Padding="2" Margin="0 0 10 0" Click="SaveBtn_Click">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"   Margin="0">
-                                        <materialDesign:PackIcon Kind="CheckboxMarkedCircle" HorizontalAlignment="Left" Width="20" Height="20"/>
-                                        <TextBlock Padding="0" Margin="0" HorizontalAlignment="Right"> Save</TextBlock>
-                                    </StackPanel>
-                                </Button>
-                                <Button Name="UpdateBtn" Grid.Column="3" Background="Green" FontSize="12" Padding="2" Margin="0.4,0,10,0" Height="32" VerticalAlignment="Top" Click="UpdateBtn_Click">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"   Margin="0">
-                                        <materialDesign:PackIcon Kind="ArrowDown" HorizontalAlignment="Left"  />
-                                        <TextBlock Padding="0" Margin="0" HorizontalAlignment="Right"> Update</TextBlock>
-                                    </StackPanel>
-                                </Button>
-                                <Button Grid.Column="4" Name="UndoBtn" FontSize="12" Padding="2" Margin="0 0 10 0" Click="UndoBtn_Click">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"   Margin="0">
-                                        <materialDesign:PackIcon Kind="Undo" HorizontalAlignment="Left" />
-                                        <TextBlock Padding="0" Margin="0" HorizontalAlignment="Right"> Undo</TextBlock>
-                                    </StackPanel>
-                                </Button>
-                                <Button Name="DeleteBtn" Grid.Column="5"  Foreground="White" Background="#cb4335" FontSize="12" Padding="0" Margin="0,0,9.8,0" Height="Auto" Click="DeleteBtn_Click">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"   Margin="0">
-                                        <materialDesign:PackIcon Kind="Delete" HorizontalAlignment="Left" />
-                                        <TextBlock Padding="0" Margin="0" HorizontalAlignment="Right"> Delete</TextBlock>
-                                    </StackPanel>
-                                </Button>
-                            </Grid>
-                        </StackPanel>
-                    </GroupBox>
-
-                </StackPanel>
-                <!-- Grid Here-->
-                <StackPanel  Grid.Column="2">
-                    <TextBlock Text="Units" Margin="0 5"   FontWeight="Bold" Foreground="#566573" FontSize="15"  />
-                    <DataGrid Name="Unit_DGV" ItemsSource="{Binding}" AutoGenerateColumns="True" VerticalAlignment="Stretch" ScrollViewer.CanContentScroll="True"
-                          ScrollViewer.VerticalScrollBarVisibility="Auto"
-                          ScrollViewer.HorizontalScrollBarVisibility="Auto" 
-                          Padding="0 0 0 160"
+                        <DataGrid Name="Unit_DGV" Grid.Column="1" Grid.RowSpan="2" ItemsSource="{Binding}" AutoGenerateColumns="True" VerticalAlignment="Stretch" ScrollViewer.CanContentScroll="True"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" CanUserAddRows="False" ColumnWidth="*" IsReadOnly="True"
                           Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ActualHeight}" MouseLeftButtonUp="RowClicked">
 
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Code" IsReadOnly="True" Binding="{Binding Code}" Width="*"></DataGridTextColumn>
-                            <DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding Name}" Width="*"></DataGridTextColumn>
-                            <DataGridTextColumn Header="Is Active" IsReadOnly="True" Binding="{Binding IsActive}" Width="*"></DataGridTextColumn>
-                        </DataGrid.Columns>
+                            
+                        </DataGrid>
+
+                    </Grid>
+
+                </TabItem>
+
+                <TabItem Name="Recipes_Unit" Header="Recipes_Unit">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="3*"/>
+                            <RowDefinition Height="7*"/>
+                        </Grid.RowDefinitions>
+
+                        <GroupBox Foreground="Black"  Name="RecipeGBX" Margin="5" BorderBrush="#D0D3D4" BorderThickness="2" Header="Recipe Units" >
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="1" Text="Code" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBox Grid.Column="2" Name="TheCode_txt" HorizontalContentAlignment="Center" Margin="5" IsReadOnly="True"/>
+
+                            </Grid>
+                                
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="BaseUnit" HorizontalAlignment="Center"/>
+                                <TextBox Grid.Row="1" Name="BaseUnit" HorizontalContentAlignment="Center" Margin="5 0" IsReadOnly="True"/>
+
+                                <Button Grid.Row="1" Name="BtnRecipeUnit" IsEnabled="False" Grid.Column="1" Content="..." VerticalAlignment="Center" HorizontalAlignment="Center" Background="#FF838F99" Click="Unit1_Button" />
+
+                                <TextBlock Grid.Column="2" Text= " = " HorizontalAlignment="Center" Grid.RowSpan="2" VerticalAlignment="Center"/>
+
+                                <TextBlock Text="Qty" HorizontalAlignment="Center" Grid.Column="3"/>
+                                <TextBox Grid.Row="1" Name="ConvUnit2" Grid.Column="3" TextAlignment="Center" Margin="5 0" PreviewTextInput="NumberValidationTextBox" PreviewKeyDown="NeglectWhiteSpace"  HorizontalContentAlignment="Center" />
+
+                                <TextBlock Text="Unit" HorizontalAlignment="Center" Grid.Column="5" Visibility="Hidden"/>
+                                <TextBox Grid.Column="4" Grid.Row="1" Margin="5 0" Name="Secondunit" IsReadOnly="True" HorizontalContentAlignment="Center"/>
+
+                                <Button Grid.Row="1" Grid.Column="5" Name="BtnRecipeUnit2" IsEnabled="False" Content="..." VerticalAlignment="Center" HorizontalAlignment="Center" Background="#FF838F99" Click="Unit2_Button"/>
+
+                            </Grid>
+
+
+                            <Grid Grid.Row="2" Grid.ColumnSpan="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                        <ColumnDefinition Width="*"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+
+
+                                    <Button Grid.Column="0" Name="NewUnitBtn" Foreground="Black" Background="#cacfd2" Margin="5" Click="NewUnitBtn_Click">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                            <materialDesign:PackIcon Kind="Plus" HorizontalAlignment="Left"/>
+                                            <TextBlock HorizontalAlignment="Right"> New</TextBlock>
+                                        </StackPanel>
+                                    </Button>
+                                    
+                                    <Button Name="SaveUNitBtn" Grid.Column="1" Background="Green" Margin="5" Click="SaveUNitBtn_Click" IsEnabled="False">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                            <materialDesign:PackIcon Kind="CheckboxMarkedCircle" HorizontalAlignment="Left"/>
+                                            <TextBlock HorizontalAlignment="Right"> Save</TextBlock>
+                                        </StackPanel>
+                                    </Button>
+
+                                    <Button Name="UpdateUnitBtn" Grid.Column="2" Background="Green" Margin="5" Click="UpdateUnitBtn_Click" IsEnabled="False">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                        <materialDesign:PackIcon Kind="ArrowDown" HorizontalAlignment="Left"/>
+                                            <TextBlock HorizontalAlignment="Right"> Update</TextBlock>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Grid.Column="3" Name="UndoUnitBtn" Margin="5" Click="UndoUnitBtn_Click">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                            <materialDesign:PackIcon Kind="Undo" HorizontalAlignment="Left" />
+                                            <TextBlock HorizontalAlignment="Right"> Undo</TextBlock>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Name="DeleteUnitBtn" Grid.Column="4" Foreground="White" Background="#cb4335" IsEnabled="False" Margin="5" Click="DeleteUnitBtn_Click">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                            <materialDesign:PackIcon Kind="Delete" HorizontalAlignment="Left" />
+                                            <TextBlock HorizontalAlignment="Right"> Delete</TextBlock>
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+
+                            </Grid>
+                        </GroupBox>
+
+                    <DataGrid Name="RecipeUnit_DGV" Grid.Column="1" Grid.ColumnSpan="2"  ItemsSource="{Binding}" AutoGenerateColumns="True" VerticalAlignment="Stretch" ScrollViewer.CanContentScroll="True"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" IsReadOnly="True" MouseLeftButtonUp="RecipeUnit_DGV_MouseLeftButtonUp" ColumnWidth="*"
+                          Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ActualHeight}" >
                     </DataGrid>
-                </StackPanel>
-            </Grid>
-        </StackPanel>
-    </Border>
+
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Grid>
 </UserControl>

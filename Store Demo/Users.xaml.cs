@@ -161,6 +161,7 @@ namespace Food_Cost
             EnableUI();
             ClearUIFields();
             LoadAllJobs();
+            Active_chbx.IsChecked = true;
             newBtn.IsEnabled = false;
             UpdateBtn.IsEnabled = false;
             DeleteBtn.IsEnabled = false;

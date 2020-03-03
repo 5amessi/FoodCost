@@ -26,7 +26,6 @@ namespace Food_Cost
     {
         string CodeOfResturant = "";
         string CodeOfKitchens = "";
-        string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
         public ProcessBulkItem()
         {
             InitializeComponent();
@@ -34,7 +33,7 @@ namespace Food_Cost
         }
         private void LoadAllResturant()
         {
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlDataReader reader = null;
             try
             {
@@ -62,7 +61,7 @@ namespace Food_Cost
         private void ResturantComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Kitchencbx.Items.Clear();
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             try
             {
                 con.Open();
@@ -82,7 +81,7 @@ namespace Food_Cost
         }
         private void LoadAllKitchen()
         {
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlDataReader reader = null;
             try
             {
@@ -109,7 +108,7 @@ namespace Food_Cost
 
         private void kitchenComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlDataReader reader = null;
             try
             {
@@ -142,10 +141,10 @@ namespace Food_Cost
             dt.Columns.Add("Unit");
             dt.Columns.Add("Cost");
             
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlCommand cmd = new SqlCommand();
             SqlDataReader reader = null;
-            SqlConnection con2 = new SqlConnection(connString);
+            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
             SqlCommand cmd2 = new SqlCommand();
             SqlDataReader reader2 = null;
             try
@@ -220,10 +219,10 @@ namespace Food_Cost
             Dat.Columns.Add("Cost Precentage");  
 
             ItemsofBulkItemsDGV.Visibility = Visibility.Visible;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlCommand cmd = new SqlCommand();
             SqlDataReader reader = null;
-            SqlConnection con2 = new SqlConnection(connString);
+            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
             SqlCommand cmd2 = new SqlCommand();
             SqlDataReader reader2 = null;
             DataTable dt = new DataTable();
@@ -261,22 +260,22 @@ namespace Food_Cost
 
             }
         }
-        private int GetID()
+        private string GetID()
         {
-            int TheID = 0;
-            SqlConnection con = new SqlConnection(connString);
+            string TheID = "";
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             try
             {
                 con.Open();
-                string s = "select Top(1)ProcessBulk_ID from Process_BulkItems order by ProcessBulk_ID DESC";
+                string s = string.Format("select Top(1)ProcessBulk_ID from Process_BulkItems where ProcessBulk_ID like '{0}%' order by ProcessBulk_ID DESC",Classes.DataConnString);
                 SqlCommand cmd = new SqlCommand(s, con);
                 if(cmd.ExecuteScalar() == null)
                 {
-                    TheID = 1;
+                    TheID = Classes.IDs + "0000001";
                 }
                 else
                 {
-                    TheID = Convert.ToInt32(cmd.ExecuteScalar().ToString());
+                    TheID = "0" + (Int64.Parse(cmd.ExecuteScalar().ToString()) + 1).ToString();
                 }
             }
             catch (Exception ex)
@@ -292,16 +291,16 @@ namespace Food_Cost
 
         private void BulkItemsBtn_Click(object sender, RoutedEventArgs e)
         {
-            int ID = GetID();
+            string ID = GetID();
             string BaseCode = "";
             string BaseQty = "";
             string SUBQty = "";
             double BaseCost = 0;
             string BaseWeight = "";
             double CalcQty = 0; double CalcCost = 0;
-            SqlConnection con = new SqlConnection(connString);
+            SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlCommand cmd = new SqlCommand();
-            SqlConnection con2 = new SqlConnection(connString);
+            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
             SqlCommand cmd2 = new SqlCommand();
             SqlDataReader reader = null;
             for (int i = 0; i < ItemsDGV.Items.Count; i++)
@@ -349,7 +348,7 @@ namespace Food_Cost
                             
                             try
                             {
-                                string w = string.Format("insert into Process_BulkItems_Items(ProcessBulk_ID,ParentItem_ID,ParentQty,ParentCost,ChiledItem_ID,ChiledQty,ChiledCost) values({0},{1},{2},{3},{4},{5},{6})", ID, BaseCode, ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4].ToString(), ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6].ToString(), reader["Code"], BaseCost, BaseCost);
+                                string w = string.Format("insert into Process_BulkItems_Items(ProcessBulk_ID,ParentItem_ID,ParentQty,ParentCost,ChiledItem_ID,ChiledQty,ChiledCost) values('{0}','{1}',{2},{3},{4},{5},{6})", ID, BaseCode, ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4].ToString(), ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6].ToString(), reader["Code"], BaseCost, BaseCost);
                                 cmd2 = new SqlCommand(w, con2);
                                 cmd2.ExecuteNonQuery();
                             }
@@ -367,7 +366,7 @@ namespace Food_Cost
                         catch (Exception ex) { MessageBox.Show(ex.ToString()); }
                         try
                         {
-                            string w = string.Format("insert into Process_BulkItems(ProcessBulk_ID,Process_Date,User_ID,Resturant_ID,KitchenID,Post_Date) values({0},GETDATE(),'{1}',{2},{3},GETDATE())", ID, MainWindow.UserID,CodeOfResturant,CodeOfKitchens);
+                            string w = string.Format("insert into Process_BulkItems(ProcessBulk_ID,Process_Date,User_ID,Resturant_ID,KitchenID,Post_Date) values('{0}',GETDATE(),'{1}',{2},{3},GETDATE())", ID, MainWindow.UserID,CodeOfResturant,CodeOfKitchens);
                             cmd2 = new SqlCommand(w, con2);
                             cmd2.ExecuteNonQuery();
                         }

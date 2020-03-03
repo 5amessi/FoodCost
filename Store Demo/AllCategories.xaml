@@ -36,7 +36,7 @@
 
         <DataGrid  Name="CategoryDGV" Grid.Row="1" ItemsSource="{Binding}" AutoGenerateColumns="True" VerticalAlignment="Stretch" ScrollViewer.CanContentScroll="True"
                           ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" MouseDoubleClick="MouseDoubleClick_click"
-                          Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ActualHeight}" CanUserAddRows="False">
+                           CanUserAddRows="False">
         </DataGrid>
 
     </Grid>

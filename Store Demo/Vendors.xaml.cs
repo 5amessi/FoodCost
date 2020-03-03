@@ -97,6 +97,7 @@ namespace Food_Cost
         {
             EnableUI();
             ClearUIFields();
+            Active_chbx.IsChecked = true;
             NewBtn.IsEnabled = false;
             UpdateBtn.IsEnabled = false;
             DeleteBtn.IsEnabled = false;

@@ -38,7 +38,7 @@
 
         <DataGrid  Name="SubCategories" Grid.Row="1" ItemsSource="{Binding}" AutoGenerateColumns="True" VerticalAlignment="Stretch" ScrollViewer.CanContentScroll="True"
                           ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" Padding="0 0 0 160" MouseDoubleClick="MouseDoubleClick_click"
-                          Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}, Path=ActualHeight}" CanUserAddRows="False">
+                           CanUserAddRows="False">
 
         </DataGrid>
 

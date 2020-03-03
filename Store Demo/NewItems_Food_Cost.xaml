@@ -131,8 +131,8 @@
                                 <TextBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Name="Name1txt" HorizontalContentAlignment="Center" />
 
                                 <TextBlock Grid.Row="1" Grid.Column="2" Text="Prefared Vendor: " VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                <ComboBox Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" Name="PrefVendortxt" HorizontalContentAlignment="Center"/>
-                                <Button Grid.Row="1" Grid.Column="4" Content="..." VerticalAlignment="Center" HorizontalAlignment="Center" Background="#FF838F99" Click="Button_Click"/>
+                                <TextBox Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" Name="PrefVendortxt" HorizontalContentAlignment="Center" IsReadOnly="True"/>
+                                <Button Grid.Row="1" Grid.Column="4" Content="..." VerticalAlignment="Center" HorizontalAlignment="Center" Background="#FF838F99" Click="Vendor_Button"/>
 
                                 <TextBlock Grid.Row="2" Text="Name2: *"  VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Red"/>
                                 <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Name="Name2txt" HorizontalContentAlignment="Center"/>
@@ -196,11 +196,20 @@
                                         <TextBlock Grid.Column="3" Text="%" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black"/>
                                     </StackPanel>
 
-                                    <StackPanel Orientation="Horizontal" Grid.Column="4">
+                                    <Grid Grid.Column="3" >
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
                                         <TextBlock Text="Weight: *" VerticalAlignment="Center" Foreground="Red"/>
-                                        <TextBox VerticalAlignment="Center" HorizontalAlignment="Left" Width="60" Margin="10 0 0 0" Name="Weight" PreviewTextInput="NumberValidationTextBox" PreviewKeyDown="NeglectWhiteSpace"  HorizontalContentAlignment="Center" />
-                                        <ComboBox FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="Black" Width="50" Margin="12 0 0 2" Name="unit" HorizontalContentAlignment="Center"/>
-                                    </StackPanel>
+                                        <TextBox Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="60" Margin="10 0 0 0" Name="Weight" PreviewTextInput="NumberValidationTextBox" PreviewKeyDown="NeglectWhiteSpace"  HorizontalContentAlignment="Center" />
+                                        <TextBox Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="Black" Width="50" Margin="2" Name="unit" HorizontalContentAlignment="Center"/>
+                                        <Button Grid.Column="3" Grid.Row="1"  Content="..." VerticalAlignment="Center" HorizontalAlignment="Center" Background="#FF838F99" Click="Unit_Button"/>
+
+                                    </Grid>
+                                  
                                 </Grid>
 
 
@@ -224,18 +233,25 @@
                                                 <ColumnDefinition/>
                                                 <ColumnDefinition/>
                                                 <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
 
                                             <TextBlock Text="Unit" HorizontalAlignment="Center"/>
-                                            <ComboBox Grid.Row="1" Name="unit2" HorizontalContentAlignment="Center" Margin="5 0" SelectionChanged="unit2_SelectionChanged"/>
+                                            <TextBox Grid.Row="1" Name="unit2" HorizontalContentAlignment="Center" Margin="5 0" IsReadOnly="True"/>
 
-                                            <TextBlock Grid.Column="1" Text= " = " HorizontalAlignment="Center" Grid.RowSpan="2" VerticalAlignment="Center"/>
+                                            <Button Grid.Row="1" Grid.Column="1" Content="..." VerticalAlignment="Center" HorizontalAlignment="Center" Background="#FF838F99" Click="Unit1_Button"/>
+                                            
+                                            <TextBlock Grid.Column="2" Text= " = " HorizontalAlignment="Center" Grid.RowSpan="2" VerticalAlignment="Center"/>
 
-                                            <TextBlock Text="Qty" HorizontalAlignment="Center" Grid.Column="2"/>
-                                            <TextBox Grid.Row="1" Name="ConvUnit2" Grid.Column="2" TextAlignment="Center" Margin="5 0" PreviewTextInput="NumberValidationTextBox" PreviewKeyDown="NeglectWhiteSpace"  HorizontalContentAlignment="Center" />
+                                            <TextBlock Text="Qty" HorizontalAlignment="Center" Grid.Column="3"/>
+                                            <TextBox Grid.Row="1" Name="ConvUnit2" Grid.Column="3" TextAlignment="Center" Margin="5 0" PreviewTextInput="NumberValidationTextBox" PreviewKeyDown="NeglectWhiteSpace"  HorizontalContentAlignment="Center" />
 
                                             <TextBlock Text="Unit" HorizontalAlignment="Center" Grid.Column="5" Visibility="Hidden"/>
-                                            <ComboBox Grid.Column="4" Grid.Row="1" Margin="5 0" Name="unit_txt1" />
+                                            <TextBox Grid.Column="4" Grid.Row="1" Margin="5 0" Name="unit_txt1" IsReadOnly="True" HorizontalContentAlignment="Center"/>
+
+                                            <Button Grid.Row="1" Grid.Column="5" Content="..." VerticalAlignment="Center" HorizontalAlignment="Center" Background="#FF838F99" Click="Unit2_Button"/>
+                                            
                                         </Grid>
                                     </GroupBox>
 

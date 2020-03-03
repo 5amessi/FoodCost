@@ -24,7 +24,16 @@ namespace Food_Cost
     {
         Transfer_Kitchens transfer_Kitchens;
         Transfer_Resturant Transfer_Resturant;
+        GenerateBatch generateBatch;
         string Resturant;
+
+        public All_Resturants(GenerateBatch _GenerateBatch)
+        {
+            InitializeComponent();
+            generateBatch = _GenerateBatch;
+            LoadResturants("GenerateBatch");
+        }
+
         public All_Resturants(Transfer_Resturant _Transfer_Resturant,string _resturant)
         {
             InitializeComponent();
@@ -40,7 +49,7 @@ namespace Food_Cost
             LoadResturants("TransferKitchen");
         }
 
-        private void LoadResturants( string Transfer)
+        private void LoadResturants(string Transfer)
         {
             MainWindow main = Application.Current.MainWindow as MainWindow;
             SqlConnection con = new SqlConnection(Classes.DataConnString);
@@ -48,7 +57,7 @@ namespace Food_Cost
             {
                 con.Open();
                 string s = "";
-                if (Transfer == "TransferKitchen")
+                if (Transfer == "TransferKitchen" || Transfer== "GenerateBatch")
                      s = "select Code,Name,Name2,IsMain,IsActive from Setup_Restaurant where IsActive='True'";
                 else if (Transfer == "Transfer_Resturant")
                 {
@@ -94,10 +103,16 @@ namespace Food_Cost
                         
                         this.Close();
                     }
-                    else
+                    else if(main.GridMain.Children[0].GetType().Name == "Transfer_Kitchens")
                     {
                             transfer_Kitchens.Resturant.Text = (grid.SelectedItem as DataRowView).Row["Name"] as string;
 
+                        this.Close();
+                    }
+                    else
+                    {
+                        generateBatch.StoreIDcbx.Text = (grid.SelectedItem as DataRowView).Row["Name"] as string;
+                        generateBatch.valofStore = ((DataRowView)ResturantsDGV.SelectedItems[0]).Row.ItemArray[0].ToString();
                         this.Close();
                     }
                 }
