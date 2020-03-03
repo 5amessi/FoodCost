@@ -38,11 +38,12 @@
             this.BtnGenRecipes = new System.Windows.Forms.Button();
             this.PItemsBtn = new System.Windows.Forms.Button();
             this.BtnReceiveRequests = new System.Windows.Forms.Button();
+            this.BtnTransferOut = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // Recipes_items
             // 
-            this.Recipes_items.Location = new System.Drawing.Point(628, 307);
+            this.Recipes_items.Location = new System.Drawing.Point(271, 251);
             this.Recipes_items.Name = "Recipes_items";
             this.Recipes_items.Size = new System.Drawing.Size(113, 50);
             this.Recipes_items.TabIndex = 586;
@@ -62,7 +63,7 @@
             // 
             // BtnStores
             // 
-            this.BtnStores.Location = new System.Drawing.Point(509, 307);
+            this.BtnStores.Location = new System.Drawing.Point(152, 251);
             this.BtnStores.Name = "BtnStores";
             this.BtnStores.Size = new System.Drawing.Size(113, 50);
             this.BtnStores.TabIndex = 589;
@@ -140,11 +141,22 @@
             this.BtnReceiveRequests.UseVisualStyleBackColor = true;
             this.BtnReceiveRequests.Click += new System.EventHandler(this.BtnReceiveRequests_Click);
             // 
+            // BtnTransferOut
+            // 
+            this.BtnTransferOut.Location = new System.Drawing.Point(488, 12);
+            this.BtnTransferOut.Name = "BtnTransferOut";
+            this.BtnTransferOut.Size = new System.Drawing.Size(113, 50);
+            this.BtnTransferOut.TabIndex = 599;
+            this.BtnTransferOut.Text = "TransferOut";
+            this.BtnTransferOut.UseVisualStyleBackColor = true;
+            this.BtnTransferOut.Click += new System.EventHandler(this.BtnTransferOut_Click);
+            // 
             // ReportsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(580, 114);
+            this.ClientSize = new System.Drawing.Size(850, 386);
+            this.Controls.Add(this.BtnTransferOut);
             this.Controls.Add(this.BtnReceiveRequests);
             this.Controls.Add(this.BtnGenRecipes);
             this.Controls.Add(this.BtnEndMonth);
@@ -173,5 +185,6 @@
         private System.Windows.Forms.Button BtnGenRecipes;
         private System.Windows.Forms.Button PItemsBtn;
         private System.Windows.Forms.Button BtnReceiveRequests;
+        private System.Windows.Forms.Button BtnTransferOut;
     }
 }

@@ -26,7 +26,6 @@ namespace Food_Cost.Forms
 
         public void UC_TVKitchens_Load()
         {
-            TVKitchens = Classes.LoadStores(TVKitchens);
         }
 
         public void Kitchen_Checked(ref string f, ref string Where)

@@ -61,18 +61,6 @@ namespace Food_Cost.Forms
             Frm.Show();
         }
 
-        private void BtnKitchenTrans_Click(object sender, EventArgs e)
-        {
-            Rpt_TransferItems Frm = new Rpt_TransferItems();
-            Frm.Show();
-        }
-
-        private void BtnInKitchenTrans_Click(object sender, EventArgs e)
-        {
-            Rpt_InterKitchenTransfer Frm = new Rpt_InterKitchenTransfer();
-            Frm.Show();
-        }
-
         private void BtnVendors_Click(object sender, EventArgs e)
         {
             Rpt_Vendors Frm = new Rpt_Vendors();
@@ -100,6 +88,12 @@ namespace Food_Cost.Forms
         private void BtnReceiveRequests_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void BtnTransferOut_Click(object sender, EventArgs e)
+        {
+            Rpt_TransferOut Frm = new Rpt_TransferOut();
+            Frm.Show();
         }
     }
 }

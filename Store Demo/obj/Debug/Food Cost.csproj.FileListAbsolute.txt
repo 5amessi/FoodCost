@@ -3911,3 +3911,8 @@ E:\Michael\Git_FoodCost\Store Demo\obj\Debug\Food_Cost.application
 E:\Michael\Git_FoodCost\Store Demo\obj\Debug\Food Cost.csproj.CopyComplete
 E:\Michael\Git_FoodCost\Store Demo\obj\Debug\Food_Cost.exe
 E:\Michael\Git_FoodCost\Store Demo\obj\Debug\Food_Cost.pdb
+E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\AllUnits.g.cs
+E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\AllVendor.g.cs
+E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\AllUnits.baml
+E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\AllVendor.baml
+E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.Forms.Rpt_TransferOut.resources

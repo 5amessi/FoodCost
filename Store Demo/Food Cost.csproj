@@ -222,6 +222,12 @@
     <Compile Include="Forms\Rpt_RecipesItemsView.designer.cs">
       <DependentUpon>Rpt_RecipesItemsView.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Rpt_TransferOut.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Rpt_TransferOut.designer.cs">
+      <DependentUpon>Rpt_TransferOut.cs</DependentUpon>
+    </Compile>
     <Compile Include="ItemsDefinitionSetup.xaml.cs">
       <DependentUpon>ItemsDefinitionSetup.xaml</DependentUpon>
     </Compile>
@@ -275,6 +281,18 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>CR_RequestTransferOrder.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\CR_TransferOutDetails.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CR_TransferOutDetails.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\CR_TransferOutSummary.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CR_TransferOutSummary.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Report\CR_VendorsDetails.cs">
@@ -467,12 +485,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>CR_Transfer.rpt</DependentUpon>
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Report\CR_Vendors.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CR_Vendors.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="setup.xaml.cs">
@@ -751,6 +763,9 @@
     <EmbeddedResource Include="Forms\Rpt_TransferItems.resx">
       <DependentUpon>Rpt_TransferItems.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Rpt_TransferOut.resx">
+      <DependentUpon>Rpt_TransferOut.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Rpt_Vendors.resx">
       <DependentUpon>Rpt_Vendors.cs</DependentUpon>
     </EmbeddedResource>
@@ -826,9 +841,13 @@
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>CR_Transfer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Report\CR_Vendors.rpt">
+    <EmbeddedResource Include="Report\CR_TransferOutDetails.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
-      <LastGenOutput>CR_Vendors.cs</LastGenOutput>
+      <LastGenOutput>CR_TransferOutDetails.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\CR_TransferOutSummary.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CR_TransferOutSummary.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Report\CR_VendorsDetails.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
