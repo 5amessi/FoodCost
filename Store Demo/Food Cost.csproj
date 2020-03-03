@@ -247,6 +247,42 @@
       <DependentUpon>Cr_MonthClosing.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Report\CR_ReceiveTransfer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CR_ReceiveTransfer.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\CR_ReceiveTransferItemes.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CR_ReceiveTransferItemes.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\CR_RequestTransferItems.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CR_RequestTransferItems.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\CR_RequestTransferOrder.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CR_RequestTransferOrder.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\CR_VendorsDetails.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CR_VendorsDetails.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Report\CR_VendorsSummary.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CR_VendorsSummary.rpt</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="StockInventory.xaml.cs">
       <DependentUpon>StockInventory.xaml</DependentUpon>
     </Compile>
@@ -748,9 +784,25 @@
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>CR_ReceiveOrder.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Report\CR_ReceiveTransfer.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CR_ReceiveTransfer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\CR_ReceiveTransferItemes.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CR_ReceiveTransferItemes.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Report\CR_Recipes.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>CR_Recipes.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\CR_RequestTransferItems.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CR_RequestTransferItems.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\CR_RequestTransferOrder.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CR_RequestTransferOrder.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Report\CR_Stores.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
@@ -763,6 +815,14 @@
     <EmbeddedResource Include="Report\CR_Vendors.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>CR_Vendors.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\CR_VendorsDetails.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CR_VendorsDetails.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\CR_VendorsSummary.rpt">
+      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
+      <LastGenOutput>CR_VendorsSummary.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_TVKitchens.resx">
       <DependentUpon>UC_TVKitchens.cs</DependentUpon>

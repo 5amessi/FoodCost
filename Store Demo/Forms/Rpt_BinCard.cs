@@ -64,7 +64,7 @@ namespace Food_Cost.Forms
             foreach (string KitName in uC_TVKitchens1.KitchensList)
             {
                 string where = " _Date < '" + Classes.ADjDate(dtp_from.Value) + "' AND Item_ID = '" + TxtItemCode.Text + "' AND KitchenName = '" + KitName + "' order by  _DATE DESC";
-                DataTable DTTop = Classes.RetrieveData("top 1 * ", where, "TransActions");
+                DataTable DTTop = Classes.RetrieveData("top 1 * ", where, "TransActionsView");
                 if (DTTop.Rows.Count != 0)
                 {
                     Qty = DTTop.Rows[0]["Current_Qty"].ToString();
@@ -76,7 +76,7 @@ namespace Food_Cost.Forms
                     BBalance[KitName] = new Tuple<string, string>("0", "0");
                 }
                 where = " _Date <= '" + Classes.ADjDate(dtp_to.Value) + "' AND Item_ID = '" + TxtItemCode.Text + "' AND KitchenName = '" + KitName + "' order by  _DATE DESC";
-                DTTop = Classes.RetrieveData("top 1 * ", where, "TransActions");
+                DTTop = Classes.RetrieveData("top 1 * ", where, "TransActionsView");
                 if (DTTop.Rows.Count != 0)
                 {
                     Qty = DTTop.Rows[0]["Current_Qty"].ToString();
@@ -92,7 +92,7 @@ namespace Food_Cost.Forms
 
         private void btnRport_Click(object sender, EventArgs e)
         {            
-            DtItem_BinCard = Classes.RetrieveData("*", "TransActionsView");
+            DtItem_BinCard = Classes.RetrieveData("*", "BinCard");
             DtItem_BinCard.Clear();
             if (!CBMyKitchen.Checked)
             {

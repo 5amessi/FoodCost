@@ -12,7 +12,7 @@ using System.IO;
 using System.Configuration;
 using System.Globalization;
 using System.Threading;
-
+//git
 namespace Food_Cost
 {
     public class Classes
@@ -242,6 +242,16 @@ namespace Food_Cost
                 TVDates.Nodes[DR["Year"].ToString()].Nodes.Add("Month" + DR["Month"].ToString());
             }
             return TVDates;
+        }
+
+        public static string ADjDate(DateTime Date)
+        {
+            return Convert.ToDateTime(Date).ToString("MM-dd-yyyy");
+        }
+
+        public static string ADjDateto(DateTime Date)
+        {
+            return Convert.ToDateTime(Date).ToString("MM-dd-yyyy") + " 11:59:59";
         }
     }
 }

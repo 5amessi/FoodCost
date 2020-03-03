@@ -91,8 +91,7 @@ namespace Food_Cost.Forms
             {
                 dt = Classes.RetrieveData("*", Where, "ReceiveTransferItems");
                 Rec.Rpt = new CR_ReceiveTransferItemes();
-            }
-           
+            }           
      
             Rec.Rpt.SetDataSource(dt);
             Rec.Rpt.SetParameterValue("Rpt_Fdate", dtp_from.Value);

@@ -3889,7 +3889,6 @@ E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.Forms.Rpt_GeneratedRecipe
 E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.Forms.Rpt_InterKitchenTransfer.resources
 E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.Forms.Rpt_InventoryStats.resources
 E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.Forms.Rpt_MonthClosing.resources
-E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.Forms.Rpt_PurchaseItems.resources
 E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.Forms.Rpt_PurchaseOrder.resources
 E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.Forms.Rpt_ReceiveItems.resources
 E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.Forms.Rpt_ReceiveOrder.resources
@@ -3905,3 +3904,6 @@ E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.application
 E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.exe
 E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.pdb
 E:\Michael\Git_FoodCost\Store Demo\bin\Debug\CRVsPackageLib.dll
+E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\ItemsDefinitionSetup.g.cs
+E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\ItemsDefinitionSetup.baml
+E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.Forms.Rpt_Request.resources
