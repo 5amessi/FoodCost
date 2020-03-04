@@ -253,6 +253,9 @@
       <DependentUpon>CR_GeneratedRecipes.rpt</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Report\CR_GeneratedRecipesItems.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Report\Cr_MonthClosing.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
