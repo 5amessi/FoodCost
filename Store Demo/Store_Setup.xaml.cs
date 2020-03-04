@@ -26,9 +26,9 @@ namespace Food_Cost
         List<string> Authenticated = new List<string>();
         public Store_Sertup()
         {
-            if (MainWindow.AuthenticationData.ContainsKey("Kitchens"))
+            if (MainWindow.AuthenticationData.ContainsKey("Resturants"))
             {
-                Authenticated = MainWindow.AuthenticationData["Kitchens"];
+                Authenticated = MainWindow.AuthenticationData["Resturants"];
                 if (Authenticated.Count == 0)
                 {
                     MessageBox.Show("You Havent a Privilage to Open this Page");

@@ -598,9 +598,9 @@ namespace Food_Cost
             finally
             {
                 con.Close();
-            }
-          
+            }          
             MessageBox.Show("Saved Successfully");
+            savebtn.IsEnabled = false;
         }
         private void SaveClass()
         {
@@ -655,9 +655,8 @@ namespace Food_Cost
             {
                 con.Close();
             }
-
-
             MessageBox.Show("Saved Successfully");
+            savebtn.IsEnabled = false;
         }
         private void SaveSubClass()
         {
@@ -705,6 +704,7 @@ namespace Food_Cost
             }
           
             MessageBox.Show("Saved Successfully");
+            savebtn.IsEnabled = false;
         }
         private void SaveItem()
         {
@@ -712,17 +712,6 @@ namespace Food_Cost
                 return;
             
             SqlConnection con = new SqlConnection(Classes.DataConnString);
-
-            //string s = string.Format("select * from Setup_Items where Code = {0}", Codetxt.Text);
-            //SqlCommand cmd = new SqlCommand(s, con);
-            //SqlDataReader reader = cmd.ExecuteReader();
-
-            //if (reader.HasRows)
-            //{
-            //    MessageBox.Show("Another Work station save at the saame time");
-            //    Codetxt.Text = "0" + (int.Parse(Codetxt.Text) + 1).ToString();
-            //}
-
             try
             {
                 con.Open();
@@ -836,12 +825,12 @@ namespace Food_Cost
                 cmd.ExecuteNonQuery();
                 MessageBox.Show("Saved Successfully");
 
-                s = "select count(Code) FROM Setup_Restaurant";
+           
+                s = string.Format("select ItemID from Setup_KitchenItems where RestaurantID=(select Code from Setup_Restaurant where IsMain='True') and KitchenID=(select Code from Setup_Kitchens where IsMain='True' and RestaurantID=(select Code from Setup_Restaurant where IsMain='True')) and ItemID='{0}'", Codetxt.Text);
                 cmd = new SqlCommand(s, con);
-                string CountofSTores = cmd.ExecuteScalar().ToString();
-                for (int i = 1; i <= (Convert.ToInt32(CountofSTores)); i++)
+                if (cmd.ExecuteScalar() == null)
                 {
-                    s = string.Format("insert into Setup_KitchenItems (RestaurantID,KitchenID,ItemID) values({0},1,'{1}')", i, Codetxt.Text);
+                    s = string.Format("insert into Setup_KitchenItems (RestaurantID,KitchenID,ItemID,MinQty,MaxQty,shulfID,Create_Date,WS,UserID) values((select Code from Setup_Restaurant where IsMain='True'),(select Code from Setup_Kitchens where IsMain='True' and RestaurantID=(select Code from Setup_Restaurant where IsMain='True')),'{0}',0,0,0,GETDATE(),'{1}','{2}')", Codetxt.Text,Classes.WS,MainWindow.UserID);
                     cmd = new SqlCommand(s, con);
                     cmd.ExecuteNonQuery();
                 }
@@ -869,6 +858,8 @@ namespace Food_Cost
             {
                 con.Close();
             }
+            savebtn.IsEnabled = false;
+            TI_Value.Visibility = Visibility.Hidden;
             //end of last Update
         }
 
@@ -1211,6 +1202,7 @@ namespace Food_Cost
 
                     UndifinedExists = treeViewItem;
                     CodeLabel.Visibility = Visibility.Hidden;
+                    TI_Value.Visibility = Visibility.Hidden;
                     Codetxt.Visibility = Visibility.Hidden;
                 }
                 catch (Exception error)
@@ -1251,6 +1243,8 @@ namespace Food_Cost
             Manual_Code_txt.Text = "";
             CodeLabel.Visibility = Visibility.Visible;
             Codetxt.Visibility = Visibility.Visible;
+            TI_Value.Visibility = Visibility.Hidden;
+
         }    //Done
         private void DeleteClicked(object sender, RoutedEventArgs e)
         {
@@ -1309,6 +1303,7 @@ namespace Food_Cost
                 Reload.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
                 //ClearGroupBox();
             }
+            TI_Value.Visibility = Visibility.Hidden;
         }  //Done
         private void SaveBtn_Clicked(object sender, RoutedEventArgs e)
         {
@@ -1423,7 +1418,7 @@ namespace Food_Cost
                 LoadItemData();
                 LoadData("Setup_Items", treeNodes[4].Header.ToString());
             }
-
+            savebtn.IsEnabled = true;
         }      //Done
         private void TreeViewItems_SelectedItemChanged_1(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
@@ -1460,6 +1455,7 @@ namespace Food_Cost
                 LoadItemData();
 
             ClearGroupBox();
+            savebtn.IsEnabled = true;
         }       //Done
 
         private void ItemImage_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
