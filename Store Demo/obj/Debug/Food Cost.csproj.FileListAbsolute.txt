@@ -3917,3 +3917,7 @@ E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\AllUnits.baml
 E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\AllVendor.baml
 E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.Forms.Rpt_TransferOut.resources
 E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.Forms.Statues.resources
+E:\Michael\Git_FoodCost\Store Demo\bin\Debug\CRVsPackageLib.dll
+E:\Michael\Git_FoodCost\Store Demo\obj\Debug\Food Cost.csprojAssemblyReference.cache
+E:\Michael\Git_FoodCost\Store Demo\obj\Debug\Food_Cost.Forms.Rpt_TransferOut.resources
+E:\Michael\Git_FoodCost\Store Demo\obj\Debug\Food_Cost.Forms.Statues.resources
