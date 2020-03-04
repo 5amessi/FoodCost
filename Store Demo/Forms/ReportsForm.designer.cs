@@ -43,7 +43,7 @@
             // 
             // Recipes_items
             // 
-            this.Recipes_items.Location = new System.Drawing.Point(271, 251);
+            this.Recipes_items.Location = new System.Drawing.Point(250, 77);
             this.Recipes_items.Name = "Recipes_items";
             this.Recipes_items.Size = new System.Drawing.Size(113, 50);
             this.Recipes_items.TabIndex = 586;
@@ -53,7 +53,7 @@
             // 
             // BtnBincard
             // 
-            this.BtnBincard.Location = new System.Drawing.Point(369, 12);
+            this.BtnBincard.Location = new System.Drawing.Point(131, 77);
             this.BtnBincard.Name = "BtnBincard";
             this.BtnBincard.Size = new System.Drawing.Size(113, 50);
             this.BtnBincard.TabIndex = 588;
@@ -63,7 +63,7 @@
             // 
             // BtnStores
             // 
-            this.BtnStores.Location = new System.Drawing.Point(152, 251);
+            this.BtnStores.Location = new System.Drawing.Point(271, 307);
             this.BtnStores.Name = "BtnStores";
             this.BtnStores.Size = new System.Drawing.Size(113, 50);
             this.BtnStores.TabIndex = 589;
@@ -83,7 +83,7 @@
             // 
             // Btn_InvStats
             // 
-            this.Btn_InvStats.Location = new System.Drawing.Point(152, 307);
+            this.Btn_InvStats.Location = new System.Drawing.Point(369, 77);
             this.Btn_InvStats.Name = "Btn_InvStats";
             this.Btn_InvStats.Size = new System.Drawing.Size(113, 50);
             this.Btn_InvStats.TabIndex = 592;
@@ -113,7 +113,7 @@
             // 
             // BtnGenRecipes
             // 
-            this.BtnGenRecipes.Location = new System.Drawing.Point(271, 307);
+            this.BtnGenRecipes.Location = new System.Drawing.Point(369, 12);
             this.BtnGenRecipes.Name = "BtnGenRecipes";
             this.BtnGenRecipes.Size = new System.Drawing.Size(113, 50);
             this.BtnGenRecipes.TabIndex = 597;
@@ -133,7 +133,7 @@
             // 
             // BtnReceiveRequests
             // 
-            this.BtnReceiveRequests.Location = new System.Drawing.Point(390, 307);
+            this.BtnReceiveRequests.Location = new System.Drawing.Point(152, 307);
             this.BtnReceiveRequests.Name = "BtnReceiveRequests";
             this.BtnReceiveRequests.Size = new System.Drawing.Size(113, 50);
             this.BtnReceiveRequests.TabIndex = 598;
@@ -143,7 +143,7 @@
             // 
             // BtnTransferOut
             // 
-            this.BtnTransferOut.Location = new System.Drawing.Point(488, 12);
+            this.BtnTransferOut.Location = new System.Drawing.Point(12, 77);
             this.BtnTransferOut.Name = "BtnTransferOut";
             this.BtnTransferOut.Size = new System.Drawing.Size(113, 50);
             this.BtnTransferOut.TabIndex = 599;
@@ -155,7 +155,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(642, 102);
+            this.ClientSize = new System.Drawing.Size(498, 168);
             this.Controls.Add(this.BtnTransferOut);
             this.Controls.Add(this.BtnReceiveRequests);
             this.Controls.Add(this.BtnGenRecipes);
@@ -169,7 +169,6 @@
             this.Controls.Add(this.PItemsBtn);
             this.Name = "ReportsForm";
             this.Text = "Reports";
-            this.Load += new System.EventHandler(this.ReportsForm_Load);
             this.ResumeLayout(false);
 
         }

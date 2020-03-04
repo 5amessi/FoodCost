@@ -22,9 +22,6 @@ namespace Food_Cost.Forms
         string f = "";
         string s2 = "";
         DataTable dt;
-        Dictionary<string, string> dic = new Dictionary<string, string>();
-        Dictionary<string, string> Stores = new Dictionary<string, string>();
-        Dictionary<string, List<string>> FilterDic = new Dictionary<string, List<string>>();
 
         private void ShowBtn_Click(object sender, EventArgs e)
         {

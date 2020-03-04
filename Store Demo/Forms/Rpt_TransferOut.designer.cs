@@ -44,13 +44,19 @@
             this.TxtItemName = new System.Windows.Forms.TextBox();
             this.TxtItemCode = new System.Windows.Forms.TextBox();
             this.BtnItem = new System.Windows.Forms.Button();
+            this.CbRejected = new System.Windows.Forms.CheckBox();
+            this.CbApproval = new System.Windows.Forms.CheckBox();
+            this.CbHold = new System.Windows.Forms.CheckBox();
+            this.CbPost = new System.Windows.Forms.CheckBox();
+            this.Statues = new System.Windows.Forms.GroupBox();
             this.GrpDateTimeRange.SuspendLayout();
             this.GbItem.SuspendLayout();
+            this.Statues.SuspendLayout();
             this.SuspendLayout();
             // 
             // ShowBtn
             // 
-            this.ShowBtn.Location = new System.Drawing.Point(141, 255);
+            this.ShowBtn.Location = new System.Drawing.Point(161, 338);
             this.ShowBtn.Name = "ShowBtn";
             this.ShowBtn.Size = new System.Drawing.Size(122, 54);
             this.ShowBtn.TabIndex = 604;
@@ -60,9 +66,9 @@
             // 
             // UC_TVKitchens2
             // 
-            this.UC_TVKitchens2.Location = new System.Drawing.Point(289, 12);
+            this.UC_TVKitchens2.Location = new System.Drawing.Point(289, 14);
             this.UC_TVKitchens2.Name = "UC_TVKitchens2";
-            this.UC_TVKitchens2.Size = new System.Drawing.Size(302, 345);
+            this.UC_TVKitchens2.Size = new System.Drawing.Size(321, 377);
             this.UC_TVKitchens2.TabIndex = 613;
             this.UC_TVKitchens2.Load += new System.EventHandler(this.UC_TVKitchens2_Load);
             // 
@@ -81,11 +87,12 @@
             this.GrpDateTimeRange.TabStop = false;
             this.GrpDateTimeRange.Tag = "160";
             this.GrpDateTimeRange.Text = "Date Time Range";
+            this.GrpDateTimeRange.Enter += new System.EventHandler(this.GrpDateTimeRange_Enter);
             // 
             // CbToday
             // 
             this.CbToday.AutoSize = true;
-            this.CbToday.Location = new System.Drawing.Point(13, 21);
+            this.CbToday.Location = new System.Drawing.Point(23, 21);
             this.CbToday.Name = "CbToday";
             this.CbToday.Size = new System.Drawing.Size(65, 20);
             this.CbToday.TabIndex = 56;
@@ -95,7 +102,7 @@
             // lblDateTo
             // 
             this.lblDateTo.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDateTo.Location = new System.Drawing.Point(6, 81);
+            this.lblDateTo.Location = new System.Drawing.Point(1, 81);
             this.lblDateTo.Name = "lblDateTo";
             this.lblDateTo.Size = new System.Drawing.Size(65, 22);
             this.lblDateTo.TabIndex = 52;
@@ -165,7 +172,7 @@
             // 
             this.CBMyKitchen.AutoSize = true;
             this.CBMyKitchen.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
-            this.CBMyKitchen.Location = new System.Drawing.Point(11, 273);
+            this.CBMyKitchen.Location = new System.Drawing.Point(11, 355);
             this.CBMyKitchen.Name = "CBMyKitchen";
             this.CBMyKitchen.Size = new System.Drawing.Size(122, 20);
             this.CBMyKitchen.TabIndex = 612;
@@ -221,11 +228,70 @@
             this.BtnItem.UseVisualStyleBackColor = true;
             this.BtnItem.Click += new System.EventHandler(this.BtnItem_Click);
             // 
+            // CbRejected
+            // 
+            this.CbRejected.AutoSize = true;
+            this.CbRejected.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
+            this.CbRejected.Location = new System.Drawing.Point(6, 19);
+            this.CbRejected.Name = "CbRejected";
+            this.CbRejected.Size = new System.Drawing.Size(83, 20);
+            this.CbRejected.TabIndex = 0;
+            this.CbRejected.Text = "Rejected";
+            this.CbRejected.UseVisualStyleBackColor = true;
+            // 
+            // CbApproval
+            // 
+            this.CbApproval.AutoSize = true;
+            this.CbApproval.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
+            this.CbApproval.Location = new System.Drawing.Point(129, 19);
+            this.CbApproval.Name = "CbApproval";
+            this.CbApproval.Size = new System.Drawing.Size(84, 20);
+            this.CbApproval.TabIndex = 1;
+            this.CbApproval.Text = "Approval";
+            this.CbApproval.UseVisualStyleBackColor = true;
+            // 
+            // CbHold
+            // 
+            this.CbHold.AutoSize = true;
+            this.CbHold.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
+            this.CbHold.Location = new System.Drawing.Point(130, 51);
+            this.CbHold.Name = "CbHold";
+            this.CbHold.Size = new System.Drawing.Size(56, 20);
+            this.CbHold.TabIndex = 2;
+            this.CbHold.Text = "Hold";
+            this.CbHold.UseVisualStyleBackColor = true;
+            // 
+            // CbPost
+            // 
+            this.CbPost.AutoSize = true;
+            this.CbPost.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
+            this.CbPost.Location = new System.Drawing.Point(6, 51);
+            this.CbPost.Name = "CbPost";
+            this.CbPost.Size = new System.Drawing.Size(54, 20);
+            this.CbPost.TabIndex = 3;
+            this.CbPost.Text = "Post";
+            this.CbPost.UseVisualStyleBackColor = true;
+            // 
+            // Statues
+            // 
+            this.Statues.Controls.Add(this.CbPost);
+            this.Statues.Controls.Add(this.CbHold);
+            this.Statues.Controls.Add(this.CbApproval);
+            this.Statues.Controls.Add(this.CbRejected);
+            this.Statues.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
+            this.Statues.Location = new System.Drawing.Point(12, 236);
+            this.Statues.Name = "Statues";
+            this.Statues.Size = new System.Drawing.Size(271, 77);
+            this.Statues.TabIndex = 623;
+            this.Statues.TabStop = false;
+            this.Statues.Text = "Statues";
+            // 
             // Rpt_TransferOut
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(603, 367);
+            this.ClientSize = new System.Drawing.Size(622, 404);
+            this.Controls.Add(this.Statues);
             this.Controls.Add(this.GbItem);
             this.Controls.Add(this.RbItems);
             this.Controls.Add(this.RbOrders);
@@ -239,6 +305,8 @@
             this.GrpDateTimeRange.PerformLayout();
             this.GbItem.ResumeLayout(false);
             this.GbItem.PerformLayout();
+            this.Statues.ResumeLayout(false);
+            this.Statues.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -261,5 +329,10 @@
         private System.Windows.Forms.TextBox TxtItemName;
         private System.Windows.Forms.TextBox TxtItemCode;
         private System.Windows.Forms.Button BtnItem;
+        private System.Windows.Forms.CheckBox CbRejected;
+        private System.Windows.Forms.CheckBox CbApproval;
+        private System.Windows.Forms.CheckBox CbHold;
+        private System.Windows.Forms.CheckBox CbPost;
+        private System.Windows.Forms.GroupBox Statues;
     }
 }

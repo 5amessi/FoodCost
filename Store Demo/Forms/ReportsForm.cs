@@ -49,15 +49,17 @@ namespace Food_Cost.Forms
             Frm.Show();
         }
 
-        private void BntRecOrder_Click(object sender, EventArgs e)
-        {
-            Rpt_ReceiveOrder Frm = new Rpt_ReceiveOrder();
-            Frm.Show();
-        }
+      
 
         private void Btn_InvStats_Click(object sender, EventArgs e)
         {
             Rpt_InventoryStats Frm = new Rpt_InventoryStats();
+            Frm.Show();
+        }
+
+        private void BtnInKitchenTrans_Click(object sender, EventArgs e)
+        {
+            Rpt_TransferOut Frm = new Rpt_TransferOut();
             Frm.Show();
         }
 
@@ -80,10 +82,7 @@ namespace Food_Cost.Forms
             Frm.Show();
         }
 
-        private void ReportsForm_Load(object sender, EventArgs e)
-        {
-
-        }
+       
 
         private void BtnReceiveRequests_Click(object sender, EventArgs e)
         {

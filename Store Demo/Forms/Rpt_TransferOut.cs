@@ -47,6 +47,26 @@ namespace Food_Cost.Forms
                 dtp_from.Value = DateTime.Today;
                 dtp_to.Value = DateTime.Today;
             }
+            List<string> status = new List<string>();
+            if (CbPost.Checked)
+                status.Add("'Post'");
+            if (CbHold.Checked)
+                status.Add("'Hold'");
+            if (CbApproval.Checked)
+                status.Add("'Approval'");
+            if (CbRejected.Checked)
+                status.Add("'Rejected'");
+            if (status.Count != 0)
+            {
+                string s = "";
+                Where += "And Status IN (";
+                foreach (string st in status)
+                {
+                    Where += s + st;
+                    s = ",";
+                }
+                Where += ")";
+            }
 
             ReportView Rec = new ReportView();
             Where += " And Request_Date between '" + Classes.ADjDate(dtp_from.Value) + "' AND '" + Classes.ADjDateto(dtp_to.Value) + "'";
@@ -64,7 +84,7 @@ namespace Food_Cost.Forms
                 Dt = Classes.RetrieveData("*", Where, "TransferOrdersOut");
                 Rec.Rpt = new CR_TransferOutSummary();
             }
-        
+
             Rec.Rpt.SetDataSource(Dt);
             Rec.Rpt.SetParameterValue("Rpt_Fdate", dtp_from.Value);
             Rec.Rpt.SetParameterValue("Rpt_Tdate", dtp_to.Value);
@@ -103,6 +123,11 @@ namespace Food_Cost.Forms
         private void UC_TVKitchens2_Load(object sender, EventArgs e)
         {
             UC_TVKitchens2.UC_TVKitchens_Load();
+        }
+
+        private void GrpDateTimeRange_Enter(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -3916,3 +3916,4 @@ E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\AllVendor.g.cs
 E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\AllUnits.baml
 E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\AllVendor.baml
 E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.Forms.Rpt_TransferOut.resources
+E:\FOODCOST\GitFoodCost\Store Demo\obj\Debug\Food_Cost.Forms.Statues.resources

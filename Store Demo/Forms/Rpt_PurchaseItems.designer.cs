@@ -96,7 +96,7 @@
             // CbToday
             // 
             this.CbToday.AutoSize = true;
-            this.CbToday.Location = new System.Drawing.Point(92, 60);
+            this.CbToday.Location = new System.Drawing.Point(19, 60);
             this.CbToday.Name = "CbToday";
             this.CbToday.Size = new System.Drawing.Size(65, 20);
             this.CbToday.TabIndex = 55;
@@ -218,7 +218,7 @@
             // 
             this.UC_TVKitchens2.Location = new System.Drawing.Point(300, 13);
             this.UC_TVKitchens2.Name = "UC_TVKitchens2";
-            this.UC_TVKitchens2.Size = new System.Drawing.Size(306, 345);
+            this.UC_TVKitchens2.Size = new System.Drawing.Size(306, 403);
             this.UC_TVKitchens2.TabIndex = 617;
             this.UC_TVKitchens2.Load += new System.EventHandler(this.UC_TVKitchens2_Load);
             // 

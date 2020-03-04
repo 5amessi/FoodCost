@@ -44,7 +44,7 @@ namespace Food_Cost.Forms
             for (int i=0; i< dt.Rows.Count; i++)
             {
                 string tempwhere = "ID = '" + dt.Rows[i]["Generate_ID"] + "' AND Item_ID = '" + dt.Rows[i]["Item_ID"] + "' AND Trantype = 'Generate' ";
-                DataRow Tempdt = Classes.RetrieveData("*", tempwhere, "TransActions").Rows[0];
+                DataRow Tempdt = Classes.RetrieveData("*", tempwhere, "TransActionsView").Rows[0];
                 dt.Rows[i]["PrevQty"] = (double.Parse(Tempdt["Current_Qty"].ToString())- double.Parse(Tempdt["Qty"].ToString())).ToString();
                 dt.Rows[i]["CurrQty"] = Tempdt["Current_Qty"];
             }

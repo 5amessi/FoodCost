@@ -52,6 +52,7 @@
             this.dtp_from = new System.Windows.Forms.DateTimePicker();
             this.dtp_to = new System.Windows.Forms.DateTimePicker();
             this.lblDateTo = new System.Windows.Forms.Label();
+            this.RbRequest = new System.Windows.Forms.RadioButton();
             this.groupBox1.SuspendLayout();
             this.GbItem.SuspendLayout();
             this.GrpDateTimeRange.SuspendLayout();
@@ -70,9 +71,9 @@
             // 
             // UC_TVKitchens2
             // 
-            this.UC_TVKitchens2.Location = new System.Drawing.Point(316, 15);
+            this.UC_TVKitchens2.Location = new System.Drawing.Point(320, 15);
             this.UC_TVKitchens2.Name = "UC_TVKitchens2";
-            this.UC_TVKitchens2.Size = new System.Drawing.Size(375, 398);
+            this.UC_TVKitchens2.Size = new System.Drawing.Size(337, 398);
             this.UC_TVKitchens2.TabIndex = 617;
             this.UC_TVKitchens2.Load += new System.EventHandler(this.UC_TVKitchens2_Load);
             // 
@@ -137,7 +138,7 @@
             // 
             this.RBTransfer.AutoSize = true;
             this.RBTransfer.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
-            this.RBTransfer.Location = new System.Drawing.Point(103, 174);
+            this.RBTransfer.Location = new System.Drawing.Point(100, 174);
             this.RBTransfer.Name = "RBTransfer";
             this.RBTransfer.Size = new System.Drawing.Size(77, 20);
             this.RBTransfer.TabIndex = 633;
@@ -258,7 +259,7 @@
             // CbToday
             // 
             this.CbToday.AutoSize = true;
-            this.CbToday.Location = new System.Drawing.Point(76, 30);
+            this.CbToday.Location = new System.Drawing.Point(18, 30);
             this.CbToday.Name = "CbToday";
             this.CbToday.Size = new System.Drawing.Size(65, 20);
             this.CbToday.TabIndex = 55;
@@ -317,11 +318,24 @@
             this.lblDateTo.Text = "To";
             this.lblDateTo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // RbRequest
+            // 
+            this.RbRequest.AutoSize = true;
+            this.RbRequest.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
+            this.RbRequest.Location = new System.Drawing.Point(176, 174);
+            this.RbRequest.Name = "RbRequest";
+            this.RbRequest.Size = new System.Drawing.Size(77, 20);
+            this.RbRequest.TabIndex = 639;
+            this.RbRequest.TabStop = true;
+            this.RbRequest.Text = "Request";
+            this.RbRequest.UseVisualStyleBackColor = true;
+            // 
             // Rpt_ReceiveItems
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(707, 425);
+            this.ClientSize = new System.Drawing.Size(669, 425);
+            this.Controls.Add(this.RbRequest);
             this.Controls.Add(this.GrpDateTimeRange);
             this.Controls.Add(this.GbItem);
             this.Controls.Add(this.groupBox1);
@@ -373,5 +387,6 @@
         private System.Windows.Forms.DateTimePicker dtp_from;
         private System.Windows.Forms.DateTimePicker dtp_to;
         private System.Windows.Forms.Label lblDateTo;
+        private System.Windows.Forms.RadioButton RbRequest;
     }
 }

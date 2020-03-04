@@ -21,13 +21,13 @@ namespace Food_Cost.Forms
 
         private void UC_TVKitchens_Load(object sender, EventArgs e)
         {
-            TVKitchens = Classes.LoadStores(TVKitchens);
+            //TVKitchens = Classes.LoadStores(TVKitchens);
         }
 
         public void UC_TVKitchens_Load()
         {
+            TVKitchens = Classes.LoadStores(TVKitchens);
         }
-
         public void Kitchen_Checked(ref string f, ref string Where)
         {
             KitchensList.Clear();

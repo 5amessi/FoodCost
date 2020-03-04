@@ -511,6 +511,12 @@
     <Compile Include="UserAuth.xaml.cs">
       <DependentUpon>UserAuth.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControl\UC_Statues.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControl\UC_Statues.Designer.cs">
+      <DependentUpon>UC_Statues.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserControl\UC_TVKitchens.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -856,6 +862,9 @@
     <EmbeddedResource Include="Report\CR_VendorsSummary.rpt">
       <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
       <LastGenOutput>CR_VendorsSummary.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControl\UC_Statues.resx">
+      <DependentUpon>UC_Statues.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\UC_TVKitchens.resx">
       <DependentUpon>UC_TVKitchens.cs</DependentUpon>
