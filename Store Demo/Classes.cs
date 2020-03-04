@@ -12,7 +12,7 @@ using System.IO;
 using System.Configuration;
 using System.Globalization;
 using System.Threading;
-//git
+
 namespace Food_Cost
 {
     public class Classes
@@ -39,7 +39,7 @@ namespace Food_Cost
                 ConfigurationManager.RefreshSection("connectionStrings");
                 DataConnString = Properties.Settings.Default.FoodCostDB.ToString();
 
-    }
+            }
             catch (Exception exception)
             {
                 MessageBox.Show(exception.ToString());
@@ -81,6 +81,14 @@ namespace Food_Cost
             MyAdapt.Fill(MyTable);
             return MyTable;
         }
+        public static string ADjDate(DateTime Date)
+        {
+            return Convert.ToDateTime(Date).ToString("MM-dd-yyyy");
+        }
+        public static string ADjDateto(DateTime Date)
+        {
+            return Convert.ToDateTime(Date).ToString("MM-dd-yyyy")+ " 23:59:59";
+        }
 
         public static DataTable RetrieveData(string FieldSelected, string WhereFiltering, string TableName)
         {
@@ -114,7 +122,7 @@ namespace Food_Cost
             string[] V = Value.Split(',');
             string FSV = "";
             string comma = "";
-            for (int i =0; i< FS.Length; i++)
+            for (int i = 0; i < FS.Length; i++)
             {
                 FSV += comma + FS[i] + " = " + V[i];
                 comma = ",";
@@ -242,16 +250,6 @@ namespace Food_Cost
                 TVDates.Nodes[DR["Year"].ToString()].Nodes.Add("Month" + DR["Month"].ToString());
             }
             return TVDates;
-        }
-
-        public static string ADjDate(DateTime Date)
-        {
-            return Convert.ToDateTime(Date).ToString("MM-dd-yyyy");
-        }
-
-        public static string ADjDateto(DateTime Date)
-        {
-            return Convert.ToDateTime(Date).ToString("MM-dd-yyyy") + " 11:59:59";
         }
     }
 }
