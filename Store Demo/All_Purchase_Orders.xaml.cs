@@ -340,7 +340,8 @@ namespace Food_Cost
                             float Total_Price = 0;
                             for (int i = 0; i < recieveOrder.ItemKitchenTransferDGV.Items.Count; i++)
                             {
-                                Total_Price += float.Parse(Dat.Rows[i][recieveOrder.ToKitchenKitchentxt.Text + " total Cost"].ToString());
+                                Total_Price += (float.Parse(Dat.Rows[i][recieveOrder.FromKitchenKitchentxt.Text + " Qty"].ToString()) * float.Parse(Dat.Rows[i][recieveOrder.FromKitchenKitchentxt.Text + " Unit Cost"].ToString()));
+                                //Total_Price += float.Parse(Dat.Rows[i][recieveOrder.ToKitchenKitchentxt.Text + " total Cost"].ToString());
                             }
                             recieveOrder.NumberOfItemsKitchen.Text = recieveOrder.ItemKitchenTransferDGV.Items.Count.ToString();
                             recieveOrder.Total_Price_With_Tax_Kitchen.Text = Total_Price.ToString();
@@ -499,7 +500,8 @@ namespace Food_Cost
                             float Total_Price = 0;
                             for (int i = 0; i < recieveOrder.ItemRoInterDGV.Items.Count; i++)
                             {
-                                Total_Price += float.Parse(Dat.Rows[i][recieveOrder.ToKitchenIntertxt.Text + " total Cost"].ToString());
+                                Total_Price += (float.Parse(Dat.Rows[i]["Qty"].ToString()) * float.Parse(Dat.Rows[i][recieveOrder.FromKitchenIntertxt.Text + " Unit Cost"].ToString()));
+                                //Total_Price += float.Parse(Dat.Rows[i][recieveOrder.ToKitchenIntertxt.Text + " total Cost"].ToString());
                             }
                             recieveOrder.NumberOfItemsInter.Text = recieveOrder.ItemRoInterDGV.Items.Count.ToString();
                             recieveOrder.Total_Price_With_Tax_InterKitchen.Text = Total_Price.ToString();

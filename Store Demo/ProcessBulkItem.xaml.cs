@@ -24,12 +24,26 @@ namespace Food_Cost
     /// </summary>
     public partial class ProcessBulkItem : UserControl
     {
+        List<string> Authenticated = new List<string>();
         string CodeOfResturant = "";
         string CodeOfKitchens = "";
         public ProcessBulkItem()
         {
-            InitializeComponent();
-            LoadAllResturant();
+            if (MainWindow.AuthenticationData.ContainsKey("ProcessBulk"))
+            {
+                Authenticated = MainWindow.AuthenticationData["ProcessBulk"];
+                if (Authenticated.Count == 0)
+                {
+                    MessageBox.Show("You Havent a Privilage to Open this Page");
+                    LogIn logIn = new LogIn();
+                    logIn.ShowDialog();
+                }
+                else
+                {
+                    InitializeComponent();
+                    LoadAllResturant();
+                }
+            }
         }
         private void LoadAllResturant()
         {
@@ -164,7 +178,7 @@ namespace Food_Cost
                         reader2.Read();
                         if(reader2.HasRows == true)
                         {
-                            if(reader2["Qty"] !="")
+                            if(reader2["Qty"] !="" && Convert.ToDouble(reader2["Qty"].ToString()) >0)
                             {
                                 dt.Rows.Add(false, reader["Code"], reader.GetValue(1), reader["Name"], (Convert.ToDouble(reader2["Qty"]) * Convert.ToDouble(reader["weight"])).ToString(),reader["Unit"],reader2["Current_Cost"]);
 
@@ -259,6 +273,8 @@ namespace Food_Cost
                 }
 
             }
+
+            BulkItems.IsEnabled = true;
         }
         private string GetID()
         {
@@ -291,97 +307,106 @@ namespace Food_Cost
 
         private void BulkItemsBtn_Click(object sender, RoutedEventArgs e)
         {
-            string ID = GetID();
-            string BaseCode = "";
-            string BaseQty = "";
-            string SUBQty = "";
-            double BaseCost = 0;
-            string BaseWeight = "";
-            double CalcQty = 0; double CalcCost = 0;
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-            SqlCommand cmd = new SqlCommand();
-            SqlConnection con2 = new SqlConnection(Classes.DataConnString);
-            SqlCommand cmd2 = new SqlCommand();
-            SqlDataReader reader = null;
-            for (int i = 0; i < ItemsDGV.Items.Count; i++)
+            if (Authenticated.IndexOf("DoProcessBulk") == -1 && Authenticated.IndexOf("CheckAllBulk") == -1)
             {
-                if (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0].ToString() == "True")
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                string ID = GetID();
+                string BaseCode = "";
+                string BaseQty = "";
+                string SUBQty = "";
+                double BaseCost = 0;
+                string BaseWeight = "";
+                double CalcQty = 0; double CalcCost = 0;
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                SqlCommand cmd = new SqlCommand();
+                SqlConnection con2 = new SqlConnection(Classes.DataConnString);
+                SqlCommand cmd2 = new SqlCommand();
+                SqlDataReader reader = null;
+                for (int i = 0; i < ItemsDGV.Items.Count; i++)
                 {
-                    BaseCode = ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[1].ToString();
-                    BaseQty = ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4].ToString();
-                    SUBQty = BaseQty;
-                    BaseCost = Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6].ToString());
-                    con.Open();
-                    try
+                    if (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0].ToString() == "True")
                     {
-                        string s = string.Format("select Weight FROM Setup_Items where Code='{0}'", BaseCode);
-                        cmd = new SqlCommand(s, con);
-                        BaseWeight = cmd.ExecuteScalar().ToString();
-                    }
-                    catch(Exception ex) { MessageBox.Show(ex.ToString()); }
-
-                    try
-                    {
-                        string s = string.Format("select * from Setup_BulkItems where Item_Code='{0}'", BaseCode);
-                        cmd = new SqlCommand(s, con);
-                        reader = cmd.ExecuteReader();
-                        while (reader.Read())
+                        BaseCode = ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[1].ToString();
+                        BaseQty = ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4].ToString();
+                        SUBQty = BaseQty;
+                        BaseCost = Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6].ToString());
+                        con.Open();
+                        try
                         {
-                            CalcQty = (((Convert.ToDouble(reader["WeightPrecentage"]) / 100) * Convert.ToDouble(BaseQty)) / Convert.ToDouble(BaseWeight));
-                            CalcCost = (((Convert.ToDouble(reader["CostPrecentage"]) / 100) * Convert.ToDouble(BaseCost)) / Convert.ToDouble(BaseWeight));
-                            try
-                            {
-                                con2.Open();
-                                string w = string.Format("UPDATE Items set Qty=Qty+{0},Last_Cost=Current_Cost,Current_Cost=(((Qty*Current_Cost)+({0}*{4}))/(Qty+{0})) where ItemID='{1}' and RestaurantID={2} and KitchenID={3}", CalcQty, reader["Code"], CodeOfResturant, CodeOfKitchens, CalcCost);
-                                cmd2 = new SqlCommand(w, con2);
-                                int n = cmd2.ExecuteNonQuery();
+                            string s = string.Format("select Weight FROM Setup_Items where Code='{0}'", BaseCode);
+                            cmd = new SqlCommand(s, con);
+                            BaseWeight = cmd.ExecuteScalar().ToString();
+                        }
+                        catch (Exception ex) { MessageBox.Show(ex.ToString()); }
 
-                                if (n == 0)
+                        try
+                        {
+                            string s = string.Format("select * from Setup_BulkItems where Item_Code='{0}'", BaseCode);
+                            cmd = new SqlCommand(s, con);
+                            reader = cmd.ExecuteReader();
+                            while (reader.Read())
+                            {
+                                CalcQty = (((Convert.ToDouble(reader["WeightPrecentage"]) / 100) * Convert.ToDouble(BaseQty)) / Convert.ToDouble(BaseWeight));
+                                CalcCost = (((Convert.ToDouble(reader["CostPrecentage"]) / 100) * Convert.ToDouble(BaseCost)) / Convert.ToDouble(BaseWeight));
+                                try
                                 {
-                                    w = string.Format("insert into Items(RestaurantID,KitchenID,ItemID,Qty,Current_Cost,Net_Cost) values({0},{1},'{2}',{3},{4},{5})", CodeOfResturant, CodeOfKitchens, reader["Code"], CalcQty, CalcCost, CalcCost*CalcQty);
+                                    con2.Open();
+                                    string w = string.Format("UPDATE Items set Qty=Qty+{0},Last_Cost=Current_Cost,Current_Cost=(((Qty*Current_Cost)+({0}*{4}))/(Qty+{0})) where ItemID='{1}' and RestaurantID={2} and KitchenID={3}", CalcQty, reader["Code"], CodeOfResturant, CodeOfKitchens, CalcCost);
+                                    cmd2 = new SqlCommand(w, con2);
+                                    int n = cmd2.ExecuteNonQuery();
+
+                                    if (n == 0)
+                                    {
+                                        w = string.Format("insert into Items(RestaurantID,KitchenID,ItemID,Qty,Current_Cost,Net_Cost) values({0},{1},'{2}',{3},{4},{5})", CodeOfResturant, CodeOfKitchens, reader["Code"], CalcQty, CalcCost, CalcCost * CalcQty);
+                                        cmd2 = new SqlCommand(w, con2);
+                                        cmd2.ExecuteNonQuery();
+                                    }
+                                }
+                                catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+                                SUBQty = (Convert.ToDouble(SUBQty) - CalcQty).ToString();
+
+                                try
+                                {
+                                    string w = string.Format("insert into Process_BulkItems_Items(ProcessBulk_ID,ParentItem_ID,ParentQty,ParentCost,ChiledItem_ID,ChiledQty,ChiledCost) values('{0}','{1}',{2},{3},{4},{5},{6})", ID, BaseCode, ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4].ToString(), ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6].ToString(), reader["Code"], BaseCost, BaseCost);
                                     cmd2 = new SqlCommand(w, con2);
                                     cmd2.ExecuteNonQuery();
                                 }
+                                catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+                                con2.Close();
+
                             }
-                            catch (Exception ex) { MessageBox.Show(ex.ToString()); }
-                            SUBQty = (Convert.ToDouble(SUBQty) - CalcQty).ToString();
-                            
                             try
                             {
-                                string w = string.Format("insert into Process_BulkItems_Items(ProcessBulk_ID,ParentItem_ID,ParentQty,ParentCost,ChiledItem_ID,ChiledQty,ChiledCost) values('{0}','{1}',{2},{3},{4},{5},{6})", ID, BaseCode, ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4].ToString(), ((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6].ToString(), reader["Code"], BaseCost, BaseCost);
+                                con2.Open();
+                                string w = string.Format("update Items set Qty={0} where RestaurantID={1} and KitchenID={2} and ItemID='{3}' ", SUBQty, CodeOfResturant, CodeOfKitchens, BaseCode);
                                 cmd2 = new SqlCommand(w, con2);
                                 cmd2.ExecuteNonQuery();
                             }
                             catch (Exception ex) { MessageBox.Show(ex.ToString()); }
-                            con2.Close();
-
+                            try
+                            {
+                                string w = string.Format("insert into Process_BulkItems(ProcessBulk_ID,Process_Date,User_ID,Resturant_ID,KitchenID,Post_Date) values('{0}',GETDATE(),'{1}',{2},{3},GETDATE())", ID, MainWindow.UserID, CodeOfResturant, CodeOfKitchens);
+                                cmd2 = new SqlCommand(w, con2);
+                                cmd2.ExecuteNonQuery();
+                            }
+                            catch (Exception ex) { MessageBox.Show(ex.ToString()); }
                         }
-                        try
+                        catch (Exception ex)
                         {
-                            con2.Open();
-                            string w = string.Format("update Items set Qty={0} where RestaurantID={1} and KitchenID={2} and ItemID='{3}' ", SUBQty, CodeOfResturant, CodeOfKitchens, BaseCode);
-                            cmd2 = new SqlCommand(w, con2);
-                            cmd2.ExecuteNonQuery();
+                            MessageBox.Show(ex.ToString());
                         }
-                        catch (Exception ex) { MessageBox.Show(ex.ToString()); }
-                        try
-                        {
-                            string w = string.Format("insert into Process_BulkItems(ProcessBulk_ID,Process_Date,User_ID,Resturant_ID,KitchenID,Post_Date) values('{0}',GETDATE(),'{1}',{2},{3},GETDATE())", ID, MainWindow.UserID,CodeOfResturant,CodeOfKitchens);
-                            cmd2 = new SqlCommand(w, con2);
-                            cmd2.ExecuteNonQuery();
-                        }
-                        catch (Exception ex) { MessageBox.Show(ex.ToString()); }
-                    }
-                    catch(Exception ex)
-                    {
-                        MessageBox.Show(ex.ToString());
-                    }
-                    con2.Close();
+                        con2.Close();
 
 
+                    }
                 }
+                MessageBox.Show("Done");
             }
-            MessageBox.Show("Done");
+            BulkItems.IsEnabled = false;
 
         }
 

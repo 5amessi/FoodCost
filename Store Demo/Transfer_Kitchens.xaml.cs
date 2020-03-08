@@ -18,21 +18,25 @@ namespace Food_Cost
         int codeTodelete = 0;
         public Transfer_Kitchens()
         {
-            if (MainWindow.AuthenticationData.ContainsKey("TransferKitchen"))
+            if (MainWindow.AuthenticationData.Count != 0)
             {
-                Authenticated = MainWindow.AuthenticationData["TransferKitchen"];
-                if (Authenticated.Count == 0)
+                if (MainWindow.AuthenticationData.ContainsKey("TransferKitchen"))
                 {
-                    MessageBox.Show("You Havent a Privilage to Open this Page");
-                    LogIn logIn = new LogIn();
-                    logIn.ShowDialog();
-                }
-                else
-                {
-                    InitializeComponent();
-                    increment_transferNO();
+                    Authenticated = MainWindow.AuthenticationData["TransferKitchen"];
+                    if (Authenticated.Count == 0)
+                    {
+                        MessageBox.Show("You Havent a Privilage to Open this Page");
+                        LogIn logIn = new LogIn();
+                        logIn.ShowDialog();
+                    }
+                    else
+                    {
+                        InitializeComponent();
+                        increment_transferNO();
+                    }
                 }
             }
+            else { MessageBox.Show("You should Login First !"); LogIn logIn = new LogIn(); logIn.ShowDialog(); }
         } 
         private bool DoSomeChecks()
         {
@@ -167,7 +171,7 @@ namespace Food_Cost
             ClearData();
         }
         private void Save_TIK_Items(SqlConnection con)
-        {
+        { 
             string To_QTyonHand = ""; string To_CostOfItemsOnHand = ""; string To_QtyOnHandMultipleCost = "";
             string From_QTyonHand = ""; string From_CostOfItemsOnHand = "";
             try
@@ -200,13 +204,13 @@ namespace Food_Cost
                     while (_reader.Read())
                     {
                         To_QTyonHand = (Convert.ToDouble(_reader["Qty"].ToString())).ToString();
-                        To_CostOfItemsOnHand = _reader["Current_Cost"].ToString();
+                        To_CostOfItemsOnHand = (Convert.ToDouble(_reader["Current_Cost"].ToString())).ToString();
                     }
                     try
                     {
                         To_QtyOnHandMultipleCost = (Convert.ToDouble(To_QTyonHand) * Convert.ToDouble(To_CostOfItemsOnHand)).ToString();
                         To_QTyonHand = (Convert.ToDouble(To_QTyonHand) + Convert.ToDouble(dt.Rows[i]["Qty"].ToString())).ToString();
-                        To_CostOfItemsOnHand = ((Convert.ToDouble(To_QtyOnHandMultipleCost) + (Convert.ToDouble(dt.Rows[i]["Qty"].ToString()) * Convert.ToDouble(dt.Rows[i][To_Kitchen.Text + " Unit Cost"]))) / Convert.ToDouble(To_QTyonHand)).ToString();
+                        To_CostOfItemsOnHand = (((Convert.ToDouble(To_QtyOnHandMultipleCost)) + (Convert.ToDouble(dt.Rows[i]["Qty"].ToString()) * Convert.ToDouble(dt.Rows[i][To_Kitchen.Text + " Unit Cost"]))) / Convert.ToDouble(To_QTyonHand)).ToString();
                     }
                     catch
                     {
@@ -235,8 +239,8 @@ namespace Food_Cost
         {
             try
             {
-                string FiledSelection = "Transfer_Serial,Manual_Transfer_No,Transfer_Date,Comment,From_Resturant_ID,To_Resturant_ID,From_Kitchen_ID,To_Kitchen_ID,Create_Date,Type,UserID,WS,Status";
-                string values = string.Format("'{0}', '{1}', '{2}', '{3}', (select Code from Setup_Restaurant where Name = '{4}'),(select Code from Setup_Restaurant where Name = '{5}'),(select Code from Setup_Kitchens where Name = '{6}'),(select Code from Setup_Kitchens where Name = '{7}'), GETDATE(),'{8}','{9}',{10},'{11}'", transfer_No.Text, Manual_transfer_No.Text,Convert.ToDateTime(Transfer_dt.Text).ToString("MM-dd-yyyy") , commenttxt.Text, Resturant.Text, Resturant.Text, From_Kitchen.Text, To_Kitchen.Text, "Transfer_Kitchen", MainWindow.UserID, Classes.WS, Statustxt.Text);
+                string FiledSelection = "Transfer_Serial,Manual_Transfer_No,Transfer_Date,Comment,From_Resturant_ID,To_Resturant_ID,From_Kitchen_ID,To_Kitchen_ID,Create_Date,Type,UserID,WS,Status,Total_Cost";
+                string values = string.Format("'{0}', '{1}', '{2}', '{3}', (select Code from Setup_Restaurant where Name = '{4}'),(select Code from Setup_Restaurant where Name = '{5}'),(select Code from Setup_Kitchens where Name = '{6}'),(select Code from Setup_Kitchens where Name = '{7}'), GETDATE(),'{8}','{9}',{10},'{11}','{12}'", transfer_No.Text, Manual_transfer_No.Text,Convert.ToDateTime(Transfer_dt.Text).ToString("MM-dd-yyyy") , commenttxt.Text, Resturant.Text, Resturant.Text, From_Kitchen.Text, To_Kitchen.Text, "Transfer_Kitchen", MainWindow.UserID, Classes.WS, Statustxt.Text, Total_Price.Text);
                 Classes.InsertRow("Transfer_Kitchens", FiledSelection, values);
             }
             catch (Exception ex)
@@ -251,8 +255,8 @@ namespace Food_Cost
         {
             try
             {
-                string FiledSlection = "Manual_Transfer_No,Transfer_Date,Comment,From_Resturant_ID,To_Resturant_ID,From_Kitchen_ID,To_Kitchen_ID,Type,Status,Modifiled_Date";
-                string Values = string.Format("'{0}','{1}','{2}',(select Code From Setup_Restaurant where Name='{3}'),(select Code From Setup_Restaurant where Name='{3}'),(select Code From Setup_Kitchens where Name='{4}' and RestaurantID=(select Code From Setup_Restaurant where Name='{3}')),(select Code From Setup_Kitchens where Name='{5}' and RestaurantID=(select Code From Setup_Restaurant where Name='{3}')),'{6}','{7}',GETDATE()", Manual_transfer_No.Text,Convert.ToDateTime(Transfer_dt.Text).ToString("MM-dd-yyyy") , commenttxt.Text, Resturant.Text, From_Kitchen.Text, To_Kitchen.Text, "Transfer_Kitchen", Statustxt.Text);
+                string FiledSlection = "Manual_Transfer_No,Transfer_Date,Comment,From_Resturant_ID,To_Resturant_ID,From_Kitchen_ID,To_Kitchen_ID,Type,Status,Modifiled_Date,Total_Cost";
+                string Values = string.Format("'{0}','{1}','{2}',(select Code From Setup_Restaurant where Name='{3}'),(select Code From Setup_Restaurant where Name='{3}'),(select Code From Setup_Kitchens where Name='{4}' and RestaurantID=(select Code From Setup_Restaurant where Name='{3}')),(select Code From Setup_Kitchens where Name='{5}' and RestaurantID=(select Code From Setup_Restaurant where Name='{3}')),'{6}','{7}',GETDATE(),'{8}'", Manual_transfer_No.Text,Convert.ToDateTime(Transfer_dt.Text).ToString("MM-dd-yyyy") , commenttxt.Text, Resturant.Text, From_Kitchen.Text, To_Kitchen.Text, "Transfer_Kitchen", Statustxt.Text, Total_Price.Text);
                 string Where = string.Format("Transfer_Serial={0}", transfer_No.Text);
                 Classes.UpdateRow(FiledSlection, Values, Where, "Transfer_Kitchens");
                 //string s = string.Format("update Transfer_Kitchens set Manual_Transfer_No='{0}',Transfer_Date='{1}',Comment='{2}',From_Resturant_ID=(select Code From Setup_Restaurant where Name='{3}'),To_Resturant_ID=(select Code From Setup_Restaurant where Name='{3}'),From_Kitchen_ID=(select Code From Setup_Kitchens where Name='{4}' and RestaurantID=(select Code From Setup_Restaurant where Name='{3}')),To_Kitchen_ID=(select Code From Setup_Kitchens where Name='{5}' and RestaurantID=(select Code From Setup_Restaurant where Name='{3}')),Type='Transfer_InterKitchen' Where Transfer_Serial={6}", Manual_transfer_No.Text, Transfer_dt.Text, commenttxt.Text, Resturant.Text, From_Kitchen.Text, To_Kitchen.Text, transfer_No.Text);
@@ -406,7 +410,7 @@ namespace Food_Cost
                     {
                         try
                         {
-                            totalPrice += Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[10]);
+                            totalPrice += (Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]) * Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6]));
                         }
                         catch
                         {

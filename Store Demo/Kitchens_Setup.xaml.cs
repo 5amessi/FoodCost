@@ -270,9 +270,9 @@ namespace Food_Cost
                 if (IsMain.IsChecked == true)
                 {
                     con.Open();
-                    string s = string.Format("select IsMain from Setup_Kitchens where IsMain='True' and RestaurantID='{0}'", ResturantCode);
+                    string s = string.Format("select Code,IsMain from Setup_Kitchens where IsMain='True' and RestaurantID='{0}'", ResturantCode);
                     SqlCommand cmd = new SqlCommand(s, con);
-                    if (cmd.ExecuteScalar() != null)
+                    if(cmd.ExecuteScalar().ToString() != Code_txt.Text)
                     {
                         MessageBox.Show("Can't be more Than Main Kitchen !");
                         return;

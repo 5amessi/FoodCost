@@ -28,10 +28,10 @@
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
                             <Label Grid.Row="0" Grid.Column="0" Margin="0,5" Content="User Name : " VerticalContentAlignment="Center" HorizontalContentAlignment="Right"/>
-                            <TextBox Grid.Row="0" Grid.Column="1" Name="UserNametxt"  VerticalContentAlignment="Center" HorizontalContentAlignment="Left"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" Name="UserNametxt"  VerticalContentAlignment="Center" HorizontalContentAlignment="Left" KeyUp="myTextBox_KeyDown"/>
 
                             <Label Grid.Row="1" Grid.Column="0" Margin="0,5" Content="Password : " VerticalContentAlignment="Center" HorizontalContentAlignment="Right"/>
-                            <PasswordBox Grid.Row="1" Grid.Column="1" Name="Passwordtxt" VerticalContentAlignment="Center" HorizontalContentAlignment="Left"/>
+                            <PasswordBox Grid.Row="1" Grid.Column="1" Name="Passwordtxt" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" KeyUp="myTextBox_KeyDown"/>
 
                             <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Center">
                                 <Button Content="LOGIN" Name="LoginBtn" Margin="2,10" Width="100" Height="30" Click="LoginBtn_Click" Background="Gray" Foreground="Black" BorderBrush="White"/>

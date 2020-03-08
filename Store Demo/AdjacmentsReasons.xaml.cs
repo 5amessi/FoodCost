@@ -24,11 +24,29 @@ namespace Food_Cost
     /// </summary>
     public partial class AdjacmentsReasons : UserControl
     {
+        List<string> Authenticated = new List<string>();
         public AdjacmentsReasons()
         {
-            InitializeComponent();
-            FillDGV();
-            MainUiFormat();
+
+            if (MainWindow.AuthenticationData.Count != 0)
+            {
+                if (MainWindow.AuthenticationData.ContainsKey("AdjacmentReasons"))
+                {
+                    Authenticated = MainWindow.AuthenticationData["AdjacmentReasons"];
+                    if (Authenticated.Count == 0)
+                    {
+                        MessageBox.Show("You Havent a Privilage to Open this Page");
+                        LogIn logIn = new LogIn();
+                        logIn.ShowDialog();
+                    }
+                    else
+                    {
+                        InitializeComponent();
+                        FillDGV();
+                        MainUiFormat();
+                    }
+                }
+            }                  
         }
 
         private void FillDGV()
@@ -116,28 +134,77 @@ namespace Food_Cost
 
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (Code_txt.Text != "1")
+            if (Authenticated.IndexOf("SaveAddjacmentReasons") == -1 && Authenticated.IndexOf("CheckAllAddjacmentReasons") == -1)
             {
-                if (Code_txt.Text == "")
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                if (Code_txt.Text != "1")
                 {
-                    MessageBox.Show("Code Field Can't Be Empty");
-                    return;
-                }
-
-                for (int i = 0; i < ReasonsDGV.Items.Count; i++)
-                {
-                    if (Code_txt.Text == ((DataRowView)ReasonsDGV.Items[i]).Row.ItemArray[0].ToString())
+                    if (Code_txt.Text == "")
                     {
-                        MessageBox.Show("This Code Is Not Avaliable");
+                        MessageBox.Show("Code Field Can't Be Empty");
                         return;
                     }
-                }
 
+                    for (int i = 0; i < ReasonsDGV.Items.Count; i++)
+                    {
+                        if (Code_txt.Text == ((DataRowView)ReasonsDGV.Items[i]).Row.ItemArray[0].ToString())
+                        {
+                            MessageBox.Show("This Code Is Not Avaliable");
+                            return;
+                        }
+                    }
+
+                    SqlConnection con = new SqlConnection(Classes.DataConnString);
+                    try
+                    {
+                        con.Open();
+                        string s = "insert into Setup_AdjacmentReasons_tbl(Code, Name, Name2, Active) values (" + Code_txt.Text + ",N'" + Name_txt.Text + "',N'" + Name2_txt.Text + "','" + Active_chbx.IsChecked + "')";
+                        SqlCommand cmd = new SqlCommand(s, con);
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                    finally
+                    {
+                        con.Close();
+                        MainUiFormat();
+
+                        ReasonsDGV.DataContext = null;
+                        FillDGV();
+                    }
+                    MessageBox.Show("Saved Successfully");
+                }
+                else
+                {
+                    MessageBox.Show("You can't Update This Reason");
+                }
+            }
+        }
+
+        private void UpdateBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (Authenticated.IndexOf("UpdateAddjacmentReasonss") == -1 && Authenticated.IndexOf("CheckAllAddjacmentReasons") == -1)
+            {
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
                 SqlConnection con = new SqlConnection(Classes.DataConnString);
+
                 try
                 {
                     con.Open();
-                    string s = "insert into Setup_AdjacmentReasons_tbl(Code, Name, Name2, Active) values (" + Code_txt.Text + ",N'" + Name_txt.Text + "',N'" + Name2_txt.Text + "','" + Active_chbx.IsChecked + "')";
+                    string s = "Update Setup_AdjacmentReasons_tbl SET Name=N'" + Name_txt.Text +
+                                                   "',Name2=N'" + Name2_txt.Text +
+                                                   "',Active='" + Active_chbx.IsChecked +
+                                                   "'Where Code =" + Code_txt.Text;
                     SqlCommand cmd = new SqlCommand(s, con);
                     cmd.ExecuteNonQuery();
                 }
@@ -153,41 +220,8 @@ namespace Food_Cost
                     ReasonsDGV.DataContext = null;
                     FillDGV();
                 }
-                MessageBox.Show("Saved Successfully");
-            }
-            else
-            {
-                MessageBox.Show("You can't Update This Reason");
-            }
-        }
-
-        private void UpdateBtn_Click(object sender, RoutedEventArgs e)
-        {
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-
-            try
-            {
-                con.Open();
-                string s = "Update Setup_AdjacmentReasons_tbl SET Name=N'" + Name_txt.Text +
-                                               "',Name2=N'" + Name2_txt.Text +
-                                               "',Active='" + Active_chbx.IsChecked +
-                                               "'Where Code =" + Code_txt.Text;
-                SqlCommand cmd = new SqlCommand(s, con);
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-                MainUiFormat();
-
-                ReasonsDGV.DataContext = null;
-                FillDGV();
-            }
-            MessageBox.Show("Updated Successfully");
+                MessageBox.Show("Updated Successfully");
+            }         
         }
 
         private void UndoBtn_Click(object sender, RoutedEventArgs e)
@@ -197,33 +231,41 @@ namespace Food_Cost
 
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (Code_txt.Text != "1")
+            if (Authenticated.IndexOf("DeleteAddjacmentReasons") == -1 && Authenticated.IndexOf("CheckAllAddjacmentReasons") == -1)
             {
-                SqlConnection con = new SqlConnection(Classes.DataConnString);
-                try
-                {
-                    con.Open();
-                    string s = "Delete Setup_AdjacmentReasons_tbl Where Code =" + Code_txt.Text;
-                    SqlCommand cmd = new SqlCommand(s, con);
-                    cmd.ExecuteNonQuery();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-                finally
-                {
-                    con.Close();
-                    MainUiFormat();
-
-                    ReasonsDGV.DataContext = null;
-                    FillDGV();
-                }
-                MessageBox.Show("Deleted Successfully");
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
             else
             {
-                MessageBox.Show("You can't delete This Reason");
+                if (Code_txt.Text != "1")
+                {
+                    SqlConnection con = new SqlConnection(Classes.DataConnString);
+                    try
+                    {
+                        con.Open();
+                        string s = "Delete Setup_AdjacmentReasons_tbl Where Code =" + Code_txt.Text;
+                        SqlCommand cmd = new SqlCommand(s, con);
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                    finally
+                    {
+                        con.Close();
+                        MainUiFormat();
+
+                        ReasonsDGV.DataContext = null;
+                        FillDGV();
+                    }
+                    MessageBox.Show("Deleted Successfully");
+                }
+                else
+                {
+                    MessageBox.Show("You can't delete This Reason");
+                }
             }
         }
 

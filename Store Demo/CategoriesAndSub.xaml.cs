@@ -188,82 +188,22 @@ namespace Food_Cost
 
         private void UpdateBtn_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            if (Authenticated.IndexOf("UpdateRecipeCategory") == -1 && Authenticated.IndexOf("CheckAllRecipeCategory") == -1)
+            {
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
 
-            try
-            {
-                con.Open();
-                string s = "Update Setup_RecipeCategory SET Name=N'" + Name_txt.Text +
-                                               "',Name2=N'" + Name2_txt.Text +
-                                               "',IsActive='" + Active_chbx.IsChecked +
-                                               "'Where Code =" + Code_txt.Text;
-                SqlCommand cmd = new SqlCommand(s, con);
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-                MainUiFormat();
-
-                CategoryDGV.DataContext=null;
-                FillDGV();
-            }
-            MessageBox.Show("Updated Successfully");
-        }
-
-        private void UndoBtn_Click(object sender, RoutedEventArgs e)
-        {
-            MainUiFormat();
-        }
-
-        private void DeleteBtn_Click(object sender, RoutedEventArgs e)
-        {
-            string checkRecipe = ""; string checkSubCat = "";
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-            try
-            {
-                con.Open();
-                string s = "SELECT Category_ID FROM Setup_Recipes Where Category_ID=" + Code_txt.Text;
-                SqlCommand cmd = new SqlCommand(s, con);
-                if(cmd.ExecuteScalar() != null)
-                    checkRecipe = cmd.ExecuteScalar().ToString();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-            }
-
-            try
-            {
-                con.Open();
-                string s = "SELECT Category_ID FROM Setup_RecipeSubCategories Where Category_ID=" + Code_txt.Text;
-                SqlCommand cmd = new SqlCommand(s, con);
-                if (cmd.ExecuteScalar() != null)
-                    checkSubCat = cmd.ExecuteScalar().ToString();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-            }
- 
-            if (checkRecipe != Code_txt.Text && checkSubCat != Code_txt.Text)
-            {
                 try
                 {
                     con.Open();
-                    string s = "Delete Setup_RecipeCategory Where Code =" + Code_txt.Text;
+                    string s = "Update Setup_RecipeCategory SET Name=N'" + Name_txt.Text +
+                                                   "',Name2=N'" + Name2_txt.Text +
+                                                   "',IsActive='" + Active_chbx.IsChecked +
+                                                   "'Where Code =" + Code_txt.Text;
                     SqlCommand cmd = new SqlCommand(s, con);
                     cmd.ExecuteNonQuery();
                 }
@@ -276,16 +216,92 @@ namespace Food_Cost
                     con.Close();
                     MainUiFormat();
 
-                    CategoryDGV.DataContext=null;
+                    CategoryDGV.DataContext = null;
                     FillDGV();
                 }
-                MessageBox.Show("Deleted Successfully");
+                MessageBox.Show("Updated Successfully");
+            }
+        }
+
+        private void UndoBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MainUiFormat();
+        }
+
+        private void DeleteBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (Authenticated.IndexOf("DeleteRecipeCatgoey") == -1 && Authenticated.IndexOf("CheckAllRecipeCategory") == -1)
+            {
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
             else
             {
-                MessageBox.Show("Can't Delete this Category");
-                checkRecipe = "";
-                checkSubCat = "";
+                string checkRecipe = ""; string checkSubCat = "";
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                try
+                {
+                    con.Open();
+                    string s = "SELECT Category_ID FROM Setup_Recipes Where Category_ID=" + Code_txt.Text;
+                    SqlCommand cmd = new SqlCommand(s, con);
+                    if (cmd.ExecuteScalar() != null)
+                        checkRecipe = cmd.ExecuteScalar().ToString();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                }
+
+                try
+                {
+                    con.Open();
+                    string s = "SELECT Category_ID FROM Setup_RecipeSubCategories Where Category_ID=" + Code_txt.Text;
+                    SqlCommand cmd = new SqlCommand(s, con);
+                    if (cmd.ExecuteScalar() != null)
+                        checkSubCat = cmd.ExecuteScalar().ToString();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                }
+
+                if (checkRecipe != Code_txt.Text && checkSubCat != Code_txt.Text)
+                {
+                    try
+                    {
+                        con.Open();
+                        string s = "Delete Setup_RecipeCategory Where Code =" + Code_txt.Text;
+                        SqlCommand cmd = new SqlCommand(s, con);
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                    finally
+                    {
+                        con.Close();
+                        MainUiFormat();
+
+                        CategoryDGV.DataContext = null;
+                        FillDGV();
+                    }
+                    MessageBox.Show("Deleted Successfully");
+                }
+                else
+                {
+                    MessageBox.Show("Can't Delete this Category");
+                    checkRecipe = "";
+                    checkSubCat = "";
+                }
             }
             
         }
@@ -421,156 +437,58 @@ namespace Food_Cost
 
         private void SaveSubBtn_Click(object sender, RoutedEventArgs e)
         {
-            int val = 0;
-            if (CodeSub_txt.Text == "")
+            if (Authenticated.IndexOf("SaveRecipeSubCategory") == -1 && Authenticated.IndexOf("CheckAllRecipeCategory") == -1)
             {
-                MessageBox.Show("Code Field Can't Be Empty");
-                return;
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
-            if (Categorycbx.Text == "")
+            else
             {
-                MessageBox.Show("Category Field Can't Be Empty");
-                return;
-            }
-
-            for(int i=0;i< SubCategoryDGV.Items.Count;i++)
-            {
-                if(CodeSub_txt.Text==((DataRowView)SubCategoryDGV.Items[i]).Row.ItemArray[0].ToString())
+                int val = 0;
+                if (CodeSub_txt.Text == "")
                 {
-                    MessageBox.Show("This Code Is Not Avaliable");
+                    MessageBox.Show("Code Field Can't Be Empty");
                     return;
                 }
-            }
+                if (Categorycbx.Text == "")
+                {
+                    MessageBox.Show("Category Field Can't Be Empty");
+                    return;
+                }
 
-         
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-            try
-            {
-                string s = "Select Code From Setup_RecipeCategory Where Name='" + Categorycbx.Text + "'";
-                con.Open();
-                SqlCommand cmd = new SqlCommand(s, con);
-                val = int.Parse(cmd.ExecuteScalar().ToString());
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-            }
+                for (int i = 0; i < SubCategoryDGV.Items.Count; i++)
+                {
+                    if (CodeSub_txt.Text == ((DataRowView)SubCategoryDGV.Items[i]).Row.ItemArray[0].ToString())
+                    {
+                        MessageBox.Show("This Code Is Not Avaliable");
+                        return;
+                    }
+                }
 
-            try
-            {
-                con.Open();
-                string q = "Insert into Setup_RecipeSubCategories (Code,Name,Name2,IsActive,Category_ID) values (" + CodeSub_txt.Text + ",N'" + NameSub_txt.Text + "',N'" + Name2Sub_txt.Text + "','" + ActiveSub_chbx.IsChecked + "','" + val+ "')";
-                SqlCommand cmd = new SqlCommand(q, con);
 
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-                MainUiSubFormat();
-                SubCategoryDGV.DataContext= null;
-                FillSubDGV();
-            }
-            MessageBox.Show("Saved Successfully");
-        }
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                try
+                {
+                    string s = "Select Code From Setup_RecipeCategory Where Name='" + Categorycbx.Text + "'";
+                    con.Open();
+                    SqlCommand cmd = new SqlCommand(s, con);
+                    val = int.Parse(cmd.ExecuteScalar().ToString());
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                }
 
-        private void UpdateSubBtn_Click(object sender, RoutedEventArgs e)
-        {
-            int val = 0;
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-
-            try
-            {
-                string s = "Select Code From Setup_RecipeCategory Where Name='" + Categorycbx.Text + "'";
-                con.Open();
-                SqlCommand cmd = new SqlCommand(s, con);
-                val = int.Parse(cmd.ExecuteScalar().ToString());
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-            }
-
-            try
-            {
-                con.Open();
-                string q = "Update Setup_RecipeSubCategories SET Name=N'" + NameSub_txt.Text +
-                                               "',Name2=N'" + Name2Sub_txt.Text +
-                                               "',IsActive='" + ActiveSub_chbx.IsChecked +
-                                               "',Category_ID='" + val +
-                                               "' Where Code =" + CodeSub_txt.Text; ;
-
-                SqlCommand cmd = new SqlCommand(q, con);
-                //SqlCommand cmd = new SqlCommand("UpdateSetup_SubCategory", con);
-                //cmd.CommandType = CommandType.StoredProcedure;
-                //cmd.Parameters.AddWithValue("@Code", CodeSub_txt.Text);
-                //cmd.Parameters.AddWithValue("@Name", NameSub_txt.Text);
-                //cmd.Parameters.AddWithValue("@Name2", Name2Sub_txt.Text);
-                //cmd.Parameters.AddWithValue("@IsActive", ActiveSub_chbx.IsChecked);
-                //cmd.Parameters.AddWithValue("@Category", val);
-
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-                MainUiSubFormat();
-
-                SubCategoryDGV.DataContext= null;
-                FillSubDGV();
-            }
-            MessageBox.Show("Updated Successfully");
-        }
-
-        private void UndoSubBtn_Click(object sender, RoutedEventArgs e)
-        {
-            MainUiSubFormat();
-        }
-
-        private void DeleteSubBtn_Click(object sender, RoutedEventArgs e)
-        {
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-            string checkRecipe = "";
-            try
-            {
-                con.Open();
-                string s = "SELECT SubCategory_ID FROM Setup_Recipes Where SubCategory_ID=" + CodeSub_txt.Text;
-                SqlCommand cmd = new SqlCommand(s, con);
-                if(cmd.ExecuteScalar() != null)
-                    checkRecipe = cmd.ExecuteScalar().ToString();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-            }
-
-            if (checkRecipe != CodeSub_txt.Text)
-            {
                 try
                 {
                     con.Open();
-                    string q = "Delete Setup_RecipeSubCategories Where Code=" + CodeSub_txt.Text;
+                    string q = "Insert into Setup_RecipeSubCategories (Code,Name,Name2,IsActive,Category_ID) values (" + CodeSub_txt.Text + ",N'" + NameSub_txt.Text + "',N'" + Name2Sub_txt.Text + "','" + ActiveSub_chbx.IsChecked + "','" + val + "')";
                     SqlCommand cmd = new SqlCommand(q, con);
+
                     cmd.ExecuteNonQuery();
                 }
                 catch (Exception ex)
@@ -581,14 +499,136 @@ namespace Food_Cost
                 {
                     con.Close();
                     MainUiSubFormat();
+                    SubCategoryDGV.DataContext = null;
                     FillSubDGV();
                 }
-                MessageBox.Show("Deleted Successfully");
+                MessageBox.Show("Saved Successfully");
+            }
+        }
+
+        private void UpdateSubBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (Authenticated.IndexOf("UpdateRecipeSubCategory") == -1 && Authenticated.IndexOf("CheckAllRecipeCategory") == -1)
+            {
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
             else
             {
-                MessageBox.Show("Can't delete this Sub Category");
-                checkRecipe = "";
+                int val = 0;
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+
+                try
+                {
+                    string s = "Select Code From Setup_RecipeCategory Where Name='" + Categorycbx.Text + "'";
+                    con.Open();
+                    SqlCommand cmd = new SqlCommand(s, con);
+                    val = int.Parse(cmd.ExecuteScalar().ToString());
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                }
+
+                try
+                {
+                    con.Open();
+                    string q = "Update Setup_RecipeSubCategories SET Name=N'" + NameSub_txt.Text +
+                                                   "',Name2=N'" + Name2Sub_txt.Text +
+                                                   "',IsActive='" + ActiveSub_chbx.IsChecked +
+                                                   "',Category_ID='" + val +
+                                                   "' Where Code =" + CodeSub_txt.Text; ;
+
+                    SqlCommand cmd = new SqlCommand(q, con);
+                    //SqlCommand cmd = new SqlCommand("UpdateSetup_SubCategory", con);
+                    //cmd.CommandType = CommandType.StoredProcedure;
+                    //cmd.Parameters.AddWithValue("@Code", CodeSub_txt.Text);
+                    //cmd.Parameters.AddWithValue("@Name", NameSub_txt.Text);
+                    //cmd.Parameters.AddWithValue("@Name2", Name2Sub_txt.Text);
+                    //cmd.Parameters.AddWithValue("@IsActive", ActiveSub_chbx.IsChecked);
+                    //cmd.Parameters.AddWithValue("@Category", val);
+
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                    MainUiSubFormat();
+
+                    SubCategoryDGV.DataContext = null;
+                    FillSubDGV();
+                }
+                MessageBox.Show("Updated Successfully");
+            }
+        }
+
+        private void UndoSubBtn_Click(object sender, RoutedEventArgs e)
+        {
+            MainUiSubFormat();
+        }
+
+        private void DeleteSubBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (Authenticated.IndexOf("DeleteRecipeSubCatgoey") == -1 && Authenticated.IndexOf("CheckAllRecipeCategory") == -1)
+            {
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                string checkRecipe = "";
+                try
+                {
+                    con.Open();
+                    string s = "SELECT SubCategory_ID FROM Setup_Recipes Where SubCategory_ID=" + CodeSub_txt.Text;
+                    SqlCommand cmd = new SqlCommand(s, con);
+                    if (cmd.ExecuteScalar() != null)
+                        checkRecipe = cmd.ExecuteScalar().ToString();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                }
+
+                if (checkRecipe != CodeSub_txt.Text)
+                {
+                    try
+                    {
+                        con.Open();
+                        string q = "Delete Setup_RecipeSubCategories Where Code=" + CodeSub_txt.Text;
+                        SqlCommand cmd = new SqlCommand(q, con);
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                    finally
+                    {
+                        con.Close();
+                        MainUiSubFormat();
+                        FillSubDGV();
+                    }
+                    MessageBox.Show("Deleted Successfully");
+                }
+                else
+                {
+                    MessageBox.Show("Can't delete this Sub Category");
+                    checkRecipe = "";
+                }
             }
         }
 

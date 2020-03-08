@@ -28,28 +28,32 @@ namespace Food_Cost
 
         public RecieveOrder()
         {
-            if (MainWindow.AuthenticationData.ContainsKey("RecievePO")|| MainWindow.AuthenticationData.ContainsKey("RecieveReturantTrnsfer") || MainWindow.AuthenticationData.ContainsKey("RecieveKitchen") || MainWindow.AuthenticationData.ContainsKey("RecieveWithoutPurchse") || MainWindow.AuthenticationData.ContainsKey("Request"))
+            if (MainWindow.AuthenticationData.Count != 0)
             {
-                AuthenticatedPO = MainWindow.AuthenticationData["RecievePO"];
-                AuthenticatedRsturant  = MainWindow.AuthenticationData["RecieveReturantTrnsfer"];
-                AuthenticatedKitchen  = MainWindow.AuthenticationData["RecieveKitchen"];
-                AuthenticatedWithoutPO = MainWindow.AuthenticationData["RecieveWithoutPurchse"];
-                AuthenticatedRequest  = MainWindow.AuthenticationData["Request"];
-                if (AuthenticatedPO.Count == 0 && AuthenticatedRsturant.Count == 0 && AuthenticatedKitchen.Count == 0 && AuthenticatedWithoutPO.Count == 0 && AuthenticatedRequest.Count == 0)
+                if (MainWindow.AuthenticationData.ContainsKey("RecievePO") || MainWindow.AuthenticationData.ContainsKey("RecieveReturantTrnsfer") || MainWindow.AuthenticationData.ContainsKey("RecieveKitchen") || MainWindow.AuthenticationData.ContainsKey("RecieveWithoutPurchse") || MainWindow.AuthenticationData.ContainsKey("Request"))
                 {
-                    MessageBox.Show("You Havent a Privilage to Open this Page");
-                    LogIn logIn = new LogIn();
-                    logIn.ShowDialog();
-                }
-                else
-                {
-                    InitializeComponent();
-                    ExpireDate.ItemExpireDate.Clear();
-                    LoadToDGV();
-                    IncrementPoNo();
-                    LoadTheResturant();
+                    AuthenticatedPO = MainWindow.AuthenticationData["RecievePO"];
+                    AuthenticatedRsturant = MainWindow.AuthenticationData["RecieveReturantTrnsfer"];
+                    AuthenticatedKitchen = MainWindow.AuthenticationData["RecieveKitchen"];
+                    AuthenticatedWithoutPO = MainWindow.AuthenticationData["RecieveWithoutPurchse"];
+                    AuthenticatedRequest = MainWindow.AuthenticationData["Request"];
+                    if (AuthenticatedPO.Count == 0 && AuthenticatedRsturant.Count == 0 && AuthenticatedKitchen.Count == 0 && AuthenticatedWithoutPO.Count == 0 && AuthenticatedRequest.Count == 0)
+                    {
+                        MessageBox.Show("You Havent a Privilage to Open this Page");
+                        LogIn logIn = new LogIn();
+                        logIn.ShowDialog();
+                    }
+                    else
+                    {
+                        InitializeComponent();
+                        ExpireDate.ItemExpireDate.Clear();
+                        LoadToDGV();
+                        IncrementPoNo();
+                        LoadTheResturant();
+                    }
                 }
             }
+            else { MessageBox.Show("You should Login First !"); LogIn logIn = new LogIn();  logIn.ShowDialog();   }
         }
         private void MainUiFormat()
         {
@@ -1763,7 +1767,7 @@ namespace Food_Cost
             float Total_Price = 0;
             for (int i = 0; i < RequestsItemsDGV.Items.Count; i++)
             {
-                Total_Price += float.Parse(Dat.Rows[i][TOKitchenReq.Text + " total Cost"].ToString());
+                Total_Price += (float.Parse(Dat.Rows[i]["Qty"].ToString()) * float.Parse(Dat.Rows[i][KitchenReqcbx.Text + " Unit Cost"].ToString()));
             }
             NUmberOfItemsReq.Text = RequestsItemsDGV.Items.Count.ToString();
             Total_PriceReq.Text = Total_Price.ToString();
@@ -1959,7 +1963,7 @@ namespace Food_Cost
                     To_CostOfItemsOnHand = ((Convert.ToDouble(To_QtyOnHandMultipleCost) + (Convert.ToDouble(dt.Rows[i]["Qty"].ToString()) * Convert.ToDouble(dt.Rows[i][KitchenReqcbx.Text + " Unit Cost"]))) / Convert.ToDouble(To_QTyonHand)).ToString();
                     _reader.Close();
                     //
-                    float NetCost = float.Parse(dt.Rows[i]["Qty"].ToString()) * float.Parse(dt.Rows[i][6].ToString());
+                    float NetCost = float.Parse(dt.Rows[i]["Qty"].ToString()) * float.Parse(dt.Rows[i][7].ToString());
 
                     //try
                     //{
@@ -1991,6 +1995,21 @@ namespace Food_Cost
                 cmd.ExecuteNonQuery();
             }
             catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+        }
+
+        private void UndoRequestBtn_Click(object sender, RoutedEventArgs e)
+        {
+            RequestsItemsDGV.DataContext = null;
+            RequestsItemsDGV.Visibility = Visibility.Hidden;
+            RequestssDGV.Visibility = Visibility.Visible;
+            Serial_Request_NO.Text = "";
+            Request_NO.Text = "";
+            TypeCbx.Text = "";
+            Request_Date.Text = "";
+            RequestCommenttxt.Text = "";
+            TOResturantReq.Text = "";
+            TOKitchenReq.Text = "";
+
         }
 
 
@@ -2244,6 +2263,9 @@ namespace Food_Cost
             //    }
             //}
         }
+
+       
+
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9.]+");
