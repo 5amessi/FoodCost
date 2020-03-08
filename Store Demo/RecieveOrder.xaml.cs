@@ -803,7 +803,7 @@ namespace Food_Cost
 
                         float netCost = float.Parse(dt.Rows[i][FromKitchenKitchentxt.Text + " Qty"].ToString()) * float.Parse(dt.Rows[i][FromKitchenKitchentxt.Text + " Unit Cost"].ToString());
 
-                        string s = "insert RO_Items (Item_ID,RO_No,Qty,Unit,Price_Without_Tax,Tax,Price_With_Tax,Net_Price,QtyOnHand_To,Cost_To,QtyOnHand_From,Cost_From) values ('" + dt.Rows[i]["ItemID"].ToString() + "','" + RoTransferKitchen.Text + "'," + dt.Rows[i]["Qty"] + ",'" + " " + "'," + dt.Rows[i][FromKitchenKitchentxt.Text + " Unit Cost"] + ",0 ," + dt.Rows[i][FromKitchenKitchentxt.Text + " Unit Cost"] + "," + netCost + "," + dt.Rows[i][ToKitchenKitchentxt.Text + " Unit Cost"] + "," + dt.Rows[i][ToKitchenKitchentxt.Text + " Qty"] + "," + dt.Rows[i][FromKitchenKitchentxt.Text + " Qty"] + "," + dt.Rows[i][FromKitchenKitchentxt.Text + " Unit Cost"] + ")";
+                        string s = "insert RO_Items (Item_ID,RO_No,Qty,Unit,Price_Without_Tax,Tax,Price_With_Tax,Net_Price,QtyOnHand_To,Cost_To,QtyOnHand_From,Cost_From) values ('" + dt.Rows[i]["ItemID"].ToString() + "','" + RoTransferKitchen.Text + "'," + dt.Rows[i]["Qty"] + ",'" + " " + "'," + dt.Rows[i][FromKitchenKitchentxt.Text + " Unit Cost"] + ",0 ," + dt.Rows[i][FromKitchenKitchentxt.Text + " Unit Cost"] + "," + netCost + "," + dt.Rows[i][ToKitchenKitchentxt.Text + " Qty"] + "," + dt.Rows[i][ToKitchenKitchentxt.Text + " Unit Cost"] + "," + dt.Rows[i][FromKitchenKitchentxt.Text + " Qty"] + "," + dt.Rows[i][FromKitchenKitchentxt.Text + " Unit Cost"] + ")";
                         SqlCommand _CMD = new SqlCommand(s, con);
                         _CMD.ExecuteNonQuery();
 
@@ -1963,7 +1963,7 @@ namespace Food_Cost
                     To_CostOfItemsOnHand = ((Convert.ToDouble(To_QtyOnHandMultipleCost) + (Convert.ToDouble(dt.Rows[i]["Qty"].ToString()) * Convert.ToDouble(dt.Rows[i][KitchenReqcbx.Text + " Unit Cost"]))) / Convert.ToDouble(To_QTyonHand)).ToString();
                     _reader.Close();
                     //
-                    float NetCost = float.Parse(dt.Rows[i]["Qty"].ToString()) * float.Parse(dt.Rows[i][7].ToString());
+                    float NetCost = float.Parse(dt.Rows[i]["Qty"].ToString()) * float.Parse(dt.Rows[i][8].ToString());
 
                     //try
                     //{
