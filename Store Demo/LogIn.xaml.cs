@@ -32,7 +32,6 @@ namespace Food_Cost
             InitializeComponent();
             UserNametxt.Focus();
         }
-
         private void SplitAuthentication()
         {
             string authonty = MainWindow.Authentication;
@@ -238,38 +237,38 @@ namespace Food_Cost
             MainWindow.AuthenticationData.Add(key, Values);
             //
             //
-            oneAuthent = MainWindow.ArrAuthenctication[19].Split(':');
-            key = oneAuthent[0];
-            Values = new List<string>();
-            if (oneAuthent[1] != "")
-            {
-                Valuo = oneAuthent[1].Split(',');
-                Values.AddRange(Valuo);
-            }
-            MainWindow.AuthenticationData.Add(key, Values);
-            //
-            //
-            oneAuthent = MainWindow.ArrAuthenctication[20].Split(':');
-            key = oneAuthent[0];
-            Values = new List<string>();
-            if (oneAuthent[1] != "")
-            {
-                Valuo = oneAuthent[1].Split(',');
-                Values.AddRange(Valuo);
-            }
-            MainWindow.AuthenticationData.Add(key, Values);
-            //
-            //
-            oneAuthent = MainWindow.ArrAuthenctication[21].Split(':');
-            key = oneAuthent[0];
-            Values = new List<string>();
-            if (oneAuthent[1] != "")
-            {
-                Valuo = oneAuthent[1].Split(',');
-                Values.AddRange(Valuo);
-            }
-            MainWindow.AuthenticationData.Add(key, Values);
-            //
+            //oneAuthent = MainWindow.ArrAuthenctication[19].Split(':');
+            //key = oneAuthent[0];
+            //Values = new List<string>();
+            //if (oneAuthent[1] != "")
+            //{
+            //    Valuo = oneAuthent[1].Split(',');
+            //    Values.AddRange(Valuo);
+            //}
+            //MainWindow.AuthenticationData.Add(key, Values);
+            ////
+            ////
+            //oneAuthent = MainWindow.ArrAuthenctication[20].Split(':');
+            //key = oneAuthent[0];
+            //Values = new List<string>();
+            //if (oneAuthent[1] != "")
+            //{
+            //    Valuo = oneAuthent[1].Split(',');
+            //    Values.AddRange(Valuo);
+            //}
+            //MainWindow.AuthenticationData.Add(key, Values);
+            ////
+            ////
+            //oneAuthent = MainWindow.ArrAuthenctication[21].Split(':');
+            //key = oneAuthent[0];
+            //Values = new List<string>();
+            //if (oneAuthent[1] != "")
+            //{
+            //    Valuo = oneAuthent[1].Split(',');
+            //    Values.AddRange(Valuo);
+            //}
+            //MainWindow.AuthenticationData.Add(key, Values);
+            ////
             //oneAuthent = MainWindow.ArrAuthenctication[22].Split(':');
             //key = oneAuthent[0];
             //Values = new List<string>();
@@ -279,12 +278,10 @@ namespace Food_Cost
             //    Values.AddRange(Valuo);
             //}
             //MainWindow.AuthenticationData.Add(key, Values);
-
         }
 
-        private void LoginBtn_Click(object sender, RoutedEventArgs e)      
+        private void Logined()
         {
-
             SqlConnection con = new SqlConnection(Classes.DataConnString);
             SqlConnection con2 = new SqlConnection(Classes.DataConnString);
             try
@@ -332,10 +329,15 @@ namespace Food_Cost
                 }
                 else
                 {
-                    MessageBox.Show("Plea6se Enter The Correct UserName And Password");
+                    MessageBox.Show("Please Enter The Correct UserName And Password");
                 }
             }
             catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+        }
+
+        private void LoginBtn_Click(object sender, RoutedEventArgs e)      
+        {
+            Logined();
         }
       
         /*private void EnterBtn_Click(object sender, RoutedEventArgs e)
@@ -384,6 +386,15 @@ namespace Food_Cost
 
             else
                 CheckToLogin = false;
+        }
+
+
+        private void myTextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key != System.Windows.Input.Key.Enter) return;
+
+            LoginBtn.Focus();
+            Logined();
         }
     }
 }

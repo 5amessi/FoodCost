@@ -23,11 +23,29 @@ namespace Food_Cost
     /// </summary>
     public partial class Users : UserControl
     {
+        List<string> Authenticated = new List<string>();
         public Users()
         {
-            InitializeComponent();
-            FillDGV();
-            MainUiFormat();
+            if (MainWindow.AuthenticationData.Count != 0)
+            {
+                if (MainWindow.AuthenticationData.ContainsKey("Users"))
+                {
+                    Authenticated = MainWindow.AuthenticationData["Users"];
+                    if (Authenticated.Count == 0)
+                    {
+                        MessageBox.Show("You Havent a Privilage to Open this Page");
+                        LogIn logIn = new LogIn();
+                        logIn.ShowDialog();
+                    }
+                    else
+                    {
+                        InitializeComponent();
+                        FillDGV();
+                        MainUiFormat();
+                    }
+                }
+            }
+            else { MessageBox.Show("You Should Logined First !");    LogIn logIn = new LogIn();   logIn.ShowDialog();   }
         }
 
         private void FillDGV()
@@ -172,99 +190,123 @@ namespace Food_Cost
         }
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (DoSomeChecks() == false)
-                return;
-
-            foreach (DgvData item in UsersDGV.Items)
+            if (Authenticated.IndexOf("SaveUsers") == -1 && Authenticated.IndexOf("CheckAllUsers") == -1)
             {
-                if (item.User_ID.Equals(userIDtxt.Text))
-                {
-                    MessageBox.Show("This Code Is Not Avaliable");
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                if (DoSomeChecks() == false)
                     return;
+
+                foreach (DgvData item in UsersDGV.Items)
+                {
+                    if (item.User_ID.Equals(userIDtxt.Text))
+                    {
+                        MessageBox.Show("This Code Is Not Avaliable");
+                        return;
+                    }
                 }
-            }
 
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
+                string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
+                SqlConnection con = new SqlConnection(connString);
 
-            try
-            {
-                con.Open();
-                string s = string.Format("insert into Users(ID,Name,UserName,Password,UserClass_ID,Mobile,Adress,Email,Active,CreateDate) values('{0}','{1}','{2}','{3}',(select UserClass_ID FROM UserClass_tbl Where Name='{4}'),'{5}','{6}','{7}','{8}',GETDATE())",userIDtxt.Text, Nametxt.Text, UserNametxt.Text, passwordtxt.Password, jobTitle.Text, phone.Text, Addresstxt.Text, Mailtxt.Text, Active_chbx.IsChecked.ToString()) ;
-                SqlCommand cmd = new SqlCommand(s, con);
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-                MainUiFormat();
+                try
+                {
+                    con.Open();
+                    string s = string.Format("insert into Users(ID,Name,UserName,Password,UserClass_ID,Mobile,Adress,Email,Active,CreateDate) values('{0}','{1}','{2}','{3}',(select UserClass_ID FROM UserClass_tbl Where Name='{4}'),'{5}','{6}','{7}','{8}',GETDATE())", userIDtxt.Text, Nametxt.Text, UserNametxt.Text, passwordtxt.Password, jobTitle.Text, phone.Text, Addresstxt.Text, Mailtxt.Text, Active_chbx.IsChecked.ToString());
+                    SqlCommand cmd = new SqlCommand(s, con);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                    MainUiFormat();
 
-                UsersDGV.DataContext=null;
-                FillDGV();
+                    UsersDGV.DataContext = null;
+                    FillDGV();
+                }
+                MessageBox.Show("Saved Successfully");
             }
-            MessageBox.Show("Saved Successfully");
         }
         private void UpdateBtn_Click(object sender, RoutedEventArgs e)
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
-
-            try
+            if (Authenticated.IndexOf("UpdateUsers") == -1 && Authenticated.IndexOf("CheckAllUsers") == -1)
             {
-                con.Open();
-                string s = string.Format("UPDATE Users Set Name='{0}',UserName='{1}',Password='{2}',UserClass_ID=(select UserClass_ID FROM UserClass_tbl Where Name='{3}'),Mobile='{4}',Adress='{5}',Email='{6}',Active='{7}',ModifiedDate=GETDATE() Where ID={8}",
-                    Nametxt.Text, UserNametxt.Text, passwordtxt.Password, jobTitle.Text, phone.Text, Addresstxt.Text, Mailtxt.Text, Active_chbx.IsChecked.ToString(), userIDtxt.Text);
-                
-                SqlCommand cmd = new SqlCommand(s, con);
-
-                cmd.ExecuteNonQuery();
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-                MainUiFormat();
+                string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
+                SqlConnection con = new SqlConnection(connString);
 
-                UsersDGV.DataContext = null;
-                FillDGV();
+                try
+                {
+                    con.Open();
+                    string s = string.Format("UPDATE Users Set Name='{0}',UserName='{1}',Password='{2}',UserClass_ID=(select UserClass_ID FROM UserClass_tbl Where Name='{3}'),Mobile='{4}',Adress='{5}',Email='{6}',Active='{7}',ModifiedDate=GETDATE() Where ID={8}",
+                        Nametxt.Text, UserNametxt.Text, passwordtxt.Password, jobTitle.Text, phone.Text, Addresstxt.Text, Mailtxt.Text, Active_chbx.IsChecked.ToString(), userIDtxt.Text);
+
+                    SqlCommand cmd = new SqlCommand(s, con);
+
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                    MainUiFormat();
+
+                    UsersDGV.DataContext = null;
+                    FillDGV();
+                }
+                MessageBox.Show("Updated Successfully");
             }
-            MessageBox.Show("Updated Successfully");
         }
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
-
-            try
+            if (Authenticated.IndexOf("DeleteUsers") == -1 && Authenticated.IndexOf("CheckAllUsers") == -1)
             {
-                con.Open();
-
-                string s = "delete from Users where ID = " + userIDtxt.Text;
-
-                SqlCommand cmd = new SqlCommand(s, con);
-
-                cmd.ExecuteNonQuery();
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-                MainUiFormat();
+                string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
+                SqlConnection con = new SqlConnection(connString);
 
-                UsersDGV.Items.Clear();
-                FillDGV();
+                try
+                {
+                    con.Open();
+
+                    string s = "delete from Users where ID = " + userIDtxt.Text;
+
+                    SqlCommand cmd = new SqlCommand(s, con);
+
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                    MainUiFormat();
+
+                    UsersDGV.Items.Clear();
+                    FillDGV();
+                }
+                MessageBox.Show("Deleted Successfully");
             }
-            MessageBox.Show("Deleted Successfully");
         }
         private void RowClicked(object sender, MouseButtonEventArgs e)
         {
@@ -306,8 +348,16 @@ namespace Food_Cost
         }
         private void PackIcon_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            UserAuth w = new UserAuth();
-            w.ShowDialog();
+            if (Authenticated.IndexOf("UsersAuth") == -1 && Authenticated.IndexOf("CheckAllUsers") == -1)
+            {
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                UserAuth w = new UserAuth();
+                w.ShowDialog();
+            }
         }
     }
 }

@@ -100,8 +100,7 @@
             <Grid Background="White" Height="700">
 
                 <ListView Background="White" VerticalAlignment="Top" Height="600" Name="ListBox_UserPrivileges" Visibility="Hidden">
-                    <CheckBox Name="SelectAll" Checked="SelectAll_Checked" Unchecked="SelectAll_Unchecked" VerticalAlignment="Top">Select All</CheckBox>
-                        
+                        <CheckBox Name="SelectAll" Checked="SelectAll_Checked" Unchecked="SelectAll_Unchecked" VerticalAlignment="Top">Select All</CheckBox>
 
                     <TreeViewItem Header="Purchase Order" HorizontalAlignment="Left" IsSelected="False" Name="Purchase">
                         <CheckBox Name="CheckAllPO" Tag="1">Check All</CheckBox>
@@ -241,6 +240,11 @@
                         <CheckBox Name="DeleteRecipeSubCatgoey" Content="Delete Category" Tag="1"/>
                     </TreeViewItem>
 
+                    <TreeViewItem Header="Processs Bulk Items" HorizontalAlignment="Left"  IsSelected="False" Name="ProcessBulk">
+                        <CheckBox Name="CheckAllBulk" Tag="1">Check All</CheckBox>
+                        <CheckBox Name="DoProcessBulk" Content="Do Process" Tag="1"/>
+                    </TreeViewItem>
+                    
                     <TreeViewItem Header="Addjacment Items" HorizontalAlignment="Left"  IsSelected="False" Name="AddjacmentItems">
                         <CheckBox Name="CheckAllAddjacment" Tag="1">Check All</CheckBox>
                         <CheckBox Name="AddItemAddjacment" Content="Add Items" Tag="1"/>
@@ -262,12 +266,12 @@
                         <CheckBox Name="AddItemStockInventory" Content="Add Items" Tag="1"/>
                         <CheckBox Name="DeleteStockInventory" Content="Delete Items" Tag="1"/>
                         <CheckBox Name="AdjacmentStockInventory" Content="Make Inventory" Tag="1"/>
-                    </TreeViewItem>-->
+                    </TreeViewItem>--> 
 
                     <TreeViewItem Header="Physical Inventory" HorizontalAlignment="Left"  IsSelected="False" Name="PhysicalInventory">
                         <CheckBox Name="CheckAllPhysicalInventory" Tag="1">Check All</CheckBox>
-                        <CheckBox Name="AddItemPhysicalInventory" Content="Add Items" Tag="1"/>
-                        <CheckBox Name="DeletePhysicalInventory" Content="Delete Items" Tag="1"/>
+                        <CheckBox Name="StartTheInventory" Content="Start Items" Tag="1"/>
+                        <CheckBox Name="SaveTheInventory" Content="Save Items" Tag="1"/>
                         <CheckBox Name="InventoryPhysicalInventory" Content="Make Inventory" Tag="1"/>
                         <CheckBox Name="PrintPhysicalInventory" Content="Print Inventory sheet" Tag="1"/>
                     </TreeViewItem>
@@ -293,6 +297,7 @@
                         <CheckBox Name="UpdateUsers" Content="Update" Tag="1"/>
                         <CheckBox Name="UndoUsers" Content="Undo" Tag="1"/>
                         <CheckBox Name="DeleteUsers" Content="Delete Users" Tag="1"/>
+                        <CheckBox Name="UsersAuth" Content="Users Authentication" Tag="1"/>
                     </TreeViewItem>
 
                     <TreeViewItem Header="UsersAuthentication" HorizontalAlignment="Left" IsSelected="False" Name="UsersAuthentication">
@@ -311,6 +316,11 @@
                         <CheckBox Name="UpdateUnits" Content="Update" Tag="1"/>
                         <CheckBox Name="UndoUnits" Content="Undo" Tag="1"/>
                         <CheckBox Name="DeleteUnits" Content="Delete Unit" Tag="1"/>
+                        <CheckBox Name="NewConvUnits" Content="New" Tag="1"/>
+                        <CheckBox Name="SaveConvUnits" Content="Save" Tag="1"/>
+                        <CheckBox Name="UpdateConvUnits" Content="Update" Tag="1"/>
+                        <CheckBox Name="UndoConvUnits" Content="Undo" Tag="1"/>
+                        <CheckBox Name="DeleteConvUnits" Content="Delete Unit" Tag="1"/>
                     </TreeViewItem>
                 </ListView>
 

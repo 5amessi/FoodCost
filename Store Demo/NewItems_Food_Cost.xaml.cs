@@ -860,6 +860,7 @@ namespace Food_Cost
             }
             savebtn.IsEnabled = false;
             TI_Value.Visibility = Visibility.Hidden;
+            TI_Prec_icon.Visibility = Visibility.Hidden;
             //end of last Update
         }
 
@@ -1015,6 +1016,7 @@ namespace Food_Cost
                         {
                             TI_Value.Visibility = Visibility.Visible;
                             TI_Prec_icon.Visibility = Visibility.Visible;
+
 
                         }
                         else
@@ -1203,6 +1205,7 @@ namespace Food_Cost
                     UndifinedExists = treeViewItem;
                     CodeLabel.Visibility = Visibility.Hidden;
                     TI_Value.Visibility = Visibility.Hidden;
+                    TI_Prec_icon.Visibility = Visibility.Hidden;
                     Codetxt.Visibility = Visibility.Hidden;
                 }
                 catch (Exception error)
@@ -1244,6 +1247,7 @@ namespace Food_Cost
             CodeLabel.Visibility = Visibility.Visible;
             Codetxt.Visibility = Visibility.Visible;
             TI_Value.Visibility = Visibility.Hidden;
+            TI_Prec_icon.Visibility = Visibility.Hidden;
 
         }    //Done
         private void DeleteClicked(object sender, RoutedEventArgs e)
@@ -1304,6 +1308,7 @@ namespace Food_Cost
                 //ClearGroupBox();
             }
             TI_Value.Visibility = Visibility.Hidden;
+            TI_Prec_icon.Visibility = Visibility.Hidden;
         }  //Done
         private void SaveBtn_Clicked(object sender, RoutedEventArgs e)
         {

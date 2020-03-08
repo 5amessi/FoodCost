@@ -27,11 +27,14 @@ namespace Food_Cost
         public string ValOfResturant = "";
         public string ValOfKitchen = "";
         string physicalinventoryID = "";
+        List<string> Authenticated = new List<string>();
         bool Blind = false;
 
         //Adjacment Coming from Physcial Inventory
         public AdjacmentInventory(string ValofRest,string valofKit,string valofOPhiID)
         {
+            Authenticated = MainWindow.AuthenticationData["AddjacmentItems"];
+
             InitializeComponent();
             ValOfResturant = ValofRest;
             ValOfKitchen = valofKit;
@@ -210,8 +213,25 @@ namespace Food_Cost
         DataTable dt = new DataTable();
         public AdjacmentInventory()
         {
-            InitializeComponent();
-            LoadAllResturant();
+            if (MainWindow.AuthenticationData.Count != 0)
+            {
+                if (MainWindow.AuthenticationData.ContainsKey("AddjacmentItems"))
+                {
+                    Authenticated = MainWindow.AuthenticationData["AddjacmentItems"];
+                    if (Authenticated.Count == 0)
+                    {
+                        MessageBox.Show("You Havent a Privilage to Open this Page");
+                        LogIn logIn = new LogIn();
+                        logIn.ShowDialog();
+                    }
+                    else
+                    {
+                        InitializeComponent();
+                        LoadAllResturant();
+                    }
+                }
+            }
+            else { MessageBox.Show(" You Should Logined First !"); LogIn logIn = new LogIn();   logIn.ShowDialog(); }
         }
         public void LoadAllResturant()
         {
@@ -418,105 +438,129 @@ namespace Food_Cost
 
         private void AddItemBtn_Click(object sender, RoutedEventArgs e)
         {
-            ValOfResturant = ValOfResturant;
-            ValOfKitchen = ValOfKitchen;
-            Items itemswindow = new Items(this);
-            itemswindow.ShowDialog();
+            if (Authenticated.IndexOf("AddItemAddjacment") == -1 && Authenticated.IndexOf("CheckAllAddjacment") == -1)
+            {
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                ValOfResturant = ValOfResturant;
+                ValOfKitchen = ValOfKitchen;
+                Items itemswindow = new Items(this);
+                itemswindow.ShowDialog();
+            }
         }
 
         private void RemoveItemBtn_Click(object sender, RoutedEventArgs e)
         {
-            //DataGrid grid = sender as DataGrid;
-            //int codeTodelete = grid.SelectedIndex;
-            //if (grid != null && grid.SelectedItems != null && grid.SelectedItems.Count == 1)
-            //{
-            //    DataTable dt = new DataTable();
-            //    dt = ((DataView)ItemsDGV.ItemsSource).ToTable();
-            //    dt.Rows.RemoveAt(codeTodelete);
-            //    ItemsDGV.DataContext = dt;
-            //}
+            if (Authenticated.IndexOf("DeleteAddjacment") == -1 && Authenticated.IndexOf("CheckAllAddjacment") == -1)
+            {
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                //DataGrid grid = sender as DataGrid;
+                //int codeTodelete = grid.SelectedIndex;
+                //if (grid != null && grid.SelectedItems != null && grid.SelectedItems.Count == 1)
+                //{
+                //    DataTable dt = new DataTable();
+                //    dt = ((DataView)ItemsDGV.ItemsSource).ToTable();
+                //    dt.Rows.RemoveAt(codeTodelete);
+                //    ItemsDGV.DataContext = dt;
+                //}
+            }
         }
 
         private void Adjact_Click(object sender, RoutedEventArgs e)
         {
-            if (Reasoncbx.Text != "Physical Inventory")
+            if (Authenticated.IndexOf("AdjacmentAdjacment") == -1 && Authenticated.IndexOf("CheckAllAddjacment") == -1)
             {
-                if (ItemsDGV.Items.Count == 0)
-                {
-                    MessageBox.Show("First You should Select Items !");
-                    return;
-                }
-                if (Serial_Adjacment_NO.Text.Equals(""))
-                {
-                    MessageBox.Show("First You should Enter The Serial !");
-                    return;
-                }
-                if (Adjacment_NO.Text.Equals(""))
-                {
-                    MessageBox.Show("First You should Enter The Manual Number !");
-                    return;
-                }
-                if (Reasoncbx.Text.Equals(""))
-                {
-                    MessageBox.Show("First You should Choose The Reason !");
-                    return;
-                }
-                if (Adjacment_Date.Text.Equals(""))
-                {
-                    MessageBox.Show("First You should Enter The Date !");
-                    return;
-                }
-
-                SqlConnection con = new SqlConnection(Classes.DataConnString);
-                con.Open();
-                try
-                {
-                    string FiledSelection = "Adjacment_ID,Adjacment_Num,Adjacment_Reason,Adjacment_Date,Comment,Resturant_ID,KitchenID,Create_Date,Post_Date,User_ID,WS,Total_Cost";
-                    string Values = string.Format("'{0}',{1},(select Code From Setup_AdjacmentReasons_tbl where Name='{2}'),'{3}','{4}',{5},{6},GETDATE(),GETDATE(),'{7}','{8}','{9}'", Serial_Adjacment_NO.Text, Adjacment_NO.Text, Reasoncbx.Text, Convert.ToDateTime(Adjacment_Date.Text).ToString("MM-dd-yyyy"), commenttxt.Text, ValOfResturant, ValOfKitchen, MainWindow.UserID, Classes.WS, Total_Price.Text);
-                    Classes.InsertRow("Adjacment_tbl", FiledSelection, Values);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-
-                try
-                {
-                    for (int i = 0; i < ItemsDGV.Items.Count; i++)
-                    {
-                        string FiledSelection = "Adjacment_ID,Item_ID,Qty,AdjacmentableQty,Variance,Cost";
-                        string Values = string.Format("'{0}','{1}','{2}','{3}','{4}','{5}'", Serial_Adjacment_NO.Text, (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]), Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]), Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]), Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[5]), Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6]));
-                        Classes.InsertRow("Adjacment_Items", FiledSelection, Values);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-
-                try
-                {
-                    for (int i = 0; i < ItemsDGV.Items.Count; i++)
-                    {
-                        string H = string.Format("Update Items set Qty={0}, Current_Cost={4}, Net_Cost=({4} * {0}) where ItemID = '{1}' and RestaurantID ={2} and KitchenID={3}", Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]), (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]), ValOfResturant, ValOfKitchen, Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6]));
-                        SqlCommand cmd = new SqlCommand(H, con);
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-                finally
-                {
-                    MessageBox.Show("Edited Successfully");
-                }
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
             else
             {
-                SaveThePhyscialAdjacment();
-            }
-            Adjact.IsEnabled = false;
+                if (Reasoncbx.Text != "Physical Inventory")
+                {
+                    if (ItemsDGV.Items.Count == 0)
+                    {
+                        MessageBox.Show("First You should Select Items !");
+                        return;
+                    }
+                    if (Serial_Adjacment_NO.Text.Equals(""))
+                    {
+                        MessageBox.Show("First You should Enter The Serial !");
+                        return;
+                    }
+                    if (Adjacment_NO.Text.Equals(""))
+                    {
+                        MessageBox.Show("First You should Enter The Manual Number !");
+                        return;
+                    }
+                    if (Reasoncbx.Text.Equals(""))
+                    {
+                        MessageBox.Show("First You should Choose The Reason !");
+                        return;
+                    }
+                    if (Adjacment_Date.Text.Equals(""))
+                    {
+                        MessageBox.Show("First You should Enter The Date !");
+                        return;
+                    }
+
+                    SqlConnection con = new SqlConnection(Classes.DataConnString);
+                    con.Open();
+                    try
+                    {
+                        string FiledSelection = "Adjacment_ID,Adjacment_Num,Adjacment_Reason,Adjacment_Date,Comment,Resturant_ID,KitchenID,Create_Date,Post_Date,User_ID,WS,Total_Cost";
+                        string Values = string.Format("'{0}',{1},(select Code From Setup_AdjacmentReasons_tbl where Name='{2}'),'{3}','{4}',{5},{6},GETDATE(),GETDATE(),'{7}','{8}','{9}'", Serial_Adjacment_NO.Text, Adjacment_NO.Text, Reasoncbx.Text, Convert.ToDateTime(Adjacment_Date.Text).ToString("MM-dd-yyyy"), commenttxt.Text, ValOfResturant, ValOfKitchen, MainWindow.UserID, Classes.WS, Total_Price.Text);
+                        Classes.InsertRow("Adjacment_tbl", FiledSelection, Values);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+
+                    try
+                    {
+                        for (int i = 0; i < ItemsDGV.Items.Count; i++)
+                        {
+                            string FiledSelection = "Adjacment_ID,Item_ID,Qty,AdjacmentableQty,Variance,Cost";
+                            string Values = string.Format("'{0}','{1}','{2}','{3}','{4}','{5}'", Serial_Adjacment_NO.Text, (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]), Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]), Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]), Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[5]), Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6]));
+                            Classes.InsertRow("Adjacment_Items", FiledSelection, Values);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+
+                    try
+                    {
+                        for (int i = 0; i < ItemsDGV.Items.Count; i++)
+                        {
+                            string H = string.Format("Update Items set Qty={0}, Current_Cost={4}, Net_Cost=({4} * {0}) where ItemID = '{1}' and RestaurantID ={2} and KitchenID={3}", Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]), (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]), ValOfResturant, ValOfKitchen, Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6]));
+                            SqlCommand cmd = new SqlCommand(H, con);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                    finally
+                    {
+                        MessageBox.Show("Edited Successfully");
+                    }
+                }
+                else
+                {
+                    SaveThePhyscialAdjacment();
+                }
+                Adjact.IsEnabled = false;
+            }   
         }
 
         private void SaveThePhyscialAdjacment()
@@ -649,6 +693,5 @@ namespace Food_Cost
             }
             catch (Exception ex) { MessageBox.Show(ex.ToString()); }
         }
-
     }
 }

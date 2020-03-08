@@ -205,7 +205,7 @@
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Text="Weight: *" VerticalAlignment="Center" Foreground="Red"/>
                                         <TextBox Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Width="60" Margin="10 0 0 0" Name="Weight" PreviewTextInput="NumberValidationTextBox" PreviewKeyDown="NeglectWhiteSpace"  HorizontalContentAlignment="Center" />
-                                        <TextBox Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="Black" Width="50" Margin="2" Name="unit" HorizontalContentAlignment="Center"/>
+                                        <TextBox Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="Black" Width="50" Margin="2" Name="unit" HorizontalContentAlignment="Center" IsReadOnly="True"/>
                                         <Button Grid.Column="3" Grid.Row="1"  Content="..." VerticalAlignment="Center" HorizontalAlignment="Center" Background="#FF838F99" Click="Unit_Button"/>
 
                                     </Grid>

@@ -25,11 +25,29 @@ namespace Food_Cost
     /// </summary>
     public partial class UserAuth : Window
     {
+        List<string> Authenticated = new List<string>();
         public UserAuth()
         {
-            InitializeComponent();
-            MainUIFormat();
-            LoadUserClasses();
+            if (MainWindow.AuthenticationData.Count != 0)
+            {
+                if (MainWindow.AuthenticationData.ContainsKey("UsersAuthentication"))
+                {
+                    Authenticated = MainWindow.AuthenticationData["UsersAuthentication"];
+                    if (Authenticated.Count == 0)
+                    {
+                        MessageBox.Show("You Havent a Privilage to Open this Page");
+                        LogIn logIn = new LogIn();
+                        logIn.ShowDialog();
+                    }
+                    else
+                    {
+                        InitializeComponent();
+                        MainUIFormat();
+                        LoadUserClasses();
+                    }
+                }
+            }
+            else { MessageBox.Show("You Should Logined First !"); LogIn logIn = new LogIn();    logIn.ShowDialog();   }
         }
         private void LoadUserClasses()
         {
@@ -123,29 +141,154 @@ namespace Food_Cost
         }
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (UserClassIDtxt.Text == "")
+            if (Authenticated.IndexOf("SaveUsersAuthentication") == -1 && Authenticated.IndexOf("CheckAllUsersAuthentication") == -1)
             {
-                MessageBox.Show("Please enter ID Field");
-                return;
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
-            if (Nametxt.Text == "")
+            else
             {
-                MessageBox.Show("Please enter Name Field");
-                return;
-            }
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-            try
-            {
-                con.Open();
-                string s = string.Format("select UserClass_ID from UserClass_tbl where UserClass_ID={0}", UserClassIDtxt.Text);
-                SqlCommand cmd = new SqlCommand(s, con);
-                if (cmd.ExecuteScalar() == null)
+                if (UserClassIDtxt.Text == "")
                 {
+                    MessageBox.Show("Please enter ID Field");
+                    return;
+                }
+                if (Nametxt.Text == "")
+                {
+                    MessageBox.Show("Please enter Name Field");
+                    return;
+                }
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                try
+                {
+                    con.Open();
+                    string s = string.Format("select UserClass_ID from UserClass_tbl where UserClass_ID={0}", UserClassIDtxt.Text);
+                    SqlCommand cmd = new SqlCommand(s, con);
+                    if (cmd.ExecuteScalar() == null)
+                    {
+                        try
+                        {
+                            s = "insert into UserClass_tbl(UserClass_ID,Name,Active,CreateDate) values (" + UserClassIDtxt.Text + ",'" + Nametxt.Text + "','" + Active_chbx.IsChecked.ToString() + "'," + "GETDATE()" + ")";
+                            cmd = new SqlCommand(s, con);
+                            cmd.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.ToString());
+                        }
+                        finally
+                        {
+                            con.Close();
+                            MainUIFormat();
+                        }
+                        MessageBox.Show("Saved Successfully");
+                        LoadUserClasses();
+                    }
+                    else
+                    {
+                        MessageBox.Show("This Code Used");
+                        UserClassIDtxt.Text = "";
+                        con.Close();
+                        return;
+                    }
+                }
+                catch { }
+            }
+        }
+        private void UpdateBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (Authenticated.IndexOf("UpdateUsersAuthentication") == -1 && Authenticated.IndexOf("CheckAllUsersAuthentication") == -1)
+            {
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                int length = 0;
+                var Privilage = new StringBuilder();
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                if (ListBox_UserPrivileges.IsVisible == true)
+                {
+                    for (int i = 1; i < ListBox_UserPrivileges.Items.Count; i++)
+                    {
+                        TreeViewItem TreeName = (ListBox_UserPrivileges.Items[i] as TreeViewItem);
+                        if (i != 2)
+                        {
+                            Privilage.Append((ListBox_UserPrivileges.Items[i] as TreeViewItem).Name);
+                            Privilage.Append(":");
+                        }
+                        for (int j = 0; j < TreeName.Items.Count; j++)
+                        {
+
+                            if (TreeName.Items[j].GetType().Name == "CheckBox")
+                            {
+                                CheckBox valOfCheck = (TreeName.Items[j] as CheckBox);
+                                if (valOfCheck.IsChecked == true)
+                                {
+                                    Privilage.Append((TreeName.Items[j] as CheckBox).Name);
+                                    if (j < TreeName.Items.Count - 1)
+                                        Privilage.Append(",");
+                                }
+                            }
+                            else if (TreeName.Items[j].GetType().Name == "ListView")
+                            {
+                                ListView Listview = (TreeName.Items[j] as ListView);
+                                for (int k = 0; k < Listview.Items.Count; k++)
+                                {
+                                    TreeViewItem SubTreeName = (Listview.Items[k] as TreeViewItem);
+                                    Privilage.Append((Listview.Items[k] as TreeViewItem).Name);
+                                    Privilage.Append(":");
+                                    for (int l = 0; l < SubTreeName.Items.Count; l++)
+                                    {
+                                        if (SubTreeName.Items[l].GetType().Name == "CheckBox")
+                                        {
+                                            CheckBox valOfCheck = (SubTreeName.Items[l] as CheckBox);
+                                            if (valOfCheck.IsChecked == true)
+                                            {
+                                                Privilage.Append((SubTreeName.Items[l] as CheckBox).Name);
+                                                if (l < SubTreeName.Items.Count - 1)
+                                                    Privilage.Append(",");
+                                            }
+                                        }
+                                    }
+                                    length = Privilage.Length - 1;
+                                    if (Privilage[length] == ',')
+                                    {
+                                        Privilage.Remove(length, 1);
+                                    }
+                                    Privilage.Append(".");
+                                }
+                                length = Privilage.Length - 1;
+                                if (Privilage[length] == ',')
+                                {
+                                    Privilage.Remove(length, 1);
+                                    Privilage.Append(".");
+                                }
+                            }
+                        }
+                        length = Privilage.Length - 1;
+                        if (Privilage[length] == ',')
+                        {
+                            Privilage.Remove(length, 1);
+                        }
+                        if (Privilage[Privilage.Length - 1] != '.')
+                        {
+                            Privilage.Append(".");
+                        }
+                    }
                     try
                     {
-                        s = "insert into UserClass_tbl(UserClass_ID,Name,Active,CreateDate) values (" + UserClassIDtxt.Text + ",'" + Nametxt.Text + "','" + Active_chbx.IsChecked.ToString() + "'," + "GETDATE()" + ")";
-                        cmd = new SqlCommand(s, con);
-                        cmd.ExecuteNonQuery();
+                        con.Open();
+                        string s = string.Format("update UserPrivilages_tbl set ClassPrv='{0}', ModifiedDate=GETDATE() where UserClass_ID='{1}'", Privilage, UserClassIDtxt.Text);
+                        SqlCommand cmd = new SqlCommand(s, con);
+                        int IfExist = cmd.ExecuteNonQuery();
+
+                        if (IfExist == 0)
+                        {
+                            s = string.Format("insert into UserPrivilages_tbl values ('{0}','{1}',GETDATE(),GETDATE(),'{2}')", UserClassIDtxt.Text, Privilage, MainWindow.UserID);
+                            cmd = new SqlCommand(s, con);
+                            cmd.ExecuteNonQuery();
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -154,110 +297,19 @@ namespace Food_Cost
                     finally
                     {
                         con.Close();
-                        MainUIFormat();
-                    }
-                    MessageBox.Show("Saved Successfully");
-                    LoadUserClasses();
-                }
-                else
-                {
-                    MessageBox.Show("This Code Used");
-                    UserClassIDtxt.Text = "";
-                    con.Close();
-                    return;
-                }
-            }
-            catch { }
-        }
-        private void UpdateBtn_Click(object sender, RoutedEventArgs e)
-        {
-            int length = 0;
-            var Privilage = new StringBuilder();
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-            if(ListBox_UserPrivileges.IsVisible ==true)
-            {
-                for(int i=1;i< ListBox_UserPrivileges.Items.Count;i++)
-                {
-                    TreeViewItem TreeName = (ListBox_UserPrivileges.Items[i] as TreeViewItem);
-                    if (i != 2)
-                    {
-                        Privilage.Append((ListBox_UserPrivileges.Items[i] as TreeViewItem).Name);
-                        Privilage.Append(":");
-                    }
-                    for (int j=0;j< TreeName.Items.Count;j++)
-                    {
-
-                        if(TreeName.Items[j].GetType().Name == "CheckBox")
-                        {
-                            CheckBox valOfCheck = (TreeName.Items[j] as CheckBox);
-                            if (valOfCheck.IsChecked==true)
-                            {
-                                Privilage.Append((TreeName.Items[j] as CheckBox).Name);
-                                if(j < TreeName.Items.Count-1)
-                                    Privilage.Append(",");
-                            }
-                        }
-                        else if(TreeName.Items[j].GetType().Name == "ListView")
-                        {
-                            ListView Listview = (TreeName.Items[j] as ListView);
-                            for(int k=0;k<Listview.Items.Count;k++)
-                            {
-                                TreeViewItem SubTreeName = (Listview.Items[k] as TreeViewItem);
-                                Privilage.Append((Listview.Items[k] as TreeViewItem).Name);
-                                Privilage.Append(":");
-                                for (int l = 0; l < SubTreeName.Items.Count; l++)
-                                {
-                                    if (SubTreeName.Items[l].GetType().Name == "CheckBox")
-                                    {
-                                        CheckBox valOfCheck = (SubTreeName.Items[l] as CheckBox);
-                                        if (valOfCheck.IsChecked == true)
-                                        {
-                                            Privilage.Append((SubTreeName.Items[l] as CheckBox).Name);
-                                            if(l<SubTreeName.Items.Count-1)
-                                                Privilage.Append(",");
-                                        }
-                                    }
-                                }
-                                length = Privilage.Length-1;
-                                if (Privilage[length] == ',')
-                                {
-                                    Privilage.Remove(length, 1);
-                                }
-                                Privilage.Append(".");
-                            }
-                            length = Privilage.Length-1;
-                            if (Privilage[length] == ',')
-                            {
-                                Privilage.Remove(length , 1);
-                                Privilage.Append(".");
-                            }
-                        }
-                    }
-                    length = Privilage.Length-1;
-                    if (Privilage[length] == ',')
-                    {
-                        Privilage.Remove(length , 1);
-                    }
-                    if(Privilage[Privilage.Length-1] !='.')
-                    {
-                        Privilage.Append(".");
                     }
                 }
                 try
                 {
                     con.Open();
-                    string s = string.Format("update UserPrivilages_tbl set ClassPrv='{0}', ModifiedDate=GETDATE() where UserClass_ID='{1}'", Privilage, UserClassIDtxt.Text);
-                    SqlCommand cmd = new SqlCommand(s, con);
-                    int IfExist = cmd.ExecuteNonQuery();
 
-                    if (IfExist == 0)
-                    {
-                        s = string.Format("insert into UserPrivilages_tbl values ('{0}','{1}',GETDATE(),GETDATE(),'{2}')", UserClassIDtxt.Text, Privilage, MainWindow.UserID);
-                        cmd = new SqlCommand(s, con);
-                        cmd.ExecuteNonQuery();
-                    }
+                    string s = "Update UserClass_tbl SET " + "Name = '" + Nametxt.Text + "', Active = '" + Active_chbx.IsChecked + "', ModifiedDate = GETDATE() Where UserClass_ID = " + UserClassIDtxt.Text;
+
+                    SqlCommand cmd = new SqlCommand(s, con);
+
+                    cmd.ExecuteNonQuery();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     MessageBox.Show(ex.ToString());
                 }
@@ -265,51 +317,41 @@ namespace Food_Cost
                 {
                     con.Close();
                 }
+                MessageBox.Show("Updated Successfully");
+                LoadUserClasses();
             }
-            try
-            {
-                con.Open();
-
-                string s = "Update UserClass_tbl SET " + "Name = '" + Nametxt.Text + "', Active = '" + Active_chbx.IsChecked + "', ModifiedDate = GETDATE() Where UserClass_ID = " + UserClassIDtxt.Text;
-
-                SqlCommand cmd = new SqlCommand(s, con);
-
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-            }
-            MessageBox.Show("Updated Successfully"); 
-            LoadUserClasses();
         }
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-
-            try
+            if (Authenticated.IndexOf("DeleteUsersAuthentication") == -1 && Authenticated.IndexOf("CheckAllUsersAuthentication") == -1)
             {
-                con.Open();
-
-                string s = "delete from UserClass_tbl where UserClass_ID = " + UserClassIDtxt.Text;
-
-                SqlCommand cmd = new SqlCommand(s, con);
-
-                cmd.ExecuteNonQuery();
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-            }
-            MessageBox.Show("Deleted Successfully");
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+
+                try
+                {
+                    con.Open();
+
+                    string s = "delete from UserClass_tbl where UserClass_ID = " + UserClassIDtxt.Text;
+
+                    SqlCommand cmd = new SqlCommand(s, con);
+
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                }
+                MessageBox.Show("Deleted Successfully");
+            }   
         }
         private void User_Class_Mouse_Click(object sender, MouseButtonEventArgs e)
         {
@@ -350,7 +392,6 @@ namespace Food_Cost
             DeleteBtn.IsEnabled = true;
             NewBtn.IsEnabled = false;
         }
-
         private void SelectAll_Checked(object sender, RoutedEventArgs e)
         {
             if(SelectAll.IsChecked == true)

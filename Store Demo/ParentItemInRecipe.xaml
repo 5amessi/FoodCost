@@ -7,6 +7,8 @@
         xmlns:local="clr-namespace:Food_Cost"
         mc:Ignorable="d"
         Title="ParentItemInRecipe" Height="500" Width="600" Closing="Window_Closed">
+    
+    
     <Grid>
         <Grid >
             <Grid.RowDefinitions>
@@ -23,7 +25,7 @@
                 <ColumnDefinition Width="19*"/>
             </Grid.ColumnDefinitions>
             <TextBlock Grid.ColumnSpan="2" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 0 0 0"> Qty :</TextBlock>
-            <TextBox Grid.Column="2"  VerticalAlignment="Center" Name="ItemQtytxt"  IsReadOnly="True" Margin="0 0 10 0"/>
+            <TextBox Grid.Column="2"  VerticalAlignment="Center" Name="ItemQtytxt"  IsReadOnly="True" Margin="0 0 10 0" HorizontalContentAlignment="Center"/>
             <TextBox Grid.Column="3"  VerticalAlignment="Center" Name="ItemUnittxt"  IsReadOnly="True" Margin="10 0 0 0"/>
 
             <DataGrid Grid.Row="1" Grid.ColumnSpan="6" x:Name="ParentItemsDGV" AutoGenerateColumns="True" 

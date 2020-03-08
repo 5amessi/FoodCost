@@ -26,12 +26,30 @@ namespace Food_Cost
         public string ValOfResturant = "";
         public string ValOfKitchen = "";
         public string Valoftype = "";
+        List<string> Authenticated = new List<string>();
         bool Blind = false;
 
         public PhysicalInventory()
         {
-            InitializeComponent();
-            LoadAllResturant();
+            if (MainWindow.AuthenticationData.Count != 0)
+            {
+                if (MainWindow.AuthenticationData.ContainsKey("PhysicalInventory"))
+                {
+                    Authenticated = MainWindow.AuthenticationData["PhysicalInventory"];
+                    if (Authenticated.Count == 0)
+                    {
+                        MessageBox.Show("You Havent a Privilage to Open this Page");
+                        LogIn logIn = new LogIn();
+                        logIn.ShowDialog();
+                    }
+                    else
+                    {
+                        InitializeComponent();
+                        LoadAllResturant();
+                    }
+                }
+            }
+            else { MessageBox.Show("You Should Logined First !"); LogIn logIn = new LogIn(); logIn.ShowDialog();  }
         }
         public void LoadAllResturant()
         {
@@ -184,46 +202,54 @@ namespace Food_Cost
         }  //Done
         private void TheInventoryDetails_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-            try
+            if (Authenticated.IndexOf("StartTheInventory") == -1 && Authenticated.IndexOf("CheckAllPhysicalInventory") == -1)
             {
-                con.Open();
-                string s = string.Format("select Inventory_ID,Inventory_Type From PhysicalInventory_tbl where Inventory_Type='Open'");
-                SqlCommand cmd = new SqlCommand(s, con);
-                if (cmd.ExecuteScalar() != null)
-                {
-                    MessageBoxResult result = MessageBox.Show("You Hve an Opened Physical Inventory , You wan't to Open It ?", "Confirmation",
-                             MessageBoxButton.OKCancel, MessageBoxImage.Warning);
-                    if (result == MessageBoxResult.OK)
-                    {
-                        string W = string.Format("select Top(1)Inventory_ID From PhysicalInventory_tbl ORDER BY Inventory_ID DESC");
-                        cmd = new SqlCommand(W, con);
-                        StartInventory();
-                        LoadOpenPhysicalInventory(cmd.ExecuteScalar().ToString());
-                    }
-                }
-                else
-                {
-                    if (Outletcbx.Text.Equals(""))
-                    {
-                        MessageBox.Show("you Shoud Choose The Resturant first !");
-                        return;
-                    }
-                    else if (Kitchencbx.Text.Equals(""))
-                    {
-                        MessageBox.Show("you Shoud Choose The Kitchen first !");
-                        return;
-                    }
-                    DeleteDataAtQtyOnHand();
-                    GetCodeofResturantAndKitchen();
-                    InsertToONHandTable();
-                    StartInventory();
-                    GetInventoryID();
-                    LoadAllItems();
-                }
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
-            catch (Exception ex) { MessageBox.Show(ex.ToString()); }
-            con.Close();
+            else
+            {
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                try
+                {
+                    con.Open();
+                    string s = string.Format("select Inventory_ID,Inventory_Type From PhysicalInventory_tbl where Inventory_Type='Open'");
+                    SqlCommand cmd = new SqlCommand(s, con);
+                    if (cmd.ExecuteScalar() != null)
+                    {
+                        MessageBoxResult result = MessageBox.Show("You Hve an Opened Physical Inventory , You wan't to Open It ?", "Confirmation",
+                                 MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                        if (result == MessageBoxResult.OK)
+                        {
+                            string W = string.Format("select Top(1)Inventory_ID From PhysicalInventory_tbl ORDER BY Inventory_ID DESC");
+                            cmd = new SqlCommand(W, con);
+                            StartInventory();
+                            LoadOpenPhysicalInventory(cmd.ExecuteScalar().ToString());
+                        }
+                    }
+                    else
+                    {
+                        if (Outletcbx.Text.Equals(""))
+                        {
+                            MessageBox.Show("you Shoud Choose The Resturant first !");
+                            return;
+                        }
+                        else if (Kitchencbx.Text.Equals(""))
+                        {
+                            MessageBox.Show("you Shoud Choose The Kitchen first !");
+                            return;
+                        }
+                        DeleteDataAtQtyOnHand();
+                        GetCodeofResturantAndKitchen();
+                        InsertToONHandTable();
+                        StartInventory();
+                        GetInventoryID();
+                        LoadAllItems();
+                    }
+                }
+                catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+                con.Close();
+            }
 
         }   //Done
         private void DeleteDataAtQtyOnHand()
@@ -575,28 +601,35 @@ namespace Food_Cost
 
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-           
-            if (Serial_Inventory_NO.Text.Equals(""))
+            if (Authenticated.IndexOf("SaveTheInventory") == -1 && Authenticated.IndexOf("CheckAllPhysicalInventory") == -1)
             {
-                MessageBox.Show("First You should Enter The Serial !");
-                return;
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
-            if (Inventory_NO.Text.Equals(""))
+            else
             {
-                MessageBox.Show("First You should Enter The Manual Number !");
-                return;
+                if (Serial_Inventory_NO.Text.Equals(""))
+                {
+                    MessageBox.Show("First You should Enter The Serial !");
+                    return;
+                }
+                if (Inventory_NO.Text.Equals(""))
+                {
+                    MessageBox.Show("First You should Enter The Manual Number !");
+                    return;
+                }
+                if (Typecbx.Text.Equals(""))
+                {
+                    MessageBox.Show("First You should Choose The Type !");
+                    return;
+                }
+                if (InventoryDate.Text.Equals(""))
+                {
+                    MessageBox.Show("First You should Choose The Date !");
+                    return;
+                }
+                SaveInfoANdData();
             }
-            if (Typecbx.Text.Equals(""))
-            {
-                MessageBox.Show("First You should Choose The Type !");
-                return;
-            }
-            if (InventoryDate.Text.Equals(""))
-            {
-                MessageBox.Show("First You should Choose The Date !");
-                return;
-            }
-            SaveInfoANdData();
         }          //Done
 
         private void SaveInfoANdData()
@@ -794,45 +827,92 @@ namespace Food_Cost
 
         private void Inventory_Click(object sender, RoutedEventArgs e)
         {
-            SaveInfoANdData();
-            UserControl usc = new Food_Cost.AdjacmentInventory(ValOfResturant, ValOfKitchen, Serial_Inventory_NO.Text);
-            TheMainGrid.Children.Clear();
-            TheMainGrid.Children.Add(usc);
+            if (Authenticated.IndexOf("InventoryPhysicalInventory") == -1 && Authenticated.IndexOf("CheckAllPhysicalInventory") == -1)
+            {
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                SaveInfoANdData();
+                UserControl usc = new Food_Cost.AdjacmentInventory(ValOfResturant, ValOfKitchen, Serial_Inventory_NO.Text);
+                TheMainGrid.Children.Clear();
+                TheMainGrid.Children.Add(usc);
 
 
-            /* if (Serial_Inventory_NO.Text.Equals(""))
-             {
-                 MessageBox.Show("First You should Enter The Serial !");
-                 return;
-             }
-             if (Inventory_NO.Text.Equals(""))
-             {
-                 MessageBox.Show("First You should Enter The Manual Number !");
-                 return;
-             }
-             if (Typecbx.Text.Equals(""))
-             {
-                 MessageBox.Show("First You should Choose The Type !");
-                 return;
-             }
-             if (InventoryDate.Text.Equals(""))
-             {
-                 MessageBox.Show("First You should Choose The Date !");
-                 return;
-             }
+                /* if (Serial_Inventory_NO.Text.Equals(""))
+                 {
+                     MessageBox.Show("First You should Enter The Serial !");
+                     return;
+                 }
+                 if (Inventory_NO.Text.Equals(""))
+                 {
+                     MessageBox.Show("First You should Enter The Manual Number !");
+                     return;
+                 }
+                 if (Typecbx.Text.Equals(""))
+                 {
+                     MessageBox.Show("First You should Choose The Type !");
+                     return;
+                 }
+                 if (InventoryDate.Text.Equals(""))
+                 {
+                     MessageBox.Show("First You should Choose The Date !");
+                     return;
+                 }
 
-             SqlConnection con = new SqlConnection(connString);
-             if (NotBlindChx.IsChecked == false)
-             {
+                 SqlConnection con = new SqlConnection(connString);
+                 if (NotBlindChx.IsChecked == false)
+                 {
+                     try
+                     {
+                         con.Open();
+                         for (int i = 0; i < ItemsDGV.Items.Count; i++)
+                         {
+                             string s = "Insert into PhysicalInventory_Items(Inventory_ID,Item_ID,Qty,InventoryQty,Variance,Cost) Values ( " + Serial_Inventory_NO.Text + ",'" + (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]) + "'," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[5]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6]) + ")";
+                             SqlCommand cmd = new SqlCommand(s, con);
+                             cmd.ExecuteNonQuery();
+                         }
+                     }
+                     catch (Exception ex)
+                     {
+                         MessageBox.Show(ex.ToString());
+                     }
+                     finally
+                     {
+                         con.Close();
+                     }
+
+                 }
+                 else if (NotBlindChx.IsChecked == true)
+                 {
+                     try
+                     {
+                         con.Open();
+                         for (int i = 0; i < ItemsDGV.Items.Count; i++)
+                         {
+                             string s = "Insert into PhysicalInventory_Items(Inventory_ID,Item_ID,Qty,Cost) Values ( " + Serial_Inventory_NO.Text + ",'" + (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]) + "'," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]) + "," + (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[5]).ToString() + ")";
+                             SqlCommand cmd = new SqlCommand(s, con);
+                             cmd.ExecuteNonQuery();
+                         }
+                     }
+                     catch (Exception ex)
+                     {
+                         MessageBox.Show(ex.ToString());
+                     }
+                     finally
+                     {
+                         con.Close();
+                     }
+
+
+                 }
                  try
                  {
                      con.Open();
-                     for (int i = 0; i < ItemsDGV.Items.Count; i++)
-                     {
-                         string s = "Insert into PhysicalInventory_Items(Inventory_ID,Item_ID,Qty,InventoryQty,Variance,Cost) Values ( " + Serial_Inventory_NO.Text + ",'" + (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]) + "'," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[5]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[6]) + ")";
-                         SqlCommand cmd = new SqlCommand(s, con);
-                         cmd.ExecuteNonQuery();
-                     }
+                     string s = string.Format("insert into PhysicalInventory_tbl(Inventory_ID,Inventory_Num,Inventory_Type,Inventory_Date,Comment,Resturant_ID,KitchenID,Post_Date,UserID,Blind) values({0},{1},'{2}',{3},'{4}',{5},'{6}',GETDATE(),{7},{8})", Serial_Inventory_NO.Text, Inventory_NO.Text, Typecbx.Text, InventoryDate.Text, commenttxt.Text, ValOfResturant, ValOfKitchen, MainWindow.UserID, NotBlindChx.IsChecked);
+                     SqlCommand cmd = new SqlCommand(s, con);
+                     cmd.ExecuteNonQuery();
                  }
                  catch (Exception ex)
                  {
@@ -842,47 +922,8 @@ namespace Food_Cost
                  {
                      con.Close();
                  }
-
-             }
-             else if (NotBlindChx.IsChecked == true)
-             {
-                 try
-                 {
-                     con.Open();
-                     for (int i = 0; i < ItemsDGV.Items.Count; i++)
-                     {
-                         string s = "Insert into PhysicalInventory_Items(Inventory_ID,Item_ID,Qty,Cost) Values ( " + Serial_Inventory_NO.Text + ",'" + (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[0]) + "'," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[3]) + "," + Convert.ToDouble(((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[4]) + "," + (((DataRowView)ItemsDGV.Items[i]).Row.ItemArray[5]).ToString() + ")";
-                         SqlCommand cmd = new SqlCommand(s, con);
-                         cmd.ExecuteNonQuery();
-                     }
-                 }
-                 catch (Exception ex)
-                 {
-                     MessageBox.Show(ex.ToString());
-                 }
-                 finally
-                 {
-                     con.Close();
-                 }
-
-
-             }
-             try
-             {
-                 con.Open();
-                 string s = string.Format("insert into PhysicalInventory_tbl(Inventory_ID,Inventory_Num,Inventory_Type,Inventory_Date,Comment,Resturant_ID,KitchenID,Post_Date,UserID,Blind) values({0},{1},'{2}',{3},'{4}',{5},'{6}',GETDATE(),{7},{8})", Serial_Inventory_NO.Text, Inventory_NO.Text, Typecbx.Text, InventoryDate.Text, commenttxt.Text, ValOfResturant, ValOfKitchen, MainWindow.UserID, NotBlindChx.IsChecked);
-                 SqlCommand cmd = new SqlCommand(s, con);
-                 cmd.ExecuteNonQuery();
-             }
-             catch (Exception ex)
-             {
-                 MessageBox.Show(ex.ToString());
-             }
-             finally
-             {
-                 con.Close();
-             }
-         }*/
+             }*/
+            }
         }
     }
 }

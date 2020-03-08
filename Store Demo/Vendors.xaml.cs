@@ -22,12 +22,29 @@ namespace Food_Cost
     /// </summary>
     public partial class Vendors : UserControl
     {
+        List<string> Authenticated = new List<string>();
         public Vendors()
         {
-            InitializeComponent();
-
-            FillDGV();
-            MainUiFormat();
+            if (MainWindow.AuthenticationData.Count != 0)
+            {
+                if (MainWindow.AuthenticationData.ContainsKey("Vendors"))
+                {
+                    Authenticated = MainWindow.AuthenticationData["Vendors"];
+                    if (Authenticated.Count == 0)
+                    {
+                        MessageBox.Show("You Havent a Privilage to Open this Page");
+                        LogIn logIn = new LogIn();
+                        logIn.ShowDialog();
+                    }
+                    else
+                    {
+                        InitializeComponent();
+                        FillDGV();
+                        MainUiFormat();
+                    }
+                }
+            }
+            else { MessageBox.Show("You Should Logined First !"); LogIn logIn = new LogIn();  logIn.ShowDialog(); }
         }
 
         //Functions
@@ -104,77 +121,93 @@ namespace Food_Cost
         }
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (Code_txt.Text == "")
+            if (Authenticated.IndexOf("SaveVendors") == -1 && Authenticated.IndexOf("CheckAllVendors") == -1)
             {
-                MessageBox.Show("Code Field Can't Be Empty");
-                return;
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
-
-            foreach (DgvData item in Vendors_DGV.Items)
+            else
             {
-                if (item.Code.Equals(Code_txt.Text))
+                if (Code_txt.Text == "")
                 {
-                    MessageBox.Show("This Code Is Not Avaliable");
+                    MessageBox.Show("Code Field Can't Be Empty");
                     return;
                 }
+
+                foreach (DgvData item in Vendors_DGV.Items)
+                {
+                    if (item.Code.Equals(Code_txt.Text))
+                    {
+                        MessageBox.Show("This Code Is Not Avaliable");
+                        return;
+                    }
+                }
+
+                string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
+                SqlConnection con = new SqlConnection(connString);
+
+                try
+                {
+                    con.Open();
+
+                    string s = "insert into Vendors(Code,Name,IsActive) values (" + Code_txt.Text + ",N'" + Name_txt.Text +
+                        "','" + Active_chbx.IsChecked.ToString() + "')";
+
+                    SqlCommand cmd = new SqlCommand(s, con);
+
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                    MainUiFormat();
+
+                    Vendors_DGV.Items.Clear();
+                    FillDGV();
+                }
+                MessageBox.Show("Saved Successfully");
             }
-
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
-
-            try
-            {
-                con.Open();
-
-                string s = "insert into Vendors(Code,Name,IsActive) values (" + Code_txt.Text + ",N'" + Name_txt.Text + 
-                    "','" + Active_chbx.IsChecked.ToString() + "')";
-
-                SqlCommand cmd = new SqlCommand(s, con);
-
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-                MainUiFormat();
-
-                Vendors_DGV.Items.Clear();
-                FillDGV();
-            }
-            MessageBox.Show("Saved Successfully");
         }
         private void UpdateBtn_Click(object sender, RoutedEventArgs e)
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
-
-            try
+            if (Authenticated.IndexOf("UpdateVendors") == -1 && Authenticated.IndexOf("CheckAllVendors") == -1)
             {
-                con.Open();
-
-                string s = "Update Vendors SET " + "Name = N'" + Name_txt.Text + "', IsActive = '" + Active_chbx.IsChecked + "' Where Code = " + Code_txt.Text;
-
-                SqlCommand cmd = new SqlCommand(s, con);
-
-                cmd.ExecuteNonQuery();
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-                MainUiFormat();
+                string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
+                SqlConnection con = new SqlConnection(connString);
 
-                Vendors_DGV.Items.Clear();
-                FillDGV();
+                try
+                {
+                    con.Open();
+
+                    string s = "Update Vendors SET " + "Name = N'" + Name_txt.Text + "', IsActive = '" + Active_chbx.IsChecked + "' Where Code = " + Code_txt.Text;
+
+                    SqlCommand cmd = new SqlCommand(s, con);
+
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                    MainUiFormat();
+
+                    Vendors_DGV.Items.Clear();
+                    FillDGV();
+                }
+                MessageBox.Show("Updated Successfully");
             }
-            MessageBox.Show("Updated Successfully");
         }
         private void UndoBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -182,32 +215,40 @@ namespace Food_Cost
         }
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
-            SqlConnection con = new SqlConnection(connString);
-
-            try
+            if (Authenticated.IndexOf("DeleteVendors") == -1 && Authenticated.IndexOf("CheckAllVendors") == -1)
             {
-                con.Open();
-
-                string s = "delete from Vendors where Code = " + Code_txt.Text;
-
-                SqlCommand cmd = new SqlCommand(s, con);
-
-                cmd.ExecuteNonQuery();
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-                MainUiFormat();
+                string connString = ConfigurationManager.ConnectionStrings["Food_Cost.Properties.Settings.FoodCostDB"].ConnectionString;
+                SqlConnection con = new SqlConnection(connString);
 
-                Vendors_DGV.Items.Clear();
-                FillDGV();
+                try
+                {
+                    con.Open();
+
+                    string s = "delete from Vendors where Code = " + Code_txt.Text;
+
+                    SqlCommand cmd = new SqlCommand(s, con);
+
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                    MainUiFormat();
+
+                    Vendors_DGV.Items.Clear();
+                    FillDGV();
+                }
+                MessageBox.Show("Deleted Successfully");
             }
-            MessageBox.Show("Deleted Successfully");
         }
 
         private void RowClicked(object sender, MouseButtonEventArgs e)

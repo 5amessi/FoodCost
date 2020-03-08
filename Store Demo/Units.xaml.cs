@@ -24,13 +24,30 @@ namespace Food_Cost
     /// </summary>
     public partial class Units : UserControl
     {
+        List<string> Authenticated = new List<string>();
         public Units()
         {
-            InitializeComponent();
-            //LoadAuthentication();
-            FillDGV();
-            LoadAllCOnv();
-            MainUiFormat();
+            if (MainWindow.AuthenticationData.Count != 0)
+            {
+                if (MainWindow.AuthenticationData.ContainsKey("Units"))
+                {
+                    Authenticated = MainWindow.AuthenticationData["Units"];
+                    if (Authenticated.Count == 0)
+                    {
+                        MessageBox.Show("You Havent a Privilage to Open this Page");
+                        LogIn logIn = new LogIn();
+                        logIn.ShowDialog();
+                    }
+                    else
+                    {
+                        InitializeComponent();
+                        //LoadAuthentication();
+                        FillDGV();
+                        LoadAllCOnv();
+                        MainUiFormat();
+                    }
+                }
+            }
         }
 
         //UNits
@@ -127,58 +144,74 @@ namespace Food_Cost
         }
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (Code_txt.Text == "")
+            if (Authenticated.IndexOf("SaveUnits") == -1 && Authenticated.IndexOf("CheckAllUnits") == -1)
             {
-                MessageBox.Show("Code Field Can't Be Empty");
-                return;
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
+            else
+            {
+                if (Code_txt.Text == "")
+                {
+                    MessageBox.Show("Code Field Can't Be Empty");
+                    return;
+                }
 
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-            try
-            {
-                con.Open();
-                string s = string.Format("insert Into units(Code,Name,IsActive,Create_Date,User_ID,WS) values('{0}',N'{1}','{2}',GETDATE(),'{3}','{4}')", Code_txt.Text, Name_txt.Text, Active_chbx.IsChecked.ToString(), MainWindow.UserID, Classes.WS);
-                SqlCommand cmd = new SqlCommand(s, con);
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-                MainUiFormat();
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                try
+                {
+                    con.Open();
+                    string s = string.Format("insert Into units(Code,Name,IsActive,Create_Date,User_ID,WS) values('{0}',N'{1}','{2}',GETDATE(),'{3}','{4}')", Code_txt.Text, Name_txt.Text, Active_chbx.IsChecked.ToString(), MainWindow.UserID, Classes.WS);
+                    SqlCommand cmd = new SqlCommand(s, con);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                    MainUiFormat();
 
-                Unit_DGV.Items.Clear();
-                FillDGV();
+                    Unit_DGV.Items.Clear();
+                    FillDGV();
+                }
+                MessageBox.Show("Saved Successfully");
             }
-            MessageBox.Show("Saved Successfully");
         }
         private void UpdateBtn_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            if (Authenticated.IndexOf("UpdateUnits") == -1 && Authenticated.IndexOf("CheckAllUnits") == -1)
+            {
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
 
-            try
-            {
-                con.Open();
-                string s = string.Format("update Units set Name = N'{0}', IsActive = '{1}', Last_modifiled_Date = GETDATE()", Name_txt.Text, Active_chbx.IsChecked.ToString());
-                SqlCommand cmd = new SqlCommand(s, con);
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-                MainUiFormat();
+                try
+                {
+                    con.Open();
+                    string s = string.Format("update Units set Name = N'{0}', IsActive = '{1}', Last_modifiled_Date = GETDATE()", Name_txt.Text, Active_chbx.IsChecked.ToString());
+                    SqlCommand cmd = new SqlCommand(s, con);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                    MainUiFormat();
 
-                Unit_DGV.Items.Clear();
-                FillDGV();
+                    Unit_DGV.Items.Clear();
+                    FillDGV();
+                }
+                MessageBox.Show("Updated Successfully");
             }
-            MessageBox.Show("Updated Successfully");
         }
         private void UndoBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -186,28 +219,36 @@ namespace Food_Cost
         }
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            if (Authenticated.IndexOf("DeleteUnits") == -1 && Authenticated.IndexOf("CheckAllUnits") == -1)
+            {
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
 
-            try
-            {
-                con.Open();
-                string s = "delete from Units where Code = " + Code_txt.Text;
-                SqlCommand cmd = new SqlCommand(s, con);
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-                MainUiFormat();
+                try
+                {
+                    con.Open();
+                    string s = "delete from Units where Code = " + Code_txt.Text;
+                    SqlCommand cmd = new SqlCommand(s, con);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                    MainUiFormat();
 
-                Unit_DGV.Items.Clear();
-                FillDGV();
+                    Unit_DGV.Items.Clear();
+                    FillDGV();
+                }
+                MessageBox.Show("Deleted Successfully");
             }
-            MessageBox.Show("Deleted Successfully");
         }
         private void RowClicked(object sender, MouseButtonEventArgs e)
         {
@@ -261,10 +302,8 @@ namespace Food_Cost
                 con.Close();
             }
         }
-
         private void Unit1_Button(object sender, RoutedEventArgs e)
         {
-
             AllUnits allUnits = new AllUnits(this, BaseUnit.Text, "BaseUnit");
             allUnits.ShowDialog();
         }
@@ -297,53 +336,66 @@ namespace Food_Cost
             }
             catch { }
         }
-
         private void SaveUNitBtn_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-            try
+            if (Authenticated.IndexOf("SaveConvUnits") == -1 && Authenticated.IndexOf("CheckAllUnits") == -1)
             {
-                string FiledSelection = "Code,BaseUnit_ID,BaseUnit_Name,Value,SecondUnit_ID,SecondUnit_Name,Create_Date,User_ID,WS";
-                string Values = string.Format("'{5}',(select Code from Units where Name='{0}'),N'{0}','{1}',(select Code from Units where Name='{2}'),N'{2}',GETDATE(),'{3}','{4}'", BaseUnit.Text, ConvUnit2.Text, Secondunit.Text, MainWindow.UserID, Classes.WS,TheCode_txt.Text);
-                Classes.InsertRow("Units_Conversion", FiledSelection, Values);
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
-            catch(Exception ex) { MessageBox.Show(ex.ToString()); }
-            finally
+            else
             {
-                MessageBox.Show("Saved Sussesfully !");
-                SaveUNitBtn.IsEnabled = false;
-                BtnRecipeUnit2.IsEnabled = false;
-                BtnRecipeUnit.IsEnabled = false;
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                try
+                {
+                    string FiledSelection = "Code,BaseUnit_ID,BaseUnit_Name,Value,SecondUnit_ID,SecondUnit_Name,Create_Date,User_ID,WS";
+                    string Values = string.Format("'{5}',(select Code from Units where Name='{0}'),N'{0}','{1}',(select Code from Units where Name='{2}'),N'{2}',GETDATE(),'{3}','{4}'", BaseUnit.Text, ConvUnit2.Text, Secondunit.Text, MainWindow.UserID, Classes.WS, TheCode_txt.Text);
+                    Classes.InsertRow("Units_Conversion", FiledSelection, Values);
+                }
+                catch (Exception ex) { MessageBox.Show(ex.ToString()); }
+                finally
+                {
+                    MessageBox.Show("Saved Sussesfully !");
+                    SaveUNitBtn.IsEnabled = false;
+                    BtnRecipeUnit2.IsEnabled = false;
+                    BtnRecipeUnit.IsEnabled = false;
+                }
             }
         }
-
         private void UpdateUnitBtn_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
-            try
+            if (Authenticated.IndexOf("UpdateConvUnits") == -1 && Authenticated.IndexOf("CheckAllUnits") == -1)
             {
-                con.Open();
-                string s = string.Format("update Units_Conversion set BaseUnit_ID=(select Code From Units where Name='{0}'),BaseUnit_Name='{0}',Value='{1}',SecondUnit_ID=(select Code From Units where Name='{2}'),SecondUnit_Name='{2}',Last_modifiled_Date=GETDATE() where Code='{3}'", BaseUnit.Text, ConvUnit2.Text,Secondunit.Text,TheCode_txt.Text);
-                SqlCommand cmd = new SqlCommand(s, con);
-                cmd.ExecuteNonQuery();
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show(ex.ToString());
-            }
-            {
-                MessageBox.Show("Saved Sussesfully !");
-                SaveUNitBtn.IsEnabled = false;
-                BtnRecipeUnit2.IsEnabled = false;
-                BtnRecipeUnit.IsEnabled = false;
-                UpdateUnitBtn.IsEnabled = false;
-                LoadAllCOnv();
-                BaseUnit.Text = "";
-                Secondunit.Text = "";
-                ConvUnit2.Text = "";
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
+                try
+                {
+                    con.Open();
+                    string s = string.Format("update Units_Conversion set BaseUnit_ID=(select Code From Units where Name='{0}'),BaseUnit_Name='{0}',Value='{1}',SecondUnit_ID=(select Code From Units where Name='{2}'),SecondUnit_Name='{2}',Last_modifiled_Date=GETDATE() where Code='{3}'", BaseUnit.Text, ConvUnit2.Text, Secondunit.Text, TheCode_txt.Text);
+                    SqlCommand cmd = new SqlCommand(s, con);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                {
+                    MessageBox.Show("Saved Sussesfully !");
+                    SaveUNitBtn.IsEnabled = false;
+                    BtnRecipeUnit2.IsEnabled = false;
+                    BtnRecipeUnit.IsEnabled = false;
+                    UpdateUnitBtn.IsEnabled = false;
+                    LoadAllCOnv();
+                    BaseUnit.Text = "";
+                    Secondunit.Text = "";
+                    ConvUnit2.Text = "";
+                }
             }
         }
-
         private void UndoUnitBtn_Click(object sender, RoutedEventArgs e)
         {
             BtnRecipeUnit2.IsEnabled = false;
@@ -352,53 +404,55 @@ namespace Food_Cost
             Secondunit.Text = "";
             LoadAllCOnv();
         }
-
         private void DeleteUnitBtn_Click(object sender, RoutedEventArgs e)
         {
-            SqlConnection con = new SqlConnection(Classes.DataConnString);
+            if (Authenticated.IndexOf("DeleteConvUnits") == -1 && Authenticated.IndexOf("CheckAllUnits") == -1)
+            {
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
+            }
+            else
+            {
+                SqlConnection con = new SqlConnection(Classes.DataConnString);
 
-            try
-            {
-                con.Open();
-                string s = "delete from Units_Conversion where Code = " + TheCode_txt.Text;
-                SqlCommand cmd = new SqlCommand(s, con);
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                con.Close();
-                BtnRecipeUnit2.IsEnabled = false;
-                BtnRecipeUnit.IsEnabled = false;
-                SaveUNitBtn.IsEnabled = false;
-                UpdateUnitBtn.IsEnabled = false;
-                DeleteUnitBtn.IsEnabled = false;
+                try
+                {
+                    con.Open();
+                    string s = "delete from Units_Conversion where Code = " + TheCode_txt.Text;
+                    SqlCommand cmd = new SqlCommand(s, con);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    con.Close();
+                    BtnRecipeUnit2.IsEnabled = false;
+                    BtnRecipeUnit.IsEnabled = false;
+                    SaveUNitBtn.IsEnabled = false;
+                    UpdateUnitBtn.IsEnabled = false;
+                    DeleteUnitBtn.IsEnabled = false;
 
-                RecipeUnit_DGV.Items.Clear();
-                LoadAllCOnv();
+                    RecipeUnit_DGV.Items.Clear();
+                    LoadAllCOnv();
+                }
+                MessageBox.Show("Deleted Successfully");
             }
-            MessageBox.Show("Deleted Successfully");
         }
 
-
-
         //Events
-
         private void NeglectWhiteSpace(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Space)
                 e.Handled = true;
         }
-
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9.]+");
             e.Handled = regex.IsMatch(e.Text);
         }
-
         private void RecipeUnit_DGV_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (sender != null)

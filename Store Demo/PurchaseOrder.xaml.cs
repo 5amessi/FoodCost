@@ -30,23 +30,32 @@ namespace Food_Cost
         int IndexOfRecord = 0;
         public PurchaseOrder()
         {
-            if (MainWindow.AuthenticationData.ContainsKey("Purchase"))
+            if (MainWindow.AuthenticationData.Count != 0)
             {
-                Authenticated = MainWindow.AuthenticationData["Purchase"];
-                if (Authenticated.Count == 0)
+                if (MainWindow.AuthenticationData.ContainsKey("Purchase"))
                 {
-                    MessageBox.Show("You Havent a Privilage to Open this Page");
-                    LogIn logIn = new LogIn();
-                    logIn.ShowDialog();
+                    Authenticated = MainWindow.AuthenticationData["Purchase"];
+                    if (Authenticated.Count == 0)
+                    {
+                        MessageBox.Show("You Havent a Privilage to Open this Page");
+                        LogIn logIn = new LogIn();
+                        logIn.ShowDialog();
+                    }
+                    else
+                    {
+                        InitializeComponent();
+                        LoadVendorFromSQL();
+                        LoadTheMainRestaurant();
+                        DateTime now = DateTime.Now;
+                        MainUiFormat();
+                    }
                 }
-                else
-                {
-                    InitializeComponent();
-                    LoadVendorFromSQL();
-                    LoadTheMainRestaurant();
-                    DateTime now = DateTime.Now;
-                    MainUiFormat();
-                }
+            }
+            else
+            {
+                MessageBox.Show("You should Login First !");
+                LogIn logIn = new LogIn();
+                logIn.ShowDialog();
             }
         }
         private void LoadTheMainRestaurant()                
