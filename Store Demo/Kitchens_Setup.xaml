@@ -67,31 +67,31 @@
                     </Grid.ColumnDefinitions>
 
 
-                    <Button Grid.Column="0" Name="NewBtn" Foreground="Black" Background="#cacfd2"  Click="NewButtonClicked" Margin="3">
+                    <Button Grid.Column="0" Name="NewBtn" Foreground="Black" Background="#cacfd2"  Click="NewButtonClicked" Margin="2 0 2 0">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <materialDesign:PackIcon Kind="Plus" HorizontalAlignment="Left"/>
                             <TextBlock HorizontalAlignment="Right"> New </TextBlock>
                         </StackPanel>
                     </Button>
-                    <Button Name="SaveBtn" Grid.Column="1"   Background="Green" Margin="3" Click="SaveBtn_Click">
+                    <Button Name="SaveBtn" Grid.Column="1"   Background="Green" Margin="2 0 2 0" Click="SaveBtn_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <materialDesign:PackIcon Kind="CheckboxMarkedCircle" HorizontalAlignment="Left"/>
                             <TextBlock  HorizontalAlignment="Right"> Save</TextBlock>
                         </StackPanel>
                     </Button>
-                    <Button Name="UpdateBtn" Grid.Column="2"   Background="Green" Margin="3" VerticalAlignment="Center" Click="UpdateBtn_Click">
+                    <Button Name="UpdateBtn" Grid.Column="2"   Background="Green" Margin="2 0 2 0" VerticalAlignment="Center" Click="UpdateBtn_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <materialDesign:PackIcon Kind="ArrowDown" HorizontalAlignment="Left"  />
                             <TextBlock HorizontalAlignment="Right"> Update</TextBlock>
                         </StackPanel>
                     </Button>
-                    <Button Grid.Column="3" Name="UndoBtn" Margin="3" Click="UndoBtn_Click">
+                    <Button Grid.Column="3" Name="UndoBtn" Margin="2 0 2 0" Click="UndoBtn_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <materialDesign:PackIcon Kind="Undo" HorizontalAlignment="Left" />
                             <TextBlock HorizontalAlignment="Right"> Undo</TextBlock>
                         </StackPanel>
                     </Button>
-                    <Button Name="DeleteBtn" Grid.Column="4"  Foreground="White" Background="#cb4335" Margin="3" Click="DeleteBtn_Click">
+                    <Button Name="DeleteBtn" Grid.Column="4"  Foreground="White" Background="#cb4335" Margin="2 0 2 0" Click="DeleteBtn_Click">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                             <materialDesign:PackIcon Kind="Delete" HorizontalAlignment="Left" />
                             <TextBlock HorizontalAlignment="Right"> Delete</TextBlock>
