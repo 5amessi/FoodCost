@@ -849,7 +849,7 @@ namespace Food_Cost
 
                     }
 
-                    SqlCommand cmd = new SqlCommand(string.Format("Insert into RO(RO_Serial,RO_No,Transactions_No,Status,Create_Date,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment,UserID,Total_Cost)Values ('{0}','{1}','{2}','{3}',GETDATE(),'{4}',(select Code From Setup_Restaurant WHere Name='{5}'),(select Code From Setup_Kitchens WHere Name='{6}'),'{7}','{8}','{9}','{10}','{11}')", RoTransferKitchen.Text, ManualROKitchen.Text, TransferResturantID, "Recieved", DeliveryROKitchen.Text + " " + DateTime.Now.ToString("HH:mm:ss"), ToResturantKitchentxt.Text, ToKitchenKitchentxt.Text, Classes.WS, "Transfer_Resturant", commenttxt.Text, MainWindow.UserID, Total_Price_With_Tax_Kitchen.Text), con);
+                    SqlCommand cmd = new SqlCommand(string.Format("Insert into RO(RO_Serial,RO_No,Transactions_No,Status,Create_Date,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment,UserID,Total_Cost)Values ('{0}','{1}','{2}','{3}',GETDATE(),'{4}',(select Code From Setup_Restaurant WHere Name='{5}'),(select Code From Setup_Kitchens WHere Name='{6}'),'{7}','{8}','{9}','{10}','{11}')", RoTransferKitchen.Text, ManualROKitchen.Text, TransferResturantID, "Recieved",Convert.ToDateTime(DeliveryROKitchen.Text).ToString("MM-dd-yyyy") + " " + DateTime.Now.ToString("HH:mm:ss"), ToResturantKitchentxt.Text, ToKitchenKitchentxt.Text, Classes.WS, "Transfer_Resturant", commenttxt.Text, MainWindow.UserID, Total_Price_With_Tax_Kitchen.Text), con);
                     cmd.ExecuteNonQuery();
                 }
                 catch (Exception ex) { MessageBox.Show(ex.ToString()); }
