@@ -757,7 +757,7 @@ namespace Food_Cost
                     }
 
                     FiledSelection = "RO_Serial,RO_No,Transactions_No,Status,Receiving_Date,Resturant_ID,Kitchen_ID,WS,Type,Comment,UserID,Create_Date,Total_Cost";
-                    Values = string.Format("'{0}','{1}','{2}','{3}','{4}',(select Code from Setup_Restaurant where IsMain='True'),(select code from Setup_Kitchens where IsMain='True' and RestaurantID=(select Code From Setup_Restaurant where IsMain='True')),'{5}','{6}','{7}','{8}',GETDATE(),'{9}'", codetxt.Text, Manual_Recieve_No.Text, (RecieveOrderDGV.SelectedItem as DataRowView).Row.ItemArray[0].ToString(), "Recieved", Convert.ToDateTime(Delivery_dt.Text).ToString("MM-dd-yyyy") + " " + DateTime.Now.ToString("HH:mm:ss"), Classes.WS, "Recieve_Purchase", commenttxt.Text, MainWindow.UserID, Total_Price_Without_Tax_Purchase.Text);
+                    Values = string.Format("'{0}','{1}','{2}','{3}','{4}',(select Code from Setup_Restaurant where IsMain='True'),(select code from Setup_Kitchens where IsMain='True' and RestaurantID=(select Code From Setup_Restaurant where IsMain='True')),'{5}','{6}','{7}','{8}',GETDATE(),'{9}'", codetxt.Text, Manual_Recieve_No.Text, (RecieveOrderDGV.SelectedItem as DataRowView).Row.ItemArray[0].ToString(), "Recieved", Convert.ToDateTime(Delivery_dt.Text).ToString("MM-dd-yyyy") + " " + DateTime.Now.ToString("HH:mm:ss"), Classes.WS, "Recieve_Purchase", commenttxt.Text, MainWindow.UserID, Total_Price_With_Tax_Purchase.Text);
                     Classes.InsertRow("RO", FiledSelection, Values);
                 }
                 catch (Exception ex) { MessageBox.Show(ex.ToString()); }
